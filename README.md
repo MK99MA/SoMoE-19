@@ -71,7 +71,7 @@ To run Soccer Mod on your server you need the following plugins:
 http://www.sourcemm.net/downloads.php?branch=stable  
  ● SourceMod 1.7 or higher  
 https://www.sourcemod.net/downloads.php?branch=stable  
- ● Soccer Mod (2019 Edit) 
+ ● Soccer Mod (2019 Edit)  
 https://github.com/MK99MA/soccermod-2019edit/releases  
   
 Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
