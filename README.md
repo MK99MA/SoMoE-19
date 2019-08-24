@@ -37,7 +37,7 @@ I incorporated work of the following plugins and only modified it in a way so it
   
 #### Match Menu:  
 ![MatchSet](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchmenu.png)  
- ● Match menu reworked + added display of certain settings  
+ ● Match menu reworked + added display of certain settings (Image of the menu below)  
  ● Match settings changeable ingame  
  ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
   
@@ -93,3 +93,4 @@ Soccer Mod is now fully installed and will be loaded automatically when the serv
 ![lockimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/lockmenu.png)
 ![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
 ![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
+![matchset](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchsettings.png)
