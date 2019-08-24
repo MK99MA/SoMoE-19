@@ -1,1 +1,83 @@
-#soccermod-2019edit
+# Soccer Mod - 2019 Edit
+A edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers
+I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.
+
+## Credits:
+I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:
+Original version by Marco Boogers - https://github.com/marcoboogers/soccermod
+Duckjump Script by Marco Boogers
+Allchat (aka DeadChat) by Frenzzy - https://forums.alliedmods.net/showthread.php?t=171734
+ShortSprint by walmar - https://forums.alliedmods.net/showthread.php?p=2294299
+  
+## Changelog
+### New:
+#### Centralized and generated config files in cfg/sm_soccermod:
+  ● soccer_mod.cfg - Main Config updates with ingame changes 
+  ● soccer_mod_admins.cfg - SoccerMod Admin File, add and remove player ingame  
+  ● soccer_mod_allowed_maps.cfg - Allowed maps, addable ingame  
+  ● soccer_mod_cap_positions.txt  
+  ● soccer_mod_downloads.cfg - Add the directories player should download in here  
+  ● soccer_mod_GKAreas.cfg - Coords for the area in which players should get additional pts for saves  
+  ● soccer_mod_skins.cfg - List of models, changeable ingame. You have to add them to the file manually!  
+    
+#### Admin Management:
+ ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
+ ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
+ ● Promote a Soccermod Admin to a Sourcemod Admin ingame  
+ ● Admin Lists for both, Sourcemod (admins_simple.ini only) and Soccermod Admins  
+ ● Online List, showing everyone who can access the admin portion of the menu  
+  
+#### Chat Settings:
+ ● Toggleable DeadChat, with different visibility settings  
+ ● Customizable Chat messages (Prefix, Prefixcolor, Textcolor)  
+  
+#### Match Menu:
+ ● Match menu reworked + added display of certain settings  
+ ● Match settings changeable ingame  
+ ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
+  
+#### Misc:
+ ● Added toggleable duckjump block script  
+ ● Added toggleable passwort change after starting a cap and hitting a set threshold  
+ ● Switchable modes - Public menu, public cap/match, admins only 
+ ● New entries in settings menu + added display of certain settings    
+ ● Rearranged a few menu options    
+
+#### Commands:
+ ● (RCONFLAG ADMIN ONLY) !addadmin <steamid> <flags> <name> - adds an entry with the specified values to the admins_simple.ini  
+ ● (RCONFLAG ADMIN ONLY) !pass <password> - Set the current sv password  
+ ● !admins - Shows a list of online admins
+ 
+### Modified:
+● Toggleable MVP stars & messages  
+● Replaced "Hold-shift" Sprint with walmars ShortSprint
+● (TEST) Reduced restart time when a match starts from 5 secs to 1 sec  
+● Unpausing countdown will also display as centertext
+● Every mod chat message will use the set chat settings  
+
+### Removed:
+● Max allowed players per team during a match
+
+## Installation
+### 1. Download the required plugins
+To run Soccer Mod on your server you need the following plugins:
+● Metamod:Source 1.10 or higher  
+http://www.sourcemm.net/downloads.php?branch=stable
+● SourceMod 1.7 or higher  
+https://www.sourcemod.net/downloads.php?branch=stable
+● Soccer Mod (2019 Edit) 
+https://github.com/MK99MA/soccermod-2019edit/releases
+
+Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.
+
+### 2. Extract the zip files
+Right click on each zip file and select "Extract Here". After extracting the 3 zip files you should have 5 folders on your desktop:
+● addons
+● maps
+
+### 3. Copy or upload the folders
+Copy or upload the folders to your server's "csgo" folder, for example:
+● D:\Servers\Counter-Strike Global Offensive\csgo (local server)
+● /home/csgo (hosted server)
+
+Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
