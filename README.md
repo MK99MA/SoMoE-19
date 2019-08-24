@@ -20,27 +20,30 @@ I incorporated work of the following plugins and only modified it in a way so it
   ● soccer_mod_GKAreas.cfg - Coords for the area in which players should get additional pts for saves  
   ● soccer_mod_skins.cfg - List of models, changeable ingame. You have to add them to the file manually!  
     
-#### Admin Management:
+#### Admin Management:  
+![AdminManagementImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/adminmgmt.png)  
  ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
  ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
  ● Promote a Soccermod Admin to a Sourcemod Admin ingame  
  ● Admin Lists for both, Sourcemod (admins_simple.ini only) and Soccermod Admins  
  ● Online List, showing everyone who can access the admin portion of the menu  
   
-#### Chat Settings:
+#### Chat Settings:  
+![ChatSetImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/chatsettings.png)  
  ● Toggleable DeadChat, with different visibility settings  
  ● Customizable Chat messages (Prefix, Prefixcolor, Textcolor)  
   
-#### Match Menu:
+#### Match Menu:  
+![MatchSet](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchmenu.png)  
  ● Match menu reworked + added display of certain settings  
  ● Match settings changeable ingame  
  ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
   
 #### Misc:
  ● Added toggleable duckjump block script  
- ● Added toggleable passwort change after starting a cap and hitting a set threshold  
- ● Switchable modes - Public menu, public cap/match, admins only  
- ● New entries in settings menu + added display of certain settings    
+ ● Added toggleable passwort change after starting a cap and hitting a set threshold (Image of the menu below)  
+ ● Switchable modes - Public menu, public cap/match, admins only (Image of the menu below)  
+ ● New entries in settings menu + added display of certain settings (Image of the menu below)   
  ● Rearranged a few menu options    
 
 #### Commands:
@@ -84,3 +87,7 @@ Copy or upload the folders to your server's "csgo" folder, for example:
  ● /home/csgo (hosted server)  
   
 Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
+
+![lockimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/lockmenu.png)
+![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
+![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
