@@ -2,6 +2,8 @@
 A edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers
 I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.
 
+## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)   
+
 ## Credits:
 I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
   ● Original version by Marco Boogers - https://github.com/marcoboogers/soccermod  
