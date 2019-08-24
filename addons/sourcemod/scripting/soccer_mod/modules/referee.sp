@@ -201,7 +201,7 @@ public int MatchScoreMenuHandler(Menu menu, MenuAction action, int client, int c
 			OpenMatchScoreMenu(client);
 		}
 	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMatchMenu(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenRefereeMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
