@@ -617,8 +617,8 @@ public void LoadConfigSoccer()
 	SetCvarInt("mp_roundtime",				  60);
 	SetCvarInt("phys_pushscale",				phys_pushscale);
 	SetCvarFloat("phys_timescale",			  phys_timescale);
-	SetCvarInt("sv_client_min_interp_ratio",	0);
-	SetCvarInt("sv_client_max_interp_ratio",	0);
+	//SetCvarInt("sv_client_min_interp_ratio",	0);
+	//SetCvarInt("sv_client_max_interp_ratio",	0);
 
 	if (FileExists("cfg/soccer.cfg", false)) ServerCommand("exec soccer");
 }
