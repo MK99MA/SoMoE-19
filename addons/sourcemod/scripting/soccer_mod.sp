@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.19082019.1"
+#define PLUGIN_VERSION "css.25082019.1"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -105,6 +105,7 @@ public void OnPluginStart()
 {
 	CreateConVar("soccer_mod_version", PLUGIN_VERSION, "Soccer Mod version", FCVAR_NOTIFY| FCVAR_DONTRECORD);
 	
+	if (!DirExists("cfg/sm_soccermod")) CreateDirectory("cfg/sm_soccermod", 755, false);
 	//GetGameFolderName(gamevar, sizeof(gamevar));
 
 	AddCommandListener(SayCommandListener, "say");
