@@ -43,7 +43,7 @@ I incorporated work of the following plugins and only modified it in a way so it
   
 #### Misc:
  ● Added toggleable duckjump block script  
- ● Added toggleable passwort change after starting a cap and hitting a set threshold (Image of the menu below)  
+ ● Added toggleable password change after starting a cap and hitting a set threshold (Image of the menu below)  
  ● Switchable modes - Public menu, public cap/match, admins only (Image of the menu below)  
  ● New entries in settings menu + added display of certain settings (Image of the menu below)   
  ● Rearranged a few menu options    
