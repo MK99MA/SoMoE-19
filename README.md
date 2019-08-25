@@ -1,6 +1,11 @@
 # Soccer Mod - 2019 Edit
 A edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers
-I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.
+I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.  
+
+### If you used a previous (edited) version of soccermod:  
+  ● Remove "exec soccer_mod.cfg" from your server.cfg  
+  ● Remove the file "soccer_mod.cfg" from your cstrike/cfg folder  
+  ● Remove / Move shortsprint.smx and duckjumpblocker.smx to the disabled folder  
 
 ## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)   
 
