@@ -37,8 +37,8 @@ I incorporated work of the following plugins and only modified it in a way so it
   
 #### Match Menu:  
 ![MatchSet](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchmenu.png)  
- ● Match menu reworked + added display of certain settings (Image of the menu below)  
- ● Match settings changeable ingame  
+ ● Match menu reworked + added display of certain settings
+ ● Match settings changeable ingame (Image of the menu below)    
  ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
   
 #### Misc:
