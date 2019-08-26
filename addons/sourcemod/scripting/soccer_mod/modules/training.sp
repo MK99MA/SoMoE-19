@@ -514,7 +514,7 @@ public void TrainingCannonOff(int client)
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has turned the cannon off", prefixcolor, prefix, textcolor, client);
 		}
 
-		trainingCannonBallIndex = -1;
+		//trainingCannonBallIndex = -1;
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		LogMessage("%N <%s> has turned the cannon off", client, steamid);
