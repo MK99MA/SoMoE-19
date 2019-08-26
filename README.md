@@ -8,7 +8,8 @@ I merely edited and added stuff without any real knowledge, so expect some heavi
   ● Remove / Move shortsprint.smx and duckjumpblocker.smx to the disabled folder  
   ● (OPTIONAL) Copy the contents of the old soccermod created files (addons/sourcemod/config and /data) to the new ones (created after the plugin loaded) in cfg/sm_soccermod  
 
-## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)   
+## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)  
+#### [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
 
 ## Credits:
 I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
