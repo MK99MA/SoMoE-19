@@ -1,1 +1,15 @@
-
+# Alternative Skins  
+  
+## [CSL](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/csl/csl.zip)  
+## [FCD](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/fcd/fcd.zip)  
+## [ISL](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/isl/isl.zip)  
+## [Nemesis](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/nemesis/nemesis.zip)  
+## [Novi](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/novi/novi.zip)  
+## [Phoenix](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/phoenix/phoenix.zip)  
+## [Predz](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/predz/predz.zip)  
+## [PSL](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/psl/psl.zip)  
+## [Russia](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/russia/russia.zip)  
+## [SWK](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/swk/swk.zip)  
+## [Default](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
+## [Ukraine](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/ukraine/ukraine.zip)  
+## [xGoal](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/xgoal/xgoal.zip)
