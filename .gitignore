@@ -20,11 +20,6 @@
 !/addons/sourcemod/scripting/soccer_mod
 !/addons/sourcemod/scripting/soccer_mod/*
 
-!/addons/sourcemod/translations
-/addons/sourcemod/translations/*
-
-!/addons/sourcemod/translations/soccer_mod.phrases.txt
-
 !/maps
 /maps/*
 
