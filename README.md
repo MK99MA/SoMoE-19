@@ -10,6 +10,7 @@ I merely edited and added stuff without any real knowledge, so expect some heavi
 
 ## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)  
 #### [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
+#### [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins)  
 
 ## Credits:
 I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
