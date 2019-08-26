@@ -3,7 +3,7 @@ A edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Sourc
 I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.  
 
 ### If you used a previous (edited) version of soccermod:  
-  ● Remove "exec soccer_mod.cfg" from your server.cfg  
+  ● Remove "exec soccer_mod.cfg" and any soccer_mod_* command from your server.cfg  
   ● Remove the file "soccer_mod.cfg" from your cstrike/cfg folder  
   ● Remove / Move shortsprint.smx and duckjumpblocker.smx to the disabled folder  
   ● (OPTIONAL) Copy the contents of the old soccermod created files (addons/sourcemod/config and /data) to the new ones (created after the plugin loaded) in cfg/sm_soccermod  
