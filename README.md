@@ -88,8 +88,9 @@ https://github.com/MK99MA/soccermod-2019edit/releases
 Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
   
 ### 2. Extract the zip files
-Right click on each zip file and select "Extract Here". After extracting the 3 zip files you should have 5 folders on your desktop:  
+Right click on each zip file and select "Extract Here". After extracting the 3 zip files you should have 3 folders on your desktop:  
  ● addons  
+ ● cfg  
  ● maps  
   
 ### 3. Copy or upload the folders
