@@ -4,12 +4,10 @@
 bool adminRemoved;
 char SteamID[20];
 char clientName[50];
-char clientName2[50];
 char szFlags[32];
 char szTarget2[64];
 int playerCount = 0;
 int playerindex = 1;
-int userindex;
 int adminmode;
 int addoredit;
 
@@ -76,6 +74,7 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 public void OpenMenuAddAdmin(int client)
 {
 	playerCount = GetClientCount(true);
+	char userid[64];
 	
 	Menu menu = new Menu(MenuHandlerAddAdmin);
 	menu.SetTitle("Player List");
@@ -85,9 +84,9 @@ public void OpenMenuAddAdmin(int client)
 		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
 		{
 			GetClientName(playerindex, clientName, sizeof(clientName));
-			GetClientAuthId(playerindex, AuthId_Engine, SteamID, sizeof(SteamID));
-			userindex = GetClientUserId(playerindex);
-			AddMenuItem(menu, clientName, clientName);
+			//GetClientAuthId(playerindex, AuthId_Engine, SteamID, sizeof(SteamID));
+			IntToString(GetClientUserId(playerindex), userid, sizeof(userid));
+			AddMenuItem(menu, userid, clientName);
 		}
 	}
 	
@@ -97,24 +96,28 @@ public void OpenMenuAddAdmin(int client)
 
 public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int choice)
 {
-	//int userindex2;
-	menu.GetItem(choice, clientName, sizeof(clientName));
+	char userid[64];
+	int userindex2;
+	menu.GetItem(choice, userid, sizeof(userid));
 	if (action == MenuAction_Select)
 	{
-		//userindex2 = GetClientOfUserId(userindex);
-		GetClientName(userindex, clientName2, sizeof(clientName2));
-		GetClientAuthId(userindex, AuthId_Engine, SteamID, sizeof(SteamID))
-		AdminId ID = GetUserAdmin(userindex);
+		int userindex = StringToInt(userid);
+		userindex2 = GetClientOfUserId(userindex);
+		GetClientName(userindex2, clientName, sizeof(clientName));
+		//PrintToChatAll(clientName);
+		GetClientAuthId(userindex2, AuthId_Engine, SteamID, sizeof(SteamID))
+		//PrintToChatAll(SteamID);
+		AdminId ID = GetUserAdmin(userindex2);
 		if(ID != INVALID_ADMIN_ID)
 		{
 			playerindex = 1;
-			CPrintToChat(client, "{%s}[%s] {%s}%s is already SourceMod Admin.", prefixcolor, prefix, textcolor, clientName2);
+			CPrintToChat(client, "{%s}[%s] {%s}%s is already SourceMod Admin.", prefixcolor, prefix, textcolor, clientName);
 			OpenMenuAddAdmin(client);
 		}
-		else if(IsSoccerAdmin(userindex))
+		else if(IsSoccerAdmin(userindex2))
 		{
 			playerindex = 1;
-			CPrintToChat(client, "{%s}[%s] {%s}%s is already SoccerMod Admin.", prefixcolor, prefix, textcolor, clientName2);
+			CPrintToChat(client, "{%s}[%s] {%s}%s is already SoccerMod Admin.", prefixcolor, prefix, textcolor, clientName);
 			OpenMenuAddAdmin(client);
 		}
 		else 
@@ -130,7 +133,7 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 public void OpenMenuAddAdminFlags(int client)
 {
 	Menu menu = new Menu(MenuHandlerAddAdminFlags);
-	menu.SetTitle("Add %s as:", clientName2);
+	menu.SetTitle("Add %s as:", clientName);
 
 	menu.AddItem("addadminfull", "Sourcemod: Root Admin");
 	menu.AddItem("addadminsoccer", "Soccer Mod Admin");
@@ -227,9 +230,9 @@ public void OpenMenuPromoteAdmin(int client)
 		do
 		{
 			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName2, sizeof(clientName2));
+			kvAdmins.GetString("name", clientName, sizeof(clientName));
 			
-			menu.AddItem(SteamID, clientName2);
+			menu.AddItem(clientName, clientName);
 		}
 		while (kvAdmins.GotoNextKey());
 	}
@@ -257,7 +260,7 @@ public int MenuHandlerPromoteAdmin(Menu menu, MenuAction action, int client, int
 public void OpenMenuPromoteAdminFlags(int client)
 {
 	Menu menu = new Menu(MenuHandlerPromoteAdminFlags);
-	menu.SetTitle("Promote %s to:", clientName2);
+	menu.SetTitle("Promote %s to:", clientName);
 
 	menu.AddItem("addadminfull", "Sourcemod: Root Admin");
 	menu.AddItem("addadmincustom", "Sourcemod: Custom Flags");
@@ -316,9 +319,9 @@ public void OpenMenuRemoveAdmin(int client)
 		do
 		{
 			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName2, sizeof(clientName2));
+			kvAdmins.GetString("name", clientName, sizeof(clientName));
 			
-			menu.AddItem(SteamID, clientName2);
+			menu.AddItem(SteamID, clientName);
 		}
 		while (kvAdmins.GotoNextKey());
 	}
@@ -339,7 +342,7 @@ public int MenuHandlerRemoveAdmin(Menu menu, MenuAction action, int client, int 
 	{
 		RemoveSoccerAdminMenuFunc(client);
 		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SoccerMod Adminlist", prefixcolor, prefix, textcolor, clientName2);
+		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SoccerMod Adminlist", prefixcolor, prefix, textcolor, clientName);
 		OpenMenuAdminSet(client);
 	}
 		
@@ -359,7 +362,7 @@ public void OpenMenuWarning(int client)
 	menu.SetTitle("ATTENTION");
 	
 	char warning[128];
-	Format(warning, sizeof(warning), "Are you sure you want to grant %s ROOT ADMIN access?", clientName2);
+	Format(warning, sizeof(warning), "Are you sure you want to grant %s ROOT ADMIN access?", clientName);
 	
 	menu.AddItem("", warning, ITEMDRAW_DISABLED);
 	menu.AddItem("", "ROOT ADMIN allows the user to add Admins or to remove SoccerMod Admins!", ITEMDRAW_DISABLED);
@@ -481,9 +484,9 @@ public void OpenMenuAdminListSoccerMod(int client)
 		do
 		{
 			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName2, sizeof(clientName2));
+			kvAdmins.GetString("name", clientName, sizeof(clientName));
 			
-			menu.AddItem(SteamID, clientName2, ITEMDRAW_DISABLED);
+			menu.AddItem(SteamID, clientName, ITEMDRAW_DISABLED);
 		}
 		while (kvAdmins.GotoNextKey());
 	}
@@ -607,8 +610,8 @@ public void AddAdminMenuFunc(int client)
 	}
 	else if (adminmode == 0)
 	{
-		WriteFileLine(hFile, "\"%s\" \"99:z\"	//%s", szTarget2, clientName2);
-		CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Full Admin.", prefixcolor, prefix, textcolor, clientName2);
+		WriteFileLine(hFile, "\"%s\" \"99:z\"	//%s", szTarget2, clientName);
+		CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Full Admin.", prefixcolor, prefix, textcolor, clientName);
 		OpenMenuAddAdmin(client);
 	}
 
@@ -624,13 +627,13 @@ public void AddSoccerAdminMenuFunc(int client)
 	kvAdmins.ImportFromFile(adminFileKV);
 	
 	kvAdmins.JumpToKey(szTarget2, true);
-	kvAdmins.SetString("name", clientName2);	
+	kvAdmins.SetString("name", clientName);	
 	
 	kvAdmins.Rewind();
 	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
 	
-	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod Admin.", prefixcolor, prefix, textcolor, clientName2);
+	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod Admin.", prefixcolor, prefix, textcolor, clientName);
 	OpenMenuAddAdmin(client);
 }
 
@@ -670,8 +673,8 @@ public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 		{
 			szFlags = custom_flag;
 		
-			WriteFileLine(hFile, "\"%s\" \"%s\"	// %s", szTarget2, szFlags, clientName2);
-			CPrintToChat(client, "{%s}[%s] {%s}%s was added with the flags of %s.", prefixcolor, prefix, textcolor, clientName2, szFlags);
+			WriteFileLine(hFile, "\"%s\" \"%s\"	// %s", szTarget2, szFlags, clientName);
+			CPrintToChat(client, "{%s}[%s] {%s}%s was added with the flags of %s.", prefixcolor, prefix, textcolor, clientName, szFlags);
 
 			CloseHandle(hFile);
 
