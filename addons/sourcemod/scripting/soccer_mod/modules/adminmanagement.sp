@@ -97,21 +97,21 @@ public void OpenMenuAddAdmin(int client)
 
 public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int choice)
 {
-	int userindex2;
+	//int userindex2;
 	menu.GetItem(choice, clientName, sizeof(clientName));
 	if (action == MenuAction_Select)
 	{
-		userindex2 = GetClientOfUserId(userindex);
-		GetClientName(userindex2, clientName2, sizeof(clientName2));
-		GetClientAuthId(userindex2, AuthId_Engine, SteamID, sizeof(SteamID))
-		AdminId ID = GetUserAdmin(userindex2);
+		//userindex2 = GetClientOfUserId(userindex);
+		GetClientName(userindex, clientName2, sizeof(clientName2));
+		GetClientAuthId(userindex, AuthId_Engine, SteamID, sizeof(SteamID))
+		AdminId ID = GetUserAdmin(userindex);
 		if(ID != INVALID_ADMIN_ID)
 		{
 			playerindex = 1;
 			CPrintToChat(client, "{%s}[%s] {%s}%s is already SourceMod Admin.", prefixcolor, prefix, textcolor, clientName2);
 			OpenMenuAddAdmin(client);
 		}
-		else if(IsSoccerAdmin(userindex2))
+		else if(IsSoccerAdmin(userindex))
 		{
 			playerindex = 1;
 			CPrintToChat(client, "{%s}[%s] {%s}%s is already SoccerMod Admin.", prefixcolor, prefix, textcolor, clientName2);
@@ -597,7 +597,7 @@ public void AddAdminMenuFunc(int client)
 	char szFile[256];
 	BuildPath(Path_SM, szFile, sizeof(szFile), "configs/admins_simple.ini");
 
-	Handle hFile = OpenFile(szFile, "at");
+	File hFile = OpenFile(szFile, "at");
 	
 	if(adminmode == 2)
 	{
@@ -612,7 +612,7 @@ public void AddAdminMenuFunc(int client)
 		OpenMenuAddAdmin(client);
 	}
 
-	CloseHandle(hFile);
+	hFile.Close();
 	FakeClientCommandEx(client, "sm_reloadadmins");
 }
 
