@@ -214,6 +214,8 @@ public void CreateGKAreaConfig()
 	kvGKArea.SetNum("t_max_y",		1379);
 	kvGKArea.SetNum("t_min_z",		0);
 	kvGKArea.SetNum("t_max_z",		120);
+	kvGKArea.GoBack();
+	
 	kvGKArea.JumpToKey("ka_soccer_stadium_2019_b1", true);
 	kvGKArea.SetNum("ct_min_x",		-313);
 	kvGKArea.SetNum("ct_max_x",		313);
