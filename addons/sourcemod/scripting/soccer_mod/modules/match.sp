@@ -604,7 +604,7 @@ public int MenuHandlerMatchGolden(Menu menu, MenuAction action, int client, int 
 		{
 			matchGoldenGoal = 0;
 			UpdateConfigInt("Match Settings", "soccer_mod_match_golden_goal", matchGoldenGoal);
-			CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was enabled", prefixcolor, prefix, textcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was disabled", prefixcolor, prefix, textcolor);
 			OpenMenuMatchSettings(client);
 		}
 
