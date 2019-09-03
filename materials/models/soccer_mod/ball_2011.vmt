@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/soccer_mod/ball_2011"
+	"$surfaceprop" "glass"
+}
