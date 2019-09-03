@@ -1110,6 +1110,7 @@ public void EndStoppageTime()
 		if (matchPeriod <= matchPeriods)
 		{
 			matchPeriodBreak = true;
+			//EmitAmbientSound("soccer_mod/match/halftime.wav", 
 			FreezeAll();
 			matchTimer = CreateTimer(0.0, MatchPeriodBreakTimer, matchPeriodBreakLength);
 		}

@@ -45,10 +45,15 @@ public void SprintOnPluginStart()
 
 public void floodcheck()
 {
+	char afpath_old[PLATFORM_MAX_PATH], afpath_new[PLATFORM_MAX_PATH];
 	antiflood = FindPluginByFile("antiflood.smx");
+	BuildPath(Path_SM, afpath_old, sizeof(afpath_old), "plugins/antiflood.smx")
+	BuildPath(Path_SM, afpath_new, sizeof(afpath_new), "plugins/disabled/antiflood.smx")
 	if (antiflood != INVALID_HANDLE)
 	{
-		File hFile = OpenFile("cfg/server.cfg", "at");
+		RenameFile(afpath_new, afpath_old, false);
+		
+		/*File hFile = OpenFile("cfg/server.cfg", "at");
 		char sLine[128];
 		while (!hFile.EndOfFile() && hFile.ReadLine(sLine, sizeof(sLine)))
 		{
@@ -56,10 +61,10 @@ public void floodcheck()
 			{
 				WriteFileLine(hFile, "");
 				WriteFileLine(hFile, "//Floodcheck: allowed time between messages");
-				WriteFileLine(hFile, "sm_flood_time 0.25");
+				WriteFileLine(hFile, "sm_flood_time 0");
 			}
 		}
-		hFile.Close();
+		hFile.Close();*/
 	}
 }
 
