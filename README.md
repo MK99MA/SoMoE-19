@@ -10,6 +10,7 @@ I merely edited and added stuff without any real knowledge, so expect some heavi
   ● (OPTIONAL) Remove SoccerMod only admins from admins_simple.ini and add them to the new SoccerMod admin file. (SteamID and Name required)  
 
 ## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/releases)  
+## [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
 #### [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
 #### [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
 ### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow the generated examples for the default values for your desired skins!.  
