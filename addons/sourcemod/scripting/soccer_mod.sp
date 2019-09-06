@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.26082019.1"
+#define PLUGIN_VERSION "css.06092019"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -33,13 +33,17 @@ char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_
 
 ConVar pw;
 
+float afk_kicktime		= 120.0;
+int afk_menutime		= 30;
+
 int PWMAXPLAYERS		= 11 //
 int publicmode		 	= 1;
 int passwordlock		= 1;
 int djbenabled			= 1;
 
-Handle allowedMaps	  = INVALID_HANDLE;
-Handle db			   = INVALID_HANDLE;
+Handle allowedMaps	  	= INVALID_HANDLE;
+bool bLATE_LOAD 		= false;
+Handle db			   	= INVALID_HANDLE;
 //Handle shortsprint	  = INVALID_HANDLE;
 
 KeyValues kvConfig;
@@ -52,6 +56,7 @@ KeyValues kvAdmins;
 // **************************************************************************************************************
 #include <sourcemod>
 #include <sdktools>
+#include <sdktools_functions>
 #include <cstrike>
 #include <regex>
 #include <morecolors>
@@ -110,6 +115,7 @@ public void OnPluginStart()
 	//GetGameFolderName(gamevar, sizeof(gamevar));
 
 	AddCommandListener(SayCommandListener, "say");
+	AddCommandListener(SayCommandListener, "say_team");
 
 	HookEntityOutput("func_physbox",	"OnAwakened",	   OnAwakened);
 	HookEntityOutput("prop_physics",	"OnAwakened",	   OnAwakened);
@@ -236,6 +242,16 @@ public Action SayCommandListener(int client, char[] command, int argc)
 			CustomFlagListener(client, "CustFlag", custom_flag);
 			return Plugin_Handled;			
 		}
+		else if (StrEqual(changeSetting[client], "CaptchaNum"))
+		{
+			LockSet(client, "CaptchaNum", intnumber, 30, 600);
+			return Plugin_Handled;			
+		}	
+		else if (StrEqual(changeSetting[client], "MenuNum"))
+		{
+			LockSet(client, "MenuNum", intnumber, 10, 60);
+			return Plugin_Handled;			
+		}	
 	}
 
 	return Plugin_Continue;
@@ -316,6 +332,13 @@ public void OnTakeDamage(char[] output, int caller, int activator, float delay)
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
 // ************************************************************************************************************
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+  bLATE_LOAD = late;
+  return(APLRes_Success);
+}
+
+
 public void OnMapStart()
 {
 	if (!FileExists(configFileKV) || !FileExists(adminFileKV) || !FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg") || !FileExists(allowedMapsConfigFile) || !FileExists(statsKeygroupGoalkeeperAreas) || !FileExists(skinsKeygroup) || !FileExists(pathCapPositionsFile))
@@ -376,6 +399,7 @@ public void OnClientPutInServer(int client)
 	RespawnOnClientPutInServer(client);
 	SkinsOnClientPutInServer(client);
 	//SprintOnClientPutInServer(client);
+	AFKKickOnClientPutInServer(client);
 
 	RadioCommandsOnClientPutInServer(client);
 	if(pwchange == true && GetClientCount() == PWMAXPLAYERS+1  && passwordlock == 1) RandPass();

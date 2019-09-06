@@ -63,11 +63,16 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 // *******************************************************************************************************************
 public void OpenMenuLockSet(int client)
 {
-	char currentLockSet[64];
+	char currentLockSet[64], CaptchaTimer[64], MenuTimer[64];
 	char lockstate[32];
+	
 	if(passwordlock == 1) lockstate = "On"
 	else if(passwordlock == 0) lockstate = "Off"
+		
 	Format(currentLockSet, sizeof(currentLockSet), "Locking: %s | Threshold: %i", lockstate, PWMAXPLAYERS+1);
+	Format(CaptchaTimer, sizeof(CaptchaTimer), "Captcha Timer: %f", afk_kicktime);
+	Format(MenuTimer, sizeof(MenuTimer), "Captchamenu Timer: %i", afk_menutime);
+	
 	Menu menu = new Menu(MenuHandlerLockSet);
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Lock");
@@ -75,6 +80,8 @@ public void OpenMenuLockSet(int client)
 	menu.AddItem("enable", "Enable ServerLock");
 	menu.AddItem("disable", "Disable ServerLock");
 	menu.AddItem("locknumber", "Player Threshold");
+	menu.AddItem("afktime", CaptchaTimer);
+	menu.AddItem("menutime", MenuTimer);
 	menu.AddItem("locknumber", currentLockSet, ITEMDRAW_DISABLED);
 
 	menu.ExitBackButton = true;
@@ -106,6 +113,16 @@ public int MenuHandlerLockSet(Menu menu, MenuAction action, int client, int choi
 		{
 			CPrintToChat(client, "{%s}[%s] {%s}Type in the maximum allowed players for a cap, current setting is %i", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
 			changeSetting[client] = "LockServerNum";
+		}
+		else if (StrEqual(menuItem, "afktime"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds before the captcha appears. Current setting is %f", prefixcolor, prefix, textcolor, afk_kicktime);
+			changeSetting[client] = "CaptchaNum";
+		}
+		else if (StrEqual(menuItem, "menutime"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds a player has to solve the captcha. Current setting is %i", prefixcolor, prefix, textcolor, afk_menutime);
+			changeSetting[client] = "MenuNum";
 		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
@@ -670,6 +687,8 @@ public void ChatSet(int client, char type[32], char custom_tag[32])
 
 public void LockSet(int client, char type[32], int intnumber, int min, int max)
 {
+	//int min = 0;
+	//int max = 20, max2 = 600, max3 = 120;
 	if (intnumber >= min && intnumber <= max)
 	{
 		char steamid[32];
@@ -685,9 +704,34 @@ public void LockSet(int client, char type[32], int intnumber, int min, int max)
 				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the number of allowed players in a cap to %i", prefixcolor, prefix, textcolor, client, intnumber);
 			}
 
-			LogMessage("%N <%s> has set the max allowed players in the cap to %.3f", client, steamid, intnumber);
+			LogMessage("%N <%s> has set the max allowed players in the cap to %i", client, steamid, intnumber);
 		}
+		if (StrEqual(type, "CaptchaNum"))
+		{
+			afk_kicktime = float(intnumber);
+			UpdateConfigFloat("Admin Settings", "soccer_mod_afk_time", afk_kicktime);
 
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the allowed AFK time to %i seconds", prefixcolor, prefix, textcolor, client, intnumber);
+			}
+
+			LogMessage("%N <%s> has set the allowed AFK time to %i seconds", client, steamid, intnumber);
+		}
+		
+		if (StrEqual(type, "MenuNum"))
+		{
+			afk_menutime = intnumber;
+			UpdateConfigInt("Admin Settings", "soccer_mod_afk_menu", afk_menutime);
+
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the captcha solve time to %i seconds", prefixcolor, prefix, textcolor, client, intnumber);
+			}
+
+			LogMessage("%N <%s> has set the captcha solve time to %i seconds", client, steamid, intnumber);
+		}
+		
 		changeSetting[client] = "";
 		OpenMenuLockSet(client);
 	}
