@@ -416,9 +416,9 @@ public void AFKKickOnClientPutInServer(int client)
 	
 	if(pwchange == true && passwordlock == 1)
 	{
+		CPrintToChat(client, "{%s}[%s] AFK Kick enabled.", prefixcolor, prefix);
 		if(IsValidClient(client, true))
 		{
-			CPrintToChat(client, "{%s}[%s] AFK Kick enabled.", prefixcolor, prefix);
 			GetClientAbsOrigin(client, afk_Position[client]);
 			GetClientEyeAngles(client, afk_Angles[client]);
 
@@ -494,7 +494,7 @@ public Action Timer_AFKCheck(Handle Timer)
 
 			afk_Matches[i] = iMatches;
 
-			if(iMatches >= 3)
+			if(iMatches >= 2)
 			{
 				PopupAFKMenu(i, afk_menutime);
 			}
