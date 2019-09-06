@@ -4,8 +4,6 @@
 #define CLIENT_MESSAGEUSING  (1<<2)
 #define CLIENT_ANNOUNCEMENT  (1<<3)
 
-bool bLATE_LOAD = false;
-
 char iCLIENT_STATUS[MAXPLAYERS+1];
 
 Handle h_SPRINT_TIMERS[MAXPLAYERS+1];
@@ -16,12 +14,6 @@ Handle antiflood;
 #include "soccer_mod\modules\sprint\infopanel.sp"
 #include "soccer_mod\modules\sprint\timers.sp"
 
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-  bLATE_LOAD = late;
-  return(APLRes_Success);
-}
 
 public void OnPluginEnd()
 {

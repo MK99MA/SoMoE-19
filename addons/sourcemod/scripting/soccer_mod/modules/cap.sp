@@ -368,7 +368,11 @@ public void CapStartFight(int client)
 {
 	if (!capFightStarted)
 	{
-		if(passwordlock == 1) pwchange = true;
+		if(passwordlock == 1)
+		{
+			pwchange = true;
+			AFKKick();
+		}
 		capFightStarted = true;
 		capPicksLeft = (matchMaxPlayers - 1) * 2;
 
