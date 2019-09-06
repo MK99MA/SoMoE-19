@@ -27,7 +27,6 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
 	/*Handle duckjumpblock = FindPluginByFile("duckjumpblocker.smx");
 	if (GetPluginStatus(duckjumpblock) == Plugin_Running) djbenabled = 0;
 	else */
-
 	djbenabled = GetConVarInt(cvar_BLOCKDJ_ENABLED);
 	if (djbenabled == 1)
 	{

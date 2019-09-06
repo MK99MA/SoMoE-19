@@ -165,12 +165,10 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 		{
 			if (!matchStarted)
 			{
-				if(capFightStarted) capFightStarted = false;
 				if(passwordlock == 1 && pwchange == true)
 				{
 					ResetPass();
 					pwchange = false;
-					AFKKickStop();
 				}
 				MatchStart(client);
 				OpenMatchMenu(client);

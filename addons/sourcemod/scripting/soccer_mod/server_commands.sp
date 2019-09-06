@@ -88,16 +88,6 @@ public void RegisterServerCommands()
 		ServerCommands,
 		"Changes who can see which messages of the dead  - default: 0"
 	);
-	RegServerCmd(
-		"soccer_mod_afk_time",
-		ServerCommands,
-		"Set the time before inactive players will receive the AFKKick Captcha - default: 120.0"
-	);
-	RegServerCmd(
-		"soccer_mod_afk_menu",
-		ServerCommands,
-		"Set the time players will have to solve the AFKKick Captcha - default: 60.0"
-	);
 
 	RegisterServerCVarsBlockDJ();
 	RegisterServerCommandsHealth();
@@ -326,24 +316,6 @@ public Action ServerCommands(int args)
 		{
 			PrintToServer("0 - Default Deadchat visibility; 1 - Deadchat visible for teammates; 2 - Deadchat visible for everyone");
 		}
-	}
-	else if (StrEqual(serverCommand, "soccer_mod_afk_time"))
-	{
-		float value = StringToFloat(cmdArg1);
-
-		afk_kicktime = value;
-		UpdateConfigFloat("Admin Settings", "soccer_mod_afk_time", afk_kicktime);
-		PrintToServer("[%s] AFK players will see the Captcha after %f seconds if a cap is started", prefix, value);
-		CPrintToChatAll("{%s}[%s] {%s}AFK players will see the Captcha after %f seconds if a cap is started", prefixcolor, prefix, textcolor, value);
-	}
-	else if (StrEqual(serverCommand, "soccer_mod_afk_menu"))
-	{
-		int value = StringToInt(cmdArg1);
-
-		afk_menutime = value;
-		UpdateConfigInt("Admin Settings", "soccer_mod_afk_menu", afk_menutime);
-		PrintToServer("[%s] AFK players will have %i seconds to solve the captcha if a cap is started", prefix, value);
-		CPrintToChatAll("{%s}[%s] {%s}AFK players will have %i seconds to solve the captcha if a cap is started", prefixcolor, prefix, textcolor, value);
 	}
 
 	return Plugin_Handled;
