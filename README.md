@@ -25,7 +25,7 @@ I incorporated work of the following plugins and only modified it in a way so it
 ## Changelog
 ### New:
 #### Centralized and generated config files in cfg/sm_soccermod:  
-  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: CTName_vs_TName_Date.txt  
+  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: match_CTName_vs_TName_Date.txt  
   ● soccer_mod.cfg - Main Config updates with ingame changes  
   ● soccer_mod_admins.cfg - SoccerMod Admin File, add and remove player ingame  
   ● soccer_mod_allowed_maps.cfg - Allowed maps, addable ingame  
