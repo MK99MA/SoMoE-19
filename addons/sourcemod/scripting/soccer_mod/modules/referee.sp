@@ -61,9 +61,9 @@ public int RefereeMenuHandler(Menu menu, MenuAction action, int client, int choi
 		else if (StrEqual(menuItem, "remove_red"))		  OpenRemoveRedCardMenu(client);
 		else if (StrEqual(menuItem, "remove_all"))		  RemoveAllCards(client);
 		else if (StrEqual(menuItem, "score"))
-			{	 
-				if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMatchScoreMenu(client); 
-			}
+		{	 
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMatchScoreMenu(client); 
+		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)
 	{
@@ -72,7 +72,6 @@ public int RefereeMenuHandler(Menu menu, MenuAction action, int client, int choi
 	}
 	else if (action == MenuAction_End)					  menu.Close();
 }
-
 
 // ***********************************************************************************************************************
 // ************************************************** MATCH SCORE MENU  **************************************************
@@ -118,13 +117,16 @@ public int MatchScoreMenuHandler(Menu menu, MenuAction action, int client, int c
 			char steamid[32];
 			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 			LogMessage("%N <%s> has added a goal to the counter-terrorists", client, steamid);
-
+			
+			if(matchlog == 1) KVAddScore();
+			
 			OpenMatchScoreMenu(client);
 		}
 		else if (StrEqual(menuItem, "remove_ct"))
 		{
 			if (matchScoreCT > 0)
 			{
+				if(matchlog == 1) KVRemoveScore();
 				matchScoreCT--;
 				CS_SetTeamScore(3, matchScoreCT);
 				SetTeamScore(3, matchScoreCT);
@@ -139,7 +141,7 @@ public int MatchScoreMenuHandler(Menu menu, MenuAction action, int client, int c
 				LogMessage("%N <%s> has removed a goal from the counter-terrorists", client, steamid);
 			}
 			else CPrintToChat(client, "{%s}[%s] {%s}Score is already 0", prefixcolor, prefix, textcolor);
-
+			
 			OpenMatchScoreMenu(client);
 		}
 		else if (StrEqual(menuItem, "add_t"))
@@ -157,12 +159,15 @@ public int MatchScoreMenuHandler(Menu menu, MenuAction action, int client, int c
 			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 			LogMessage("%N <%s> has added a goal to the terrorists", client, steamid);
 
+			if(matchlog == 1) KVAddScore();
+			
 			OpenMatchScoreMenu(client);
 		}
 		else if (StrEqual(menuItem, "remove_t"))
 		{
 			if (matchScoreT > 0)
 			{
+				if(matchlog == 1) KVRemoveScore();
 				matchScoreT--;
 				CS_SetTeamScore(2, matchScoreT);
 				SetTeamScore(2, matchScoreT);
@@ -197,6 +202,9 @@ public int MatchScoreMenuHandler(Menu menu, MenuAction action, int client, int c
 			char steamid[32];
 			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 			LogMessage("%N <%s> has reset the score", client, steamid);
+
+			RenameMatchLog();
+			if(matchlog == 1) CreateMatchLog(custom_name_ct, custom_name_t);
 
 			OpenMatchScoreMenu(client);
 		}

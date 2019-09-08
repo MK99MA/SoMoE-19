@@ -30,6 +30,7 @@ char allowedMapsConfigFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_all
 char statsKeygroupGoalkeeperAreas[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_GKAreas.cfg";
 char adminFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_admins.cfg";
 char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_positions.txt";
+char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
 
 ConVar pw;
 
@@ -40,6 +41,7 @@ int PWMAXPLAYERS		= 11 //
 int publicmode		 	= 1;
 int passwordlock		= 1;
 int djbenabled			= 1;
+int matchlog			= 0;
 
 Handle allowedMaps	  	= INVALID_HANDLE;
 bool bLATE_LOAD 		= false;
@@ -50,6 +52,7 @@ KeyValues kvConfig;
 KeyValues kvSkins;
 KeyValues kvGKArea;
 KeyValues kvAdmins;
+KeyValues LeagueMatchKV;
 
 // **************************************************************************************************************
 // ************************************************** INCLUDES **************************************************
@@ -85,7 +88,7 @@ KeyValues kvAdmins;
 #include "soccer_mod\modules\sprint.sp"
 #include "soccer_mod\modules\stats.sp"
 #include "soccer_mod\modules\training.sp"
-
+#include "soccer_mod\modules\savelogs.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -111,6 +114,7 @@ public void OnPluginStart()
 	CreateConVar("soccer_mod_version", PLUGIN_VERSION, "Soccer Mod version", FCVAR_NOTIFY| FCVAR_DONTRECORD);
 	
 	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
+	if (!DirExists("cfg/sm_soccermod/logs"))	CreateDirectory("cfg/sm_soccermod/logs", 511, false);
 	
 	//GetGameFolderName(gamevar, sizeof(gamevar));
 

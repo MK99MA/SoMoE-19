@@ -17,6 +17,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_gk", GkCommand, "Toggle the GK skin");	
 	RegConsoleCmd("sm_help", HelpCommand, "Opens the Soccer Mod help menu");
 	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");	
+	RegConsoleCmd("sm_maprr", MaprrCommand, "Quickly rr the map");
 	RegConsoleCmd("sm_match", MatchCommand, "Opens the Soccer Mod match menu");
 	RegConsoleCmd("sm_p", PauseCommand, "Pauses a match");
 	RegConsoleCmd("sm_pause", PauseCommand, "Pauses a match");	
@@ -49,26 +50,66 @@ public Action AdminListCommand(int client, int args)
 	else 									OpenMenuOnlineAdmin(client);
 }
 
+public Action MaprrCommand(int client, int args)
+{
+	char command[128], map[128];
+	GetCurrentMap(map, sizeof(map));
+	Format(command, sizeof(command), "changelevel %s", map);
+	
+	if(!matchStarted)
+	{
+		if(publicmode == 0)
+		{
+			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			{
+				Handle pack;
+				CreateDataTimer(2.0, DelayedServerCommand, pack);
+				WritePackString(pack, command);
+				
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has reloaded the map", prefixcolor, prefix, textcolor, client, map);
+				}
+			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+		}
+		else if(publicmode == 1 || publicmode == 2)
+		{
+			Handle pack;
+			CreateDataTimer(2.0, DelayedServerCommand, pack);
+			WritePackString(pack, command);
+			
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has reloaded the map", prefixcolor, prefix, textcolor, client, map);
+			}
+		}
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}You can't reload the map during a match", prefixcolor, prefix, textcolor);
+	
+	return Plugin_Handled;
+}
 
 public Action rrCommand(int client, int args)
 {
-    if (currentMapAllowed)
-    {
-        if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-        {
-            CS_TerminateRound(1.0, CSRoundEnd_Draw);
-            for (int player = 1; player <= MaxClients; player++)
-            {
-                if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the round", prefixcolor, prefix, textcolor, client);
-            }
+	if (currentMapAllowed)
+	{
+		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+		{
+			CS_TerminateRound(1.0, CSRoundEnd_Draw);
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the round", prefixcolor, prefix, textcolor, client);
+			}
 
-            char steamid[20];
-            GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
-            LogMessage("%N <%s> has restarted the round", client, steamid);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-    }
-    else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+			char steamid[20];
+			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+			LogMessage("%N <%s> has restarted the round", client, steamid);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	return Plugin_Handled;
 }
 
 public Action StartCommand(int client, int args)
@@ -639,112 +680,112 @@ public void GetRandomString(char[] buffer, int size)
 // *******************************************************************************************************************
 public Action ClientCommands(int client, int args)
 {
-    char cmdArg[32];
-    GetCmdArg(1, cmdArg, sizeof(cmdArg));
+	char cmdArg[32];
+	GetCmdArg(1, cmdArg, sizeof(cmdArg));
 
-    if (StrEqual(cmdArg, "admin"))
-    {
+	if (StrEqual(cmdArg, "admin"))
+	{
 		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 		{
 			OpenMenuAdmin(client);
 		}
-    }
-    else if (StrEqual(cmdArg, "cap"))
-    {
-        if (currentMapAllowed)
-        {
+	}
+	else if (StrEqual(cmdArg, "cap"))
+	{
+		if (currentMapAllowed)
+		{
 			OpenCapMenu(client);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "match"))
-    {
-        if (currentMapAllowed)
-        {
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "match"))
+	{
+		if (currentMapAllowed)
+		{
 			OpenMatchMenu(client);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "training"))
-    {
-        if (currentMapAllowed)
-        {
-            if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenTrainingMenu(client);
-            else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "rr"))
-    {
-        if (currentMapAllowed)
-        {
-            if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-            {
-                // TEMPORARY CODE TO FIND FIX FOR DISSAPPEARING BALL
-                //int index = GetEntityIndexByName("ball", "prop_physics");
-                //float position[3];
-                //GetEntPropVector(index, Prop_Send, "m_vecOrigin", position);
-                //LogMessage("Ball position (round restarted): %f, %f, %f", position[0], position[1], position[2]);
-                // END TEMPORARY CODE
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "training"))
+	{
+		if (currentMapAllowed)
+		{
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenTrainingMenu(client);
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "rr"))
+	{
+		if (currentMapAllowed)
+		{
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			{
+				// TEMPORARY CODE TO FIND FIX FOR DISSAPPEARING BALL
+				//int index = GetEntityIndexByName("ball", "prop_physics");
+				//float position[3];
+				//GetEntPropVector(index, Prop_Send, "m_vecOrigin", position);
+				//LogMessage("Ball position (round restarted): %f, %f, %f", position[0], position[1], position[2]);
+				// END TEMPORARY CODE
 
-                CS_TerminateRound(1.0, CSRoundEnd_Draw);
+				CS_TerminateRound(1.0, CSRoundEnd_Draw);
 
-                for (int player = 1; player <= MaxClients; player++)
-                {
-                    if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the round", prefixcolor, prefix, textcolor, client);
-                }
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the round", prefixcolor, prefix, textcolor, client);
+				}
 
-                char steamid[20];
-                GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
-                LogMessage("%N <%s> has restarted the round", client, steamid);
-            }
-            else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "pick"))
-    {
-        if (currentMapAllowed) OpenCapPickMenu(client);
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "getview"))
-    {
-        if (currentMapAllowed)
-        {
-            if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-            {
-                float viewCoord[3];
-                GetAimOrigin(client, viewCoord);
-                CPrintToChat(client, "%s%s X: %f, Y: %f, Z: %f", prefixcolor, prefix, viewCoord[0], viewCoord[1], viewCoord[2]);
-            }
-            else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-        }
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "stats"))
-    {
-        if (currentMapAllowed) OpenStatisticsMenu(client);
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "rank"))
-    {
-        if (currentMapAllowed) ClientCommandPublicRanking(client);
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "gk"))
-    {
-        if (currentMapAllowed) ClientCommandSetGoalkeeperSkin(client);
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "pos") || StrEqual(cmdArg, "position"))
-    {
-        if (currentMapAllowed) OpenCapPositionMenu(client);
-        else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-    }
-    else if (StrEqual(cmdArg, "help"))                                  OpenMenuHelp(client);
-    else if (StrEqual(cmdArg, "commands"))                              OpenMenuCommands(client);
-    else if (StrEqual(cmdArg, "credits") || StrEqual(cmdArg, "info"))   OpenMenuCredits(client);
-    else OpenMenuSoccer(client);
+				char steamid[20];
+				GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+				LogMessage("%N <%s> has restarted the round", client, steamid);
+			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "pick"))
+	{
+		if (currentMapAllowed) OpenCapPickMenu(client);
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "getview"))
+	{
+		if (currentMapAllowed)
+		{
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			{
+				float viewCoord[3];
+				GetAimOrigin(client, viewCoord);
+				CPrintToChat(client, "%s%s X: %f, Y: %f, Z: %f", prefixcolor, prefix, viewCoord[0], viewCoord[1], viewCoord[2]);
+			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "stats"))
+	{
+		if (currentMapAllowed) OpenStatisticsMenu(client);
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "rank"))
+	{
+		if (currentMapAllowed) ClientCommandPublicRanking(client);
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "gk"))
+	{
+		if (currentMapAllowed) ClientCommandSetGoalkeeperSkin(client);
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "pos") || StrEqual(cmdArg, "position"))
+	{
+		if (currentMapAllowed) OpenCapPositionMenu(client);
+		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	}
+	else if (StrEqual(cmdArg, "help"))								  OpenMenuHelp(client);
+	else if (StrEqual(cmdArg, "commands"))							  OpenMenuCommands(client);
+	else if (StrEqual(cmdArg, "credits") || StrEqual(cmdArg, "info"))   OpenMenuCredits(client);
+	else OpenMenuSoccer(client);
 
-    return Plugin_Handled;
+	return Plugin_Handled;
 }

@@ -127,12 +127,17 @@ public void MatchEventCSWinPanelMatch(Event event)
 public void OpenMatchMenu(int client)
 {
 	char currentMatchSet[64], currentMatchSet2[64], currentMatchSet3[64];
-	char goldenstate[32];
-	if(matchGoldenGoal == 1) goldenstate = "On"
-	else if(matchGoldenGoal == 0) goldenstate = "Off"
+	char goldenstate[32], leaguestate[32];
+
+	if(matchGoldenGoal == 1) goldenstate = "On";
+	else if(matchGoldenGoal == 0) goldenstate = "Off";
+	
+	if(matchlog == 1) leaguestate = "Yes";
+	else if(matchlog == 0) leaguestate = "No";
+	
 	Format(currentMatchSet, sizeof(currentMatchSet), "Period length: %i | Break length: %i", matchPeriodLength, matchPeriodBreakLength);
 	//Format(currentMatchSet2, sizeof(currentMatchSet2), "Player per Team(max): %i | GoldenGoal: %s", matchMaxPlayers , goldenstate);
-	Format(currentMatchSet2, sizeof(currentMatchSet2), "GoldenGoal: %s", goldenstate);
+	Format(currentMatchSet2, sizeof(currentMatchSet2), "GoldenGoal: %s | Match Log: %s", goldenstate, leaguestate);
 	Format(currentMatchSet3, sizeof(currentMatchSet3), "T team name: %s | CT team name: %s", custom_name_t , custom_name_ct);
 	Menu menu = new Menu(MatchMenuHandler);
 
@@ -142,9 +147,15 @@ public void OpenMatchMenu(int client)
 
 	menu.AddItem("pause", "Pause / Unpause");
 
-	if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client)))	menu.AddItem("referee", "Referee");
+	//if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client)))	menu.AddItem("referee", "Referee");
 	
 	menu.AddItem("settings", "Match Settings");
+	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+	{
+		if(matchlog == 1)	menu.AddItem("log", "Match Log");
+	}
+	
 	menu.AddItem("locknumber", currentMatchSet, ITEMDRAW_DISABLED);
 	menu.AddItem("locknumber", currentMatchSet3, ITEMDRAW_DISABLED);
 	menu.AddItem("locknumber", currentMatchSet2, ITEMDRAW_DISABLED);
@@ -208,6 +219,10 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 		{
 			if (publicmode == 1) OpenRefereeMenu(client);
 		}
+		else if (StrEqual(menuItem, "log"))
+		{	 
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMatchLogMenu(client); 
+		}
 		else if (StrEqual(menuItem, "settings"))
 		{
 			if (!matchStarted)
@@ -226,11 +241,33 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 }
 
 
+// ***********************************************************************************************************************
+// ************************************************** MATCH LOG MENU *****************************************************
+// ***********************************************************************************************************************
+public void OpenMatchLogMenu(int client)
+{
+	Menu menu = new Menu(MatchLogMenuHandler);
+
+	menu.SetTitle("Match Log");
+	KVGetEvent(menu);
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MatchLogMenuHandler(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Cancel && choice == -6)   OpenMatchMenu(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+
 // ***************************************************************************************************************
 // ****************************************** MATCH SETTINGS MENU ************************************************
 // ***************************************************************************************************************
 public void OpenMenuMatchSettings(int client)
 {
+	char TLMstring[32]
 	Menu menu = new Menu(MenuHandlerMatchSettings);
 
 	menu.SetTitle("Soccer Mod - Match Settings");
@@ -241,6 +278,11 @@ public void OpenMenuMatchSettings(int client)
 	
 	menu.AddItem("golden", "Golden Goal");
 	
+	if(matchlog == 0)		TLMstring = "Match Log: OFF"
+	else if(matchlog == 1)	TLMstring = "Match Log: ON"
+	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("LeagueMatch", TLMstring);
+
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("name_t_menu", "Change Terrorists Name");
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("name_ct_menu", "Change CTs Name");
@@ -268,6 +310,23 @@ public int MenuHandlerMatchSettings(Menu menu, MenuAction action, int client, in
 		{
 			teamIndicator = 3;
 			OpenMenuTeamName(client);
+		}
+		else if (StrEqual(menuItem, "LeagueMatch"))
+		{
+			if(matchlog == 0)		
+			{
+				matchlog = 1;
+				UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+				CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
+				OpenMenuMatchSettings(client);
+			}
+			else if (matchlog == 1)
+			{
+				matchlog = 0;
+				UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+				CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
+				OpenMenuMatchSettings(client);
+			}
 		}
 	}
 
@@ -987,6 +1046,10 @@ public void MatchStart(int client)
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a match", prefixcolor, prefix, textcolor, client);
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s (CT) will face %s (T)", prefixcolor, prefix, textcolor, custom_name_ct, custom_name_t);
 		}
+		//if(FileExists(matchlogKV) && (matchlog == 1)) DeleteFile(matchlogKV, false);
+		
+		RenameMatchLog();		
+		if(matchlog == 1) CreateMatchLog(custom_name_ct, custom_name_t);
 
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));

@@ -516,7 +516,10 @@ public void StatsEventRoundEnd(Event event)
 
 				for (int client = 1; client <= MaxClients; client++)
 				{
-					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Goal scored by %s", prefixcolor, prefix, textcolor, statsScorerName);
+					char timeString[16];
+					getTimeString(timeString, matchTime);
+					
+					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
 				}
 
 				if (statsAssisterClientid > 0 && statsAssisterTeam == winner)
@@ -580,7 +583,10 @@ public void StatsEventRoundEnd(Event event)
 
 				for (int client = 1; client <= MaxClients; client++)
 				{
-					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Own goal scored by %s", prefixcolor, prefix, textcolor, statsScorerName);
+					char timeString[16];
+					getTimeString(timeString, matchTime);
+					
+					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Own goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
 				}
 
 				if (matchStarted)
@@ -645,6 +651,8 @@ public void StatsEventRoundEnd(Event event)
 				}
 			}
 
+			if (matchlog == 1)	KVSaveEvent();
+			
 			if(MVPEnabled == 1) ShowMVP();
 
 			if (matchStoppageTimeStarted) EndStoppageTime();

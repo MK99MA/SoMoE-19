@@ -6,14 +6,14 @@ public void OpenMenuSoccer(int client)
 	Menu menu = new Menu(MenuHandlerSoccer);
 	menu.SetTitle("Soccer Mod");
 
-	if(publicmode == 0 || publicmode == 1)
+	if(publicmode == 0)
 	{
 		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 		{
 			menu.AddItem("admin", "Admin");
 		}
 	}
-	else if(publicmode == 2)
+	else if(publicmode == 2 || publicmode == 1)
 	{
 			menu.AddItem("admin", "Admin");		
 	}
@@ -48,6 +48,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 				{
 					OpenMenuAdmin(client);
 				}
+				else CPrintToChat(client, "Access denied");
 			}
 			else if(publicmode == 2 || publicmode == 1)
 			{
@@ -86,6 +87,8 @@ public void OpenMenuAdmin(int client)
 		menu.AddItem("match", "Match");
 
 		menu.AddItem("cap", "Cap");
+		
+		menu.AddItem("referee", "Referee");
 	
 		menu.AddItem("change", "Change Map");
 	}
@@ -350,6 +353,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("pause", "!pause, !p");
 	menu.AddItem("unpause", "!unpause, !unp");
 	menu.AddItem("stop", "!stop");
+	menu.AddItem("maprr", "!maprr");
 	menu.AddItem("training", "!training");
 	menu.AddItem("pick", "!pick");
 	menu.AddItem("commands", "!commands");
@@ -380,6 +384,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "pick"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap picking menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "admin"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod admin menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "cap"))		 	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap match menu", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "maprr"))		CPrintToChat(client, "{%s}[%s] {%s}Reload the current map", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "match"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod match menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "training"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod training menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "ref"))			CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod referee menu", prefixcolor, prefix, textcolor);

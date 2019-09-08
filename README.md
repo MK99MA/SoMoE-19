@@ -24,13 +24,15 @@ I incorporated work of the following plugins and only modified it in a way so it
   
 ## Changelog
 ### New:
-#### Centralized and generated config files in cfg/sm_soccermod:
+#### Centralized and generated config files in cfg/sm_soccermod:  
+  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: CTName_vs_TName_Date.txt  
   ● soccer_mod.cfg - Main Config updates with ingame changes  
   ● soccer_mod_admins.cfg - SoccerMod Admin File, add and remove player ingame  
   ● soccer_mod_allowed_maps.cfg - Allowed maps, addable ingame  
   ● soccer_mod_cap_positions.txt  
   ● soccer_mod_downloads.cfg - Add the directories player should download in here  
   ● soccer_mod_GKAreas.cfg - Coords for the area in which players should get additional pts for saves  
+  ● soccer_mod_last_match.txt - Transcript of the last match (Time, Scorer, Assist) if enabled  
   ● soccer_mod_skins.cfg - List of models, changeable ingame. You have to add them to the file manually!  
     
 #### Admin Management:  
@@ -49,12 +51,14 @@ I incorporated work of the following plugins and only modified it in a way so it
 #### Match Menu:  
 ![MatchSet](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchmenu.png)  
  ● Match menu reworked + added display of certain settings  
+ ● Match Log: Contents of "soccer_mod_last_match.txt" viewable in a menu (if Match Log is enabled)  
  ● Match settings changeable ingame (Image of the menu below)    
  ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
   
 #### Misc:
  ● Added toggleable duckjump block script  
  ● Added toggleable password change after starting a cap and hitting a set threshold (Image of the menu below)  
+ ● While passwordchange is enabled a simple AFK Kicker is enabled (Configurable times)  
  ● Switchable modes - Public menu, public cap/match, admins only (Image of the menu below)  
  ● New entries in settings menu + added display of certain settings (Image of the menu below)   
  ● Rearranged a few menu options    
@@ -63,6 +67,7 @@ I incorporated work of the following plugins and only modified it in a way so it
  ● (RCONFLAG ADMIN ONLY) !addadmin <steamid> <flags> <name> - adds an entry with the specified values to the admins_simple.ini  
  ● (RCONFLAG ADMIN ONLY) !pass <password> - Set the current sv password  
  ● !admins - Shows a list of online admins  
+ ● !maprr - Simply reload the current map
   
 #### Map:  
  ● I added a recompiled version of ka_soccer_xsl_stadium_b1, so expect differences in the ball behaviour  

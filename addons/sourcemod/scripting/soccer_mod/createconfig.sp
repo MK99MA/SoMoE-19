@@ -27,6 +27,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_passwordlock_max", 				PWMAXPLAYERS+1);
 	kvConfig.SetFloat("soccer_mod_afk_time",					afk_kicktime);
 	kvConfig.SetNum("soccer_mod_afk_menu",						afk_menutime);
+	kvConfig.SetNum("soccer_mod_matchlog",						matchlog);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Chat Settings", true);
@@ -248,6 +249,7 @@ public void ReadFromConfig()
 	PWMAXPLAYERS			= (kvConfig.GetNum("soccer_mod_passwordlock_max", 13)-1);
 	afk_kicktime			= kvConfig.GetFloat("soccer_mod_afk_time", 120.0);
 	afk_menutime			= kvConfig.GetNum("soccer_mod_afk_menu", 30);
+	matchlog				= kvConfig.GetNum("soccer_mod_matchlog", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Chat Settings", false);

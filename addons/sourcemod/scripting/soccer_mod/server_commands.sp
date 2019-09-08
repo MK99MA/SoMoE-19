@@ -98,6 +98,11 @@ public void RegisterServerCommands()
 		ServerCommands,
 		"Set the time players will have to solve the AFKKick Captcha - default: 60.0"
 	);
+	RegServerCmd(
+		"soccer_mod_matchlog",
+		ServerCommands,
+		"Toggle the creation of matchlogs - default: 0"
+	);
 
 	RegisterServerCVarsBlockDJ();
 	RegisterServerCommandsHealth();
@@ -344,6 +349,21 @@ public Action ServerCommands(int args)
 		UpdateConfigInt("Admin Settings", "soccer_mod_afk_menu", afk_menutime);
 		PrintToServer("[%s] AFK players will have %i seconds to solve the captcha if a cap is started", prefix, value);
 		CPrintToChatAll("{%s}[%s] {%s}AFK players will have %i seconds to solve the captcha if a cap is started", prefixcolor, prefix, textcolor, value);
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_matchlog"))
+	{
+		matchlog = StringToInt(cmdArg1);
+		UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+		if(matchlog == 1)
+		{
+			PrintToServer("[%s] Matchlog enabled", prefix);
+			//CPrintToChat(client, "{%s}[%s] {%s}Matchlog enabled", prefixcolor, prefix, textcolor);
+		}
+		else if(matchlog == 0)
+		{
+			PrintToServer("[%s] Matchlog enabled", prefix);
+			//CPrintToChat(client, "{%s}[%s] {%s}Matchlog enabled", prefixcolor, prefix, textcolor);
+		}
 	}
 
 	return Plugin_Handled;
