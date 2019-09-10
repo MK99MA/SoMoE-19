@@ -16,7 +16,7 @@ I merely edited and added stuff without any prior knowledge, so expect some heav
 ### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow the generated examples for the default values for your desired skins!.  
   
 ## Credits:
-I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
+I incorporated parts of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
   ● Original version by Marco Boogers - https://github.com/marcoboogers/soccermod  
   ● Duckjump Script by Marco Boogers  
   ● Allchat (aka DeadChat) by Frenzzy - https://forums.alliedmods.net/showthread.php?t=171734  
