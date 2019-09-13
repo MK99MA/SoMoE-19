@@ -1,6 +1,6 @@
 # Soccer Mod - 2019 Edit
-An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers
-I merely edited and added stuff without any real knowledge, so expect some heavily improvable code.  
+An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
+I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
 ### If you used a previous (edited) version of soccermod:  
   ● Remove "exec soccer_mod.cfg" and any soccer_mod_* command from your server.cfg  
@@ -16,7 +16,7 @@ I merely edited and added stuff without any real knowledge, so expect some heavi
 ### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow the generated examples for the default values for your desired skins!.  
   
 ## Credits:
-I incorporated work of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
+I incorporated parts of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
   ● Original version by Marco Boogers - https://github.com/marcoboogers/soccermod  
   ● Duckjump Script by Marco Boogers  
   ● Allchat (aka DeadChat) by Frenzzy - https://forums.alliedmods.net/showthread.php?t=171734  
@@ -25,7 +25,7 @@ I incorporated work of the following plugins and only modified it in a way so it
 ## Changelog
 ### New:
 #### Centralized and generated config files in cfg/sm_soccermod:  
-  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: CTName_vs_TName_Date.txt  
+  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: match_CTName_vs_TName_Date.txt  
   ● soccer_mod.cfg - Main Config updates with ingame changes  
   ● soccer_mod_admins.cfg - SoccerMod Admin File, add and remove player ingame  
   ● soccer_mod_allowed_maps.cfg - Allowed maps, addable ingame  
