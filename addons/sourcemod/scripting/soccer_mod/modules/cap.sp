@@ -90,9 +90,9 @@ public int CapMenuHandler(Menu menu, MenuAction action, int client, int choice)
 			else if (StrEqual(menuItem, "start"))
 			{
 				CapStartFight(client);
-				if(GetClientCount() == PWMAXPLAYERS+1 && passwordlock == 1 && pwchange == true)
+				if(GetClientCount() >= PWMAXPLAYERS+1 && passwordlock == 1 && pwchange == true)
 				{
-					CPrintToChatAll("{%s}[%s] At least 12 Players when the capfight started; Changing the pw...", prefixcolor, prefix);
+					CPrintToChatAll("{%s}[%s] At least %s Players when the capfight started; Changing the pw...", PWMAXPLAYERS+1, prefixcolor, prefix);
 					RandPass();
 				}
 			}			
@@ -371,6 +371,7 @@ public void CapStartFight(int client)
 		if(passwordlock == 1)
 		{
 			pwchange = true;
+			CPrintToChatAll("{%s}[%s] AFK Kick enabled.", prefixcolor, prefix);
 			AFKKick();
 		}
 		capFightStarted = true;

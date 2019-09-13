@@ -519,7 +519,11 @@ public void StatsEventRoundEnd(Event event)
 					char timeString[16];
 					getTimeString(timeString, matchTime);
 					
-					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
+					if (IsClientInGame(client) && IsClientConnected(client))
+					{
+						if (matchStarted) CPrintToChat(client, "{%s}[%s] {%s}Goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
+						else CPrintToChat(client, "{%s}[%s] {%s}Goal scored by %s", prefixcolor, prefix, textcolor, statsScorerName);
+					}
 				}
 
 				if (statsAssisterClientid > 0 && statsAssisterTeam == winner)
@@ -580,13 +584,19 @@ public void StatsEventRoundEnd(Event event)
 				// Format(queryString, sizeof(queryString), "UPDATE %s SET own_goals = (own_goals + 1), points = (points + %i) WHERE steamid = '%s'", 
 				//  table, rankingPointsForOwnGoal, statsScorerSteamid);
 				// ExecuteQuery(queryString);
-
+				
+				statsAssisterName = "Owngoal";
+				
 				for (int client = 1; client <= MaxClients; client++)
 				{
 					char timeString[16];
 					getTimeString(timeString, matchTime);
 					
-					if (IsClientInGame(client) && IsClientConnected(client)) CPrintToChat(client, "{%s}[%s] {%s}Own goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
+					if (IsClientInGame(client) && IsClientConnected(client))
+					{
+						if (matchStarted) CPrintToChat(client, "{%s}[%s] {%s}Own goal scored by %s at {%s}%s", prefixcolor, prefix, textcolor, statsScorerName, prefixcolor, timeString);
+						else CPrintToChat(client, "{%s}[%s] {%s}Own goal scored by %s", prefixcolor, prefix, textcolor, statsScorerName);
+					}
 				}
 
 				if (matchStarted)
@@ -651,7 +661,7 @@ public void StatsEventRoundEnd(Event event)
 				}
 			}
 
-			if (matchlog == 1)	KVSaveEvent();
+			if (matchlog == 1 && matchStarted)	KVSaveEvent(statsScorerSteamid, statsAssisterSteamid);
 			
 			if(MVPEnabled == 1) ShowMVP();
 

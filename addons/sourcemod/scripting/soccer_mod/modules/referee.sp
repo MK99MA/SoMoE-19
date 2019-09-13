@@ -1,4 +1,6 @@
 char keygroupRefereeCards[PLATFORM_MAX_PATH];
+char cardReceiver[MAX_NAME_LENGTH];
+char cardString[32];
 
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
@@ -295,6 +297,13 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 				{
 					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has given a second yellow card to %N", prefixcolor, prefix, textcolor, client, target);
 				}
+				
+				if (matchlog == 1 && matchStarted)
+				{
+					cardString = "Yellow-Red Card";
+					cardReceiver = targetName;
+					KVSaveCard()
+				}
 
 				LogMessage("%N <%s> has given a second yellow card to %N <%s>", client, clientSteamid, target, targetSteamid);
 			}
@@ -307,7 +316,14 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 				{
 					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has given a yellow card to %N", prefixcolor, prefix, textcolor, client, target);
 				}
-
+				
+				if (matchlog == 1 && matchStarted)
+				{
+					cardString = "Yellow Card";
+					cardReceiver = targetName;
+					KVSaveCard()
+				}
+				
 				LogMessage("%N <%s> has given a yellow card to %N <%s>", client, clientSteamid, target, targetSteamid);
 			}
 
@@ -406,7 +422,14 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 				{
 					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has given a red card to %N", prefixcolor, prefix, textcolor, client, target);
 				}
-
+				
+				if (matchlog == 1 && matchStarted)
+				{
+					cardString = "Red Card";
+					cardReceiver = targetName;
+					KVSaveCard()
+				}
+				
 				LogMessage("%N <%s> has given a red card to %N <%s>", client, clientSteamid, target, targetSteamid);
 			}
 			else CPrintToChat(client, "{%s}[%s] {%s}Player already has a red card", prefixcolor, prefix, textcolor);

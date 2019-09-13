@@ -15,7 +15,6 @@ int teamIndicator;
 
 char tagName[32];
 int tagindex = 1;
-int tagCount = 1;
 
 float matchBallStartPosition[3];
 
@@ -177,12 +176,6 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 			if (!matchStarted)
 			{
 				if(capFightStarted) capFightStarted = false;
-				if(passwordlock == 1 && pwchange == true)
-				{
-					ResetPass();
-					pwchange = false;
-					AFKKickStop();
-				}
 				MatchStart(client);
 				OpenMatchMenu(client);
 			}
@@ -369,7 +362,7 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 	if (action == MenuAction_Select)
 	{
 		int playerNumT, playerNumCT;
-		tagCount = GetClientCount(true);
+		//tagCount = GetClientCount(true);
 		char menuItem[16];
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 		
@@ -386,14 +379,15 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 			else if(playerNumT == 1)
 			{
 				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
-				if(StrEqual(tagName, ""))
+				PrintCenterTextAll(tagName);
+				if(!(strlen(tagName) > 0))
 				{
 					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
 					OpenMenuTeamName(client);
 				}
 				else OpenMenuTeamNameList(client);
 			}
-			else OpenMenuTeamNameList(client);
+			else if (playerNumT > 1)	OpenMenuTeamNameList(client);
 		}
 		else if (StrEqual(menuItem, "cust_name_t"))
 		{
@@ -446,30 +440,33 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 
 public void OpenMenuTeamNameList(int client)
 {
-	tagCount = GetClientCount(true);
+	//tagCount = GetClientCount(true);
 	Menu menu = new Menu(MenuHandlerTeamMenuList);
 
 	if(teamIndicator == 2)
 	{
 		menu.SetTitle("Select Name for T");
-		for (tagindex = 1; tagindex <= tagCount; tagindex++)
+
+		for (tagindex = 1; tagindex <= MaxClients; tagindex++)
 		{	
-			if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T))
+			if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
 			{
 				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName))
-				if (strlen(tagName) > 0) AddMenuItem(menu, tagName, tagName)
+				if (strlen(tagName) > 0) menu.AddItem(tagName, tagName)
+				else menu.AddItem("", "Empty Tag", ITEMDRAW_DISABLED)
 			}
 		}
 	}
 	else if(teamIndicator == 3)
 	{	
 		menu.SetTitle("Select Name for CT");
-		for (tagindex = 1; tagindex <= tagCount; tagindex++)
+		for (tagindex = 1; tagindex <= MaxClients; tagindex++)
 		{	
 			if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_CT))
 			{
 				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName))
-				if (strlen(tagName) > 0) AddMenuItem(menu, tagName, tagName)
+				if (strlen(tagName) > 0) menu.AddItem(tagName, tagName)
+				else menu.AddItem("", "Empty Tag", ITEMDRAW_DISABLED)
 			}
 		}
 	}
@@ -482,27 +479,25 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 {
 	if (action == MenuAction_Select)
 	{
-		if (action == MenuAction_Select)
+		if(teamIndicator == 2)
 		{
-			if(teamIndicator == 2)
-			{
-				
-				menu.GetItem(choice, tagName, sizeof(tagName));
-				custom_name_t = tagName;
-				UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
-				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
-				OpenMenuTeamName(client);
-			}
-			else if(teamIndicator == 3)
-			{
-				menu.GetItem(choice, tagName, sizeof(tagName));
-				custom_name_ct = tagName;
-				UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
-				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
-				OpenMenuTeamName(client);
-			}
+			
+			menu.GetItem(choice, tagName, sizeof(tagName));
+			custom_name_t = tagName;
+			UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
+			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
+			OpenMenuTeamName(client);
+		}
+		else if(teamIndicator == 3)
+		{
+			menu.GetItem(choice, tagName, sizeof(tagName));
+			custom_name_ct = tagName;
+			UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
+			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
+			OpenMenuTeamName(client);
 		}
 	}
+
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuTeamName(client);
 	else if (action == MenuAction_End)					  menu.Close();
 	tagindex = 1;
@@ -596,29 +591,29 @@ public int MenuHandlerMatchBreak(Menu menu, MenuAction action, int client, int c
 		if (StrEqual(menuItem, "FullMin"))
 		{
 			matchPeriodBreakLength = 60;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
 			OpenMenuMatchSettings(client);
 		}
 		else if (StrEqual(menuItem, "HalfMin"))
 		{
 			matchPeriodBreakLength = 30;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
 			OpenMenuMatchSettings(client);
 		}
 		else if (StrEqual(menuItem, "QuartMin"))
 		{
 			matchPeriodBreakLength = 15;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
 			OpenMenuMatchSettings(client);
 		}
 		else if (StrEqual(menuItem, "5Secs"))
 		{
 			matchPeriodBreakLength = 5;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
 			OpenMenuMatchSettings(client);
 		}
 		else if (StrEqual(menuItem, "Custom"))
@@ -1031,7 +1026,7 @@ public void MatchStart(int client)
 	if (!matchStarted)
 	{
 		ServerCommand("mp_restartgame 1");
-
+	
 		FreezeAll();
 		MatchReset();
 		LoadConfigMatch();
@@ -1047,6 +1042,12 @@ public void MatchStart(int client)
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s (CT) will face %s (T)", prefixcolor, prefix, textcolor, custom_name_ct, custom_name_t);
 		}
 		//if(FileExists(matchlogKV) && (matchlog == 1)) DeleteFile(matchlogKV, false);
+		if(passwordlock == 1 && pwchange == true)
+		{
+			ResetPass();
+			AFKKickStop();
+			pwchange = false;
+		}
 		
 		RenameMatchLog();		
 		if(matchlog == 1) CreateMatchLog(custom_name_ct, custom_name_t);
@@ -1176,6 +1177,9 @@ public void EndStoppageTime()
 		{
 			matchPeriodBreak = true;
 			//EmitAmbientSound("soccer_mod/match/halftime.wav", 
+			
+			PrintCenterTextAll("Halftime break");
+			
 			FreezeAll();
 			matchTimer = CreateTimer(0.0, MatchPeriodBreakTimer, matchPeriodBreakLength);
 		}

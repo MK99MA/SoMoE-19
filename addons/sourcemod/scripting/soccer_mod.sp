@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.06092019"
+#define PLUGIN_VERSION "css.11092019"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -20,7 +20,7 @@ char prefixcolor[32]	= "green";
 char textcolor[32]		= "lightgreen";
 char custom_name_t[32]	= "T";
 char custom_name_ct[32]	= "CT";
-char listOfChar[]		= "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
+//char listOfChar[]		= "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
 char def_pass[32];
 char changeSetting[MAXPLAYERS + 1][32];
 
@@ -75,6 +75,7 @@ KeyValues LeagueMatchKV;
 #include "soccer_mod\createconfig.sp"
 
 #include "soccer_mod\modules\adminmanagement.sp"
+#include "soccer_mod\modules\afkkicker.sp"
 #include "soccer_mod\modules\cap.sp"
 #include "soccer_mod\modules\deadchat.sp"
 #include "soccer_mod\modules\duckjumpblock.sp"
@@ -373,7 +374,7 @@ public void OnMapStart()
 		return;
 	}
 	else LoadConfigNonSoccer();
-
+	
 	if (StrEqual(gamevar, "cstrike"))
 	{
 		AddDirToDownloads("materials/models/player/soccer_mod/termi/2011");
@@ -406,7 +407,11 @@ public void OnClientPutInServer(int client)
 	AFKKickOnClientPutInServer(client);
 
 	RadioCommandsOnClientPutInServer(client);
-	if(pwchange == true && GetClientCount() == PWMAXPLAYERS+1  && passwordlock == 1) RandPass();
+	if((pwchange == true) && (GetClientCount() == PWMAXPLAYERS+1) && (passwordlock == 1))
+	{
+		CPrintToChatAll("{%s}[%s] Threshold hit. Locking Server again");
+		RandPass();
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -421,10 +426,15 @@ public void OnClientDisconnect(int client)
 
 public void OnClientDisconnect_Post(int client)
 {
-	if(pwchange == true && GetClientCount() == PWMAXPLAYERS  && passwordlock == 1)
+	if((pwchange == true) && (passwordlock == 1) && (GetClientCount() == PWMAXPLAYERS))
 	{
 		CPrintToChatAll("{%s}[%s]A player left, reverting password to default", prefixcolor, prefix);
 		ResetPass();
+	}
+	else if ((pwchange == true) && (passwordlock == 1) && (GetClientCount() == 0))
+	{
+		AFKKickStop();
+		pwchange = false;
 	}
 }
 
@@ -789,7 +799,7 @@ public void FreezeAll()
 
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && IsClientConnected(client) && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_NONE);
+		if (IsClientInGame(client) && IsClientConnected(client)) SetEntityMoveType(client, MOVETYPE_NONE); // && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_NONE);
 	}
 }
 
@@ -800,7 +810,7 @@ public void UnfreezeAll()
 
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && IsClientConnected(client) && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_WALK);
+		if (IsClientInGame(client) && IsClientConnected(client)) SetEntityMoveType(client, MOVETYPE_WALK);// && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_WALK);
 	}
 }
 

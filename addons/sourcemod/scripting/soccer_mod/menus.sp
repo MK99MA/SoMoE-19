@@ -417,9 +417,10 @@ public void OpenMenuCommandsAdmin(int client)
 
 	menu.AddItem("admin", "!madmin");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "!addadmin <SteamID>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "!rr");	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("passwordcmd", "!pass <PW>");	
-
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "!rr");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("dpasswordcmd", "!dpass");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("passwordcmd", "!pass <PW>");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("rpasswordcmd", "!rpass");	
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -433,7 +434,9 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 
 		if (StrEqual(menuItem, "rr"))		  CPrintToChat(client, "{%s}[%s] {%s}Restart the current round", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "passwordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Print the current password to console or change it", prefixcolor, prefix, textcolor);			
+		else if (StrEqual(menuItem, "dpasswordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Manually reset to password to default / previous one", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "passwordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Print the current password to console or change it", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "rpasswordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Manually set a random password", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "addadmin"))	CPrintToChat(client, "{%s}[%s] {%s} !addadmin <SteamId>: Add the Steamid to soccermod admins.", prefixcolor, prefix, textcolor);	
 
 		OpenMenuCommands(client);
