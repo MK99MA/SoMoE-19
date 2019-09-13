@@ -155,7 +155,7 @@ Soccer Mod is now fully installed and will be loaded automatically when the serv
 	}  
 	"Playerstats"  
 	{  
-		"[U:1:31465094]"  
+		"[U:1:xxxxxxxx]"  //SteamID  
 		{  
 			"Name:"		"🎀 Kurisu 🌸 -> 🎀 QRisu 🌸 -> 🎀 Ayaya 🌸 -> 🎀 Kurisu 🌸"  
 			"Goals:"		"4"  
