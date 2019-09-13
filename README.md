@@ -77,7 +77,7 @@ I incorporated parts of the following plugins and only modified it in a way so i
  ● Given Cards will be listed separately with a timestamp, the target and the type of card  
  ● A per player match overview is also added, showing a players stats for that specific match (Goals, Assists, Owngoals)  
  ● Even though players should not change their name during an (official) match, the name will keep track of changes up to a certain point  
- ● [Example Output]()
+ ● [Example Output](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#example-matchlog-file)
 #### Map:  
  ● I added a recompiled version of ka_soccer_xsl_stadium_b1, so expect differences in the ball behaviour  
  
