@@ -69,6 +69,15 @@ I incorporated parts of the following plugins and only modified it in a way so i
  ● !admins - Shows a list of online admins  
  ● !maprr - Simply reload the current map
   
+#### MatchLog aka "soccer_mod_last_match.txt":  
+ ● Teamnames are listed at the top  
+ ● Goals are saved to a textfile with a timestamp, the scorer & assister names (in case of an owngoal the assistername will be set to "Owngoal")  
+ ● Goals added by a referee will say "Added by referee" for its scorername  
+ ● Removed goals will be deleted IF they are removed immediately / before a new score is added  
+ ● Given Cards will be listed separately with a timestamp, the target and the type of card  
+ ● A per player match overview is also added, showing a players stats for that specific match (Goals, Assists, Owngoals)  
+ ● Even though players should not change their name during an (official) match, the name will keep track of changes up to a certain point  
+ ● [Example Output]()
 #### Map:  
  ● I added a recompiled version of ka_soccer_xsl_stadium_b1, so expect differences in the ball behaviour  
  
@@ -111,3 +120,46 @@ Soccer Mod is now fully installed and will be loaded automatically when the serv
 ![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
 ![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
 ![matchset](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchsettings.png)
+
+#### Example MatchLog file:  
+```
+"Match Log"  
+{  
+	"CT_vs_Phoenix"  
+	{  
+		"CT"		"CT"  
+		"T"		"Phoenix"  
+	}  
+	"Scoresheet"  
+	{  
+		"0:1"  
+		{  
+			"Time:"		"00:04"  
+			"Scorer:"		"🎀 Kurisu 🌸"  
+		}  
+		"0:2"  
+		{  
+			"Time:"		"00:05"  
+			"Scorer:"		"🎀 QRisu 🌸"  
+		}  
+		"0:3"  
+		{  
+			"Time:"		"00:06"  
+			"Scorer:"		"🎀 Ayaya 🌸"  
+		}  
+		"0:4"  
+		{  
+			"Time:"		"00:07"  
+			"Scorer:"		"🎀 Kurisu 🌸"  
+		}  
+	}  
+	"Playerstats"  
+	{  
+		"[U:1:31465094]"  
+		{  
+			"Name:"		"🎀 Kurisu 🌸 -> 🎀 QRisu 🌸 -> 🎀 Ayaya 🌸 -> 🎀 Kurisu 🌸"  
+			"Goals:"		"4"  
+		}  
+	}  
+}  
+```
