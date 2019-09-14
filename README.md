@@ -110,9 +110,9 @@ Right click on each zip file and select "Extract Here". After extracting the 3 z
  ● maps  
   
 ### 3. Copy or upload the folders
-Copy or upload the folders to your server's "csgo" folder, for example:  
- ● D:\Servers\Counter-Strike Global Offensive\csgo (local server)  
- ● /home/csgo (hosted server)  
+Copy or upload the folders to your server's "cstrike" folder, for example:  
+ ● D:\Servers\Counter-Strike Source\cstrike (local server)  
+ ● /home/cstrike (hosted server)  
   
 Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
 
