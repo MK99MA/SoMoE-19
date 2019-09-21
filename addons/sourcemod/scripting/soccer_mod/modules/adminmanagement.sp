@@ -2,28 +2,37 @@
 // ************************************************ ADMIN MANAGEMENT *************************************************
 // *******************************************************************************************************************
 bool adminRemoved;
-char SteamID[20];
+
+char adminFlags[64];
+char adminGroup[64];
+char adminImmunity[64];
+char adminName[64];
+char adminSteamID[64];
 char clientName[50];
+char group[32];
+char SteamID[20];
 char szFlags[32];
 char szTarget2[64];
-int playerCount = 0;
-int playerindex = 1;
-int adminmode;
-int addoredit;
 
+int addoredit;
+int adminmode;
+int playerindex = 1;
+
+
+
+// *******************************************************************************************************************
+// *************************************************** ADMIN MENU ****************************************************
+// *******************************************************************************************************************
 
 public void OpenMenuAdminSet(int client)
-{
-	playerCount = GetClientCount(true);
-	
+{	
 	Menu menu = new Menu(MenuHandlerAdminSet);
 	menu.SetTitle("Manage Admins");
 
 	menu.AddItem("AddAdmin", "Add Admin");
-	menu.AddItem("PromoteAdmin", "Promote Admin");
-	menu.AddItem("RemoveAdmin", "Remove SoccerMod Admin");
-	menu.AddItem("SoccerAdminList", "Soccermod Admin List");
-	menu.AddItem("SourceAdminList", "Sourcemod Admin List");
+	menu.AddItem("EditAdmin", "Edit Admin");
+	menu.AddItem("RemoveAdmin", "Remove Admin");
+	menu.AddItem("AdminLists", "Admin Lists");
 	menu.AddItem("OnlineAdmin", "Online Admins");
 	
 	menu.ExitBackButton = true;
@@ -41,21 +50,17 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 		{
 			OpenMenuAddAdmin(client);
 		}
-		if (StrEqual(menuItem, "PromoteAdmin"))
+		if (StrEqual(menuItem, "EditAdmin"))
 		{
-			OpenMenuPromoteAdmin(client);
+			OpenMenuEditAdmin(client);
 		}
 		if (StrEqual(menuItem, "RemoveAdmin"))
 		{
 			OpenMenuRemoveAdmin(client);
 		}
-		else if (StrEqual(menuItem, "SourceAdminList"))
+		else if (StrEqual(menuItem, "AdminLists"))
 		{
-			OpenMenuAdminListSourceMod(client);
-		}
-		else if (StrEqual(menuItem, "SoccerAdminList"))
-		{
-			OpenMenuAdminListSoccerMod(client);
+			OpenMenuAdminLists(client);
 		}
 		else if (StrEqual(menuItem, "OnlineAdmin"))
 		{
@@ -70,16 +75,16 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 // *******************************************************************************************************************
 // *************************************************** ADD ADMINS ****************************************************
 // *******************************************************************************************************************
+// *************************************************** PLAYERLIST ****************************************************
 
 public void OpenMenuAddAdmin(int client)
 {
-	playerCount = GetClientCount(true);
 	char userid[64];
 	
 	Menu menu = new Menu(MenuHandlerAddAdmin);
-	menu.SetTitle("Player List");
+	menu.SetTitle("Add Admin: Player List");
 
-	for (playerindex = 1; playerindex <= playerCount; playerindex++)
+	for (playerindex = 1; playerindex <= MaxClients; playerindex++)
 	{
 		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
 		{
@@ -111,7 +116,10 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 		if(ID != INVALID_ADMIN_ID)
 		{
 			playerindex = 1;
-			CPrintToChat(client, "{%s}[%s] {%s}%s is already SourceMod Admin.", prefixcolor, prefix, textcolor, clientName);
+			char targetName[50]
+			targetName = clientName;
+			if(IsSMAdmin(SteamID)) CPrintToChat(client, "{%s}[%s] {%s}%s (%s) is already SourceMod Admin.", prefixcolor, prefix, textcolor, targetName, clientName);
+			else CPrintToChat(client, "{%s}[%s] {%s}%s is already Admin (%s in: admins_simple.ini).", prefixcolor, prefix, textcolor, clientName, SteamID);
 			OpenMenuAddAdmin(client);
 		}
 		else if(IsSoccerAdmin(userindex2))
@@ -122,35 +130,40 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 		}
 		else 
 		{
-			OpenMenuAddAdminFlags(client);
+			OpenMenuAddAdminType(client);
 		}
+		//OpenMenuAddAdminType(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
 	else if (action == MenuAction_End)					  menu.Close();
 	playerindex = 1;
 }
 
-public void OpenMenuAddAdminFlags(int client)
+// *************************************************** TYPE SELECTION ****************************************************
+
+public void OpenMenuAddAdminType(int client)
 {
-	Menu menu = new Menu(MenuHandlerAddAdminFlags);
+	Menu menu = new Menu(MenuHandlerAddAdminType);
 	menu.SetTitle("Add %s as:", clientName);
 
-	menu.AddItem("addadminfull", "Sourcemod: Root Admin");
+	menu.AddItem("addadmin", "Source Mod Admin");
 	menu.AddItem("addadminsoccer", "Soccer Mod Admin");
-	menu.AddItem("addadmincustom", "Sourcemod: Custom Flags");
+	menu.AddItem("", "No further ingame editing:", ITEMDRAW_DISABLED);
+	menu.AddItem("addadminsimplefull", "Admins_simple.ini: Root Admin");
+	menu.AddItem("addadminsimplecustom", "Admins_simple.ini: Custom Flags");
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int MenuHandlerAddAdminFlags(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerAddAdminType(Menu menu, MenuAction action, int client, int choice)
 {
 	char menuItem[32];
 	menu.GetItem(choice, menuItem, sizeof(menuItem));
 	
 	if (action == MenuAction_Select)
 	{
-		if (StrEqual(menuItem, "addadminfull"))
+		if (StrEqual(menuItem, "addadminsimplefull"))
 		{
 			addoredit = 0;
 			OpenMenuWarning(client);
@@ -160,51 +173,224 @@ public int MenuHandlerAddAdminFlags(Menu menu, MenuAction action, int client, in
 			adminmode = 1;
 			AddSoccerAdminMenuFunc(client);
 		}
-		else if (StrEqual(menuItem, "addadmincustom"))
+		else if (StrEqual(menuItem, "addadminsimplecustom"))
 		{
 			adminmode = 2;
-			AddAdminMenuFunc(client);
+			AddAdminSimpleMenuFunc(client);
+		}
+		else if (StrEqual(menuItem, "addadmin"))
+		{
+			addoredit = 0;
+			CPrintToChat(client, "{%s}[%s] {%s}%s added as an admin", prefixcolor, prefix, textcolor, clientName);
+			OpenMenuAddAdminValues(client);
 		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6) 	OpenMenuAddAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
-public void OpenMenuFlagInfo(int client)
+// *************************************************** ADMIN VALUES ****************************************************
+
+public void OpenMenuAddAdminValues(int client)
 {
-	Menu menu = new Menu(MenuHandlerFlagInfo);
-	menu.SetTitle("Available Flags");
+	char nameString[256], steamidString[256], flagString[32], immunityString[32], groupString[128];
 	
-	menu.AddItem("inputformat", "Example: 50:abcejk", ITEMDRAW_DISABLED);
-	menu.AddItem("immunity", "Immunity: 0 - 99", ITEMDRAW_DISABLED);
-	menu.AddItem("a_flag", "[a] - reservation", ITEMDRAW_DISABLED);
-	menu.AddItem("b_flag", "[b] - generic (soccermod)", ITEMDRAW_DISABLED);
-	menu.AddItem("c_flag", "[c] - kick", ITEMDRAW_DISABLED);
-	menu.AddItem("d_flag", "[d] - ban", ITEMDRAW_DISABLED);
-	menu.AddItem("e_flag", "[e] - unban", ITEMDRAW_DISABLED);
-	menu.AddItem("f_flag", "[f] - slay", ITEMDRAW_DISABLED);
-	menu.AddItem("g_flag", "[g] - changemap", ITEMDRAW_DISABLED);
-	menu.AddItem("h_flag", "[h] - cvars", ITEMDRAW_DISABLED);
-	menu.AddItem("i_flag", "[i] - config", ITEMDRAW_DISABLED);
-	menu.AddItem("j_flag", "[j] - chat", ITEMDRAW_DISABLED);
-	menu.AddItem("k_flag", "[k] - vote", ITEMDRAW_DISABLED);
-	menu.AddItem("l_flag", "[l] - password", ITEMDRAW_DISABLED);
-	menu.AddItem("m_flag", "[m] - rcon", ITEMDRAW_DISABLED);
-	menu.AddItem("n_flag", "[n] - cheats", ITEMDRAW_DISABLED);
-	menu.AddItem("z_flag", "[z] - root", ITEMDRAW_DISABLED);
+	if (!IsSMAdmin(SteamID))
+	{
+		AddAdminFunc(SteamID);
+		ReadAdminFile();
+	}
+	else if (IsSMAdmin(SteamID)) ReadAdminFile();
 	
+	Format(nameString, sizeof(nameString), "Name: %s", adminName);
+	Format(steamidString, sizeof(steamidString), "SteamID: %s",SteamID);
+	Format(flagString, sizeof(flagString), "Flags: %s", adminFlags);
+	Format(immunityString, sizeof(immunityString), "Immunity: %s", adminImmunity);
+	Format(groupString, sizeof(groupString), "Group: %s", adminGroup);
 	
+	Menu menu = new Menu(MenuHandlerAddAdminValues);
+	menu.SetTitle("Properties of %s", adminName);
+	
+	menu.AddItem("sm_name", nameString);
+	menu.AddItem("sm_flag", flagString);
+	menu.AddItem("sm_immunity", immunityString);
+	menu.AddItem("sm_group", groupString);
+	menu.AddItem("sm_id", steamidString, ITEMDRAW_DISABLED);
+	menu.AddItem("", "-------------------", ITEMDRAW_DISABLED);
+	menu.AddItem("confirm", "Reload Admins & Return");
+	
+	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int MenuHandlerFlagInfo(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerAddAdminValues(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_End)					  menu.Close();
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "sm_name"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the new name for %s", prefixcolor, prefix, textcolor, adminName);
+			changeSetting[client] = "AdminNameValue";
+		}
+		else if (StrEqual(menuItem, "sm_flag"))
+		{
+			OpenMenuFlagInfo(client, 0);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired flags (see menu) for %s", prefixcolor, prefix, textcolor, adminName);
+			changeSetting[client] = "AdminFlagsValue";
+		}
+		else if (StrEqual(menuItem, "sm_immunity"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired immunity (0-99) for %s", prefixcolor, prefix, textcolor, adminName);
+			changeSetting[client] = "AdminImmunityValue";
+		}
+		else if (StrEqual(menuItem, "sm_group"))
+		{
+			OpenMenuGroupList(client);
+		}
+		else if (StrEqual(menuItem, "confirm"))
+		{
+			FakeClientCommandEx(client, "sm_reloadadmins");
+			ResetAdminValues();
+			OpenMenuAdminSet(client);
+		}
+	}
+	else if (action == MenuAction_Cancel && choice == -6)
+	{
+		if (addoredit == 1) OpenMenuEditList(client);
+		else if(addoredit == 0) OpenMenuAddAdminType(client);
+		else if(addoredit == 2) OpenMenuPromoteAdminFlags(client);
+	}
+	else if (action == MenuAction_End)					  menu.Close();
 }
+
+// *************************************************** GROUPLIST ****************************************************
+
+public void OpenMenuGroupList(int client)
+{
+	Menu menu = new Menu(MenuHandlerGroupList);
+	menu.SetTitle("Available Groups:");
+	
+	int length = groupArray.Length;
+	for  (int i = 0; i < length; i++)
+	{
+		groupArray.GetString(i, group, sizeof(group));
+		if ((StrContains(group, "immunity") == -1 && StrContains(group, "flags") == -1 && StrContains(group, "Groups") == -1 && StrContains(group, "allow") == -1 && StrContains(group, "deny") == -1 && StrContains(group, "}") == -1))
+		{
+			menu.AddItem(group, group);
+		}
+	}
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerGroupList(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, group, sizeof(group));
+	
+	if (action == MenuAction_Select)
+	{
+		char buffer[64];
+		buffer = group;
+		UpdateAdmin(adminName, "group", buffer, 1);	
+		CPrintToChat(client, "{%s}[%s] {%s}Updated Group to %s", prefixcolor, prefix, textcolor, buffer);
+		OpenMenuAddAdminValues(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6) 	OpenMenuAddAdminValues(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
 
 // *******************************************************************************************************************
 // ************************************************ PROMOTE ADMINS ***************************************************
 // *******************************************************************************************************************
+public void OpenMenuEditAdmin(int client)
+{
+	Menu menu = new Menu(MenuHandlerEditAdmin);
+	menu.SetTitle("Edit Admin");
+	
+	menu.AddItem("editSM", "Edit SM Admin");
+	menu.AddItem("promote", "Promote Soccer Admin");
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerEditAdmin(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "editSM"))
+		{
+			OpenMenuEditList(client);
+		}
+		else if (StrEqual(menuItem, "promote"))
+		{
+			OpenMenuPromoteAdmin(client);
+		}
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+// *************************************************** ADMINLISTS ****************************************************
+
+public void OpenMenuEditList(int client)
+{
+	Menu menu = new Menu(MenuHandlerEditList);
+	menu.SetTitle("Admins.cfg Admin List");
+	
+	kvSMAdmins = new KeyValues("Admins");
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	if (kvSMAdmins.GotoFirstSubKey() == false) 
+	{
+		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		OpenMenuEditAdmin(client);
+		
+		kvSMAdmins.Rewind();
+		kvSMAdmins.Close();	
+	}
+	else
+	{
+		kvSMAdmins.GotoFirstSubKey();
+		
+		do
+		{
+			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
+			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
+			
+			menu.AddItem(clientName, clientName);
+		}
+		while (kvSMAdmins.GotoNextKey());
+	}
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.Close();	
+		
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerEditList(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, clientName, sizeof(clientName));
+	if (action == MenuAction_Select)
+	{
+		addoredit = 1;
+		OpenMenuAddAdminValues(client);
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuEditAdmin(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
 
 public void OpenMenuPromoteAdmin(int client)
 {
@@ -217,10 +403,9 @@ public void OpenMenuPromoteAdmin(int client)
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
 		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor)
-		OpenMenuAdminSet(client);
+		OpenMenuEditAdmin(client);
 		
 		kvAdmins.Rewind();
-		kvAdmins.ExportToFile(adminFileKV);
 		kvAdmins.Close();	
 	}
 	else
@@ -238,7 +423,6 @@ public void OpenMenuPromoteAdmin(int client)
 	}
 	
 	kvAdmins.Rewind();
-	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
 		
 	menu.ExitBackButton = true;
@@ -253,17 +437,21 @@ public int MenuHandlerPromoteAdmin(Menu menu, MenuAction action, int client, int
 		OpenMenuPromoteAdminFlags(client);
 	}
 		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuEditAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
+
+// *************************************************** PROMOTE SELECTION ****************************************************
 
 public void OpenMenuPromoteAdminFlags(int client)
 {
 	Menu menu = new Menu(MenuHandlerPromoteAdminFlags);
 	menu.SetTitle("Promote %s to:", clientName);
 
-	menu.AddItem("addadminfull", "Sourcemod: Root Admin");
-	menu.AddItem("addadmincustom", "Sourcemod: Custom Flags");
+	menu.AddItem("addadminsm", "admins.cfg");
+	menu.AddItem("", "No further ingame editing:", ITEMDRAW_DISABLED);
+	menu.AddItem("addadminfull", "Admins_simple: Root Admin");
+	menu.AddItem("addadmincustom", "Admins_simple: Custom Flags");
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -285,7 +473,13 @@ public int MenuHandlerPromoteAdminFlags(Menu menu, MenuAction action, int client
 		{
 			adminmode = 2;
 			RemoveSoccerAdminMenuFunc(client);
-			AddAdminMenuFunc(client);
+			AddAdminSimpleMenuFunc(client);
+		}
+		else if(StrEqual(menuItem, "addadminsm"))
+		{
+			RemoveSoccerAdminMenuFunc(client);
+			addoredit = 2;
+			OpenMenuAddAdminValues(client)
 		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)  OpenMenuPromoteAdmin(client);
@@ -295,9 +489,97 @@ public int MenuHandlerPromoteAdminFlags(Menu menu, MenuAction action, int client
 // *******************************************************************************************************************
 // ************************************************* REMOVE ADMINS ***************************************************
 // *******************************************************************************************************************
+
 public void OpenMenuRemoveAdmin(int client)
 {
 	Menu menu = new Menu(MenuHandlerRemoveAdmin);
+	menu.SetTitle("Remove Admin");
+	
+	menu.AddItem("removeSM", "Remove SM Admin");
+	menu.AddItem("removeSoccer", "Remove Soccer Admin");
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerRemoveAdmin(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "removeSM"))
+		{
+			OpenMenuRemoveSMAdmin(client);
+		}
+		else if (StrEqual(menuItem, "removeSoccer"))
+		{
+			OpenMenuRemoveSoccerAdmin(client);
+		}
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+// *************************************************** ADMINLISTS ****************************************************
+
+public void OpenMenuRemoveSMAdmin(int client)
+{
+	Menu menu = new Menu(MenuHandlerRemoveSMAdmin);
+	menu.SetTitle("Admins.cfg Admin List");
+	
+	kvSMAdmins = new KeyValues("Admins");
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	if (kvSMAdmins.GotoFirstSubKey() == false) 
+	{
+		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		OpenMenuRemoveAdmin(client);
+		
+		kvSMAdmins.Rewind();
+		kvSMAdmins.Close();	
+	}
+	else
+	{
+		kvSMAdmins.GotoFirstSubKey();
+		
+		do
+		{
+			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
+			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
+			
+			menu.AddItem(clientName, clientName);
+		}
+		while (kvSMAdmins.GotoNextKey());
+	}
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.Close();	
+		
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerRemoveSMAdmin(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, clientName, sizeof(clientName));
+	if (action == MenuAction_Select)
+	{
+		RemoveSMAdminMenuFunc(clientName);
+		adminRemoved = true;
+		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SourceMod Adminlist", prefixcolor, prefix, textcolor, clientName);
+		OpenMenuRemoveAdmin(client);
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuRemoveAdmin(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuRemoveSoccerAdmin(int client)
+{
+	Menu menu = new Menu(MenuHandlerRemoveSoccerAdmin);
 	menu.SetTitle("SoccerMod Admin List");
 	
 	kvAdmins = new KeyValues("Admins");
@@ -306,7 +588,7 @@ public void OpenMenuRemoveAdmin(int client)
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
 		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor)
-		OpenMenuAdminSet(client);
+		OpenMenuRemoveAdmin(client);
 		
 		kvAdmins.Rewind();
 		kvAdmins.ExportToFile(adminFileKV);
@@ -334,7 +616,7 @@ public void OpenMenuRemoveAdmin(int client)
 	menu.Display(client, MENU_TIME_FOREVER);	
 }
 
-public int MenuHandlerRemoveAdmin(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerRemoveSoccerAdmin(Menu menu, MenuAction action, int client, int choice)
 {
 	adminRemoved = false;
 	menu.GetItem(choice, clientName, sizeof(clientName));
@@ -343,92 +625,116 @@ public int MenuHandlerRemoveAdmin(Menu menu, MenuAction action, int client, int 
 		RemoveSoccerAdminMenuFunc(client);
 		adminRemoved = true;
 		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SoccerMod Adminlist", prefixcolor, prefix, textcolor, clientName);
-		OpenMenuAdminSet(client);
+		OpenMenuRemoveAdmin(client);
 	}
 		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *******************************************************************************************************************
-// **************************************************** WARNING ******************************************************
-// *******************************************************************************************************************
-
-public void OpenMenuWarning(int client)
-{
-	Menu menu 
-	if (addoredit == 0) menu = new Menu(MenuHandlerAddWarning);
-	else if (addoredit == 1) menu = new Menu(MenuHandlerPromoteWarning);
-	menu.SetTitle("ATTENTION");
-	
-	char warning[128];
-	Format(warning, sizeof(warning), "Are you sure you want to grant %s ROOT ADMIN access?", clientName);
-	
-	menu.AddItem("", warning, ITEMDRAW_DISABLED);
-	menu.AddItem("", "ROOT ADMIN allows the user to add Admins or to remove SoccerMod Admins!", ITEMDRAW_DISABLED);
-	menu.AddItem("Yes", "Yes");
-	menu.AddItem("No", "No");
-
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerAddWarning(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "Yes"))
-		{
-			adminmode = 0;
-			AddAdminMenuFunc(client);
-		}
-		else if (StrEqual(menuItem, "No"))
-		{
-			OpenMenuAddAdminFlags(client);
-		}
-	}		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAddAdminFlags(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-public int MenuHandlerPromoteWarning(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "Yes"))
-		{
-			adminmode = 0;
-			RemoveSoccerAdminMenuFunc(client)
-			AddAdminMenuFunc(client);
-		}
-		else if (StrEqual(menuItem, "No"))
-		{
-			OpenMenuPromoteAdminFlags(client);
-		}
-	}		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuPromoteAdminFlags(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuRemoveAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
 // *******************************************************************************************************************
 // ************************************************** ADMIN LIST *****************************************************
 // *******************************************************************************************************************
+public void OpenMenuAdminLists(int client)
+{
+	Menu menu = new Menu(MenuHandlerAdminLists);
+	menu.SetTitle("Admin Lists");
+	
+	menu.AddItem("Soccerlist", "SoccerMod List");
+	menu.AddItem("SMlist", "Admins.cfg List");
+	menu.AddItem("Simplelist", "Admins_simple.ini List");
 
-public void OpenMenuAdminListSourceMod(int client)
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerAdminLists(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "Soccerlist"))
+		{
+			OpenMenuAdminListSoccerMod(client);
+		}
+		else if (StrEqual(menuItem, "SMlist"))
+		{
+			OpenMenuAdminListSM(client);
+		}
+		else if (StrEqual(menuItem, "Simplelist"))
+		{
+			OpenMenuAdminListSimple(client);
+		}
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+// *************************************************** SM LIST ******************************************************
+
+public void OpenMenuAdminListSM(int client)
+{
+	Menu menu = new Menu(MenuHandlerAdminlistSM);
+	menu.SetTitle("Admins.cfg Admin List");
+	
+	kvSMAdmins = new KeyValues("Admins");
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	if (kvSMAdmins.GotoFirstSubKey() == false) 
+	{
+		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		OpenMenuAdminLists(client);
+		
+		kvSMAdmins.Rewind();
+		kvSMAdmins.Close();	
+	}
+	else
+	{
+		kvSMAdmins.GotoFirstSubKey();
+		
+		do
+		{
+			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
+			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
+			
+			menu.AddItem(clientName, clientName);
+		}
+		while (kvSMAdmins.GotoNextKey());
+	}
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.Close();	
+		
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerAdminlistSM(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, SteamID, sizeof(SteamID));
+	if (action == MenuAction_Select)
+	{
+		CPrintToChat(client, "How?");
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+// ************************************************** SIMPLE LIST *****************************************************
+
+public void OpenMenuAdminListSimple(int client)
 {
 	char sLine[128];
 	char szFile[256];
 	File hFile;
 	//char regexLine[128] = "^.\\[.:\\d:[0-9]+\\].\\s.[0-9]+:[a-zA-Z]+.";
 	
-	Menu menu = new Menu(MenuHandlerAdminlistSourceMod);
-	menu.SetTitle("Sourcemod Admin List");
+	Menu menu = new Menu(MenuHandlerAdminlistSimple);
+	menu.SetTitle("Admins_simple List");
 
 	BuildPath(Path_SM, szFile, sizeof(szFile), "configs/admins_simple.ini");
 	
@@ -443,22 +749,29 @@ public void OpenMenuAdminListSourceMod(int client)
 	}
 	hFile.Close();
 	
+	if(GetMenuItemCount(menu) == 1)
+	{
+		CPrintToChat(client, "{%s}[%s] {%s} No Admins found", prefixcolor, prefix, textcolor);
+		OpenMenuAdminLists(client);
+	}
+	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int MenuHandlerAdminlistSourceMod(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerAdminlistSimple(Menu menu, MenuAction action, int client, int choice)
 {
 	menu.GetItem(choice, SteamID, sizeof(SteamID));
 	if (action == MenuAction_Select)
 	{
-		//Auswahl -> Add admin flags -> EditAdminMenuFunc
-		OpenMenuAddAdminFlags(client);
+		CPrintToChat(client, "How?");
 	}
 		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
+
+// ************************************************** SOCCER LIST *****************************************************
 
 public void OpenMenuAdminListSoccerMod(int client)
 {
@@ -470,11 +783,10 @@ public void OpenMenuAdminListSoccerMod(int client)
 	
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor)
-		OpenMenuAdminSet(client);
+		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor);
+		OpenMenuAdminLists(client);
 		
 		kvAdmins.Rewind();
-		kvAdmins.ExportToFile(adminFileKV);
 		kvAdmins.Close();	
 	}
 	else
@@ -492,7 +804,6 @@ public void OpenMenuAdminListSoccerMod(int client)
 	}
 	
 	kvAdmins.Rewind();
-	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
 	
 	menu.ExitBackButton = true;
@@ -504,11 +815,10 @@ public int MenuHandlerAdminlistSoccerMod(Menu menu, MenuAction action, int clien
 	menu.GetItem(choice, SteamID, sizeof(SteamID));
 	if (action == MenuAction_Select)
 	{
-		//Auswahl -> Add admin flags -> EditAdminMenuFunc
-		OpenMenuAddAdminFlags(client);
+		CPrintToChat(client, "How?");
 	}
 		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
@@ -518,13 +828,12 @@ public int MenuHandlerAdminlistSoccerMod(Menu menu, MenuAction action, int clien
 
 public void OpenMenuOnlineAdmin(int client)
 {
-	playerCount = GetClientCount(true);
 	bool onserver = false;
 	
 	Menu menu = new Menu(MenuHandlerOnlineAdminSourceMod);
 	menu.SetTitle("Online Admins");
 
-	for (playerindex = 1; playerindex <= playerCount; playerindex++)
+	for (playerindex = 1; playerindex <= MaxClients; playerindex++)
 	{
 		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
 		{
@@ -564,11 +873,10 @@ public int MenuHandlerOnlineAdminSourceMod(Menu menu, MenuAction action, int cli
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
-
-
 // *******************************************************************************************************************
 // *************************************************** FUNCTIONS *****************************************************
 // *******************************************************************************************************************
+// ************************************************** CHECK FUNCS ****************************************************
 public bool IsSoccerAdmin(int client)
 {
 	char buffer[32];
@@ -593,7 +901,142 @@ public bool IsSoccerAdmin(int client)
 	else return false;
 }
 
-public void AddAdminMenuFunc(int client)
+public bool IsSMAdmin(char SteamIDbuffer[20])
+{
+	char buffer[32];
+	bool check = false;
+	kvSMAdmins = new KeyValues("Admins");
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	if(kvSMAdmins.GotoFirstSubKey())
+	{
+		do
+		{
+			kvSMAdmins.GetString("identity", buffer, sizeof(buffer), "undefined");
+			if (StrEqual(buffer, SteamIDbuffer))
+			{
+				kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
+				check = true;
+			}
+		}
+		while (kvSMAdmins.GotoNextKey());
+	}
+	else return false;
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.Close();	
+	
+	if(check) return true;
+	else return false;
+}
+
+public void ParseAdminGroups(ArrayList array)
+{
+	char line[128];
+	char pattern[] =  "(\"[\\w ]+\")"		//"(\"[a-zA-Z0-9\s]+\"|\"[a-zA-Z0-9_]+\")"  ; //ANPASSEN
+	Regex regex = CompileRegex(pattern);
+	
+	BuildPath(Path_SM, adminGroupFileKV, sizeof(adminGroupFileKV), "configs/admin_groups.cfg");
+
+	File hFile = OpenFile(adminGroupFileKV, "r");
+
+	while (ReadFileLine(hFile, line, sizeof(line)) && !hFile.EndOfFile())
+	{
+		if (MatchRegex(regex, line) > 0 && StrContains(line, "*") == -1) 
+		{
+			TrimString(line);
+			StripQuotes(line);
+			array.PushString(line);
+		}
+	}
+	
+	hFile.Close();
+}
+
+public bool IsGroupDefined(char groupName[64])
+{
+	if ((FindStringInArray(groupArray, groupName) == -1) || (StrEqual(groupName, "flags") || StrEqual(groupName, "immunity")))
+	{
+		return false;
+	}
+	else return true;
+}
+
+// ************************************************ ADMINS.CFG FUNC **************************************************
+
+public void ReadAdminFile()
+{
+	kvSMAdmins = new KeyValues("Admins")
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	kvSMAdmins.GotoFirstSubKey()
+	
+	do
+	{
+		kvSMAdmins.GetString("identity", adminSteamID, sizeof(adminSteamID), "Not set");
+		if (StrEqual(adminSteamID, SteamID))
+		{		
+			kvSMAdmins.GetSectionName(adminName, sizeof(adminName));
+			kvSMAdmins.GetString("flags", adminFlags, sizeof(adminFlags), "Not set");
+			kvSMAdmins.GetString("immunity", adminImmunity, sizeof(adminImmunity), "Not set");
+			kvSMAdmins.GetString("group", adminGroup, sizeof(adminGroup), "Not set");
+		}
+	}
+	while (kvSMAdmins.GotoNextKey());
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.Close();
+}
+
+public void AddAdminFunc(char SteamIDbuffer[20])
+{
+	kvSMAdmins = new KeyValues("Admins")
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	adminFlags = "Not Set";
+	adminGroup = "Not Set";
+	adminImmunity = "0";
+	kvSMAdmins.JumpToKey(clientName, true);
+	adminName = clientName;
+	kvSMAdmins.SetString("auth", "steam");
+	kvSMAdmins.SetString("identity", SteamID);
+	kvSMAdmins.SetString("flags", adminFlags);
+	kvSMAdmins.SetString("immunity", adminImmunity);
+	kvSMAdmins.SetString("group", adminGroup);
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.ExportToFile(adminSMFileKV);
+	kvSMAdmins.Close();	
+}
+
+public void UpdateAdmin(char section[64], char type[32], char value[64], int mode)
+{
+	kvSMAdmins = new KeyValues("Admins")
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	kvSMAdmins.JumpToKey(section, false);
+	if(mode == 0)	kvSMAdmins.SetSectionName(value);
+	else if (mode == 1)	kvSMAdmins.SetString(type, value);
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.ExportToFile(adminSMFileKV);
+	kvSMAdmins.Close();
+}
+
+public void RemoveSMAdminMenuFunc(char section[50])
+{
+	kvSMAdmins = new KeyValues("Admins");
+	kvSMAdmins.ImportFromFile(adminSMFileKV);
+	
+	kvSMAdmins.JumpToKey(section, false);	
+	kvSMAdmins.DeleteThis();
+	
+	kvSMAdmins.Rewind();
+	kvSMAdmins.ExportToFile(adminSMFileKV);
+	kvSMAdmins.Close();
+}
+
+// ************************************************ ADMINS_SIMPLE FUNC *************************************************
+
+public void AddAdminSimpleMenuFunc(int client)
 {
 	szTarget2 = SteamID;
 	
@@ -604,7 +1047,7 @@ public void AddAdminMenuFunc(int client)
 	
 	if(adminmode == 2)
 	{
-		OpenMenuFlagInfo(client);
+		OpenMenuFlagInfo(client, 1);
 		CPrintToChat(client, "{%s}[%s] {%s}Enter the desired flags, remember to include flag 'b' for soccermod rights.", prefixcolor, prefix, textcolor);
 		changeSetting[client] = "CustFlag";
 	}
@@ -618,6 +1061,8 @@ public void AddAdminMenuFunc(int client)
 	hFile.Close();
 	FakeClientCommandEx(client, "sm_reloadadmins");
 }
+
+// ************************************************* SOCCERMOD FUNC ***************************************************
 
 public void AddSoccerAdminMenuFunc(int client)
 {
@@ -654,6 +1099,41 @@ public void RemoveSoccerAdminMenuFunc(int client)
 // ************************************************* CHAT LISTENER ***************************************************
 // *******************************************************************************************************************
 
+public void AdminSetListener(int client, char type[32], char admin_value[64], int min, int max)
+{
+	if (strlen(admin_value) >= min && strlen(admin_value) <= max)
+	{
+		if (StrEqual(type, "AdminNameValue"))
+		{
+			UpdateAdmin(adminName, "", admin_value, 0);
+			
+			CPrintToChat(client, "{%s}[%s] {%s}Updated Adminname to %s", prefixcolor, prefix, textcolor, admin_value);
+		}
+		if (StrEqual(type, "AdminFlagsValue"))
+		{
+			UpdateAdmin(adminName, "flags", admin_value, 1);
+
+			CPrintToChat(client, "{%s}[%s] {%s}Updated Flags to %s", prefixcolor, prefix, textcolor, admin_value);
+		}
+		if (StrEqual(type, "AdminImmunityValue"))
+		{
+			int buffer = StringToInt(admin_value);
+			if(buffer <= 99)
+			{
+				UpdateAdmin(adminName, "immunity", admin_value, 1);
+				
+				CPrintToChat(client, "{%s}[%s] {%s}Updated Immunity to %s", prefixcolor, prefix, textcolor, admin_value);
+			}
+			else CPrintToChat(client, "{%s}[%s] {%s} Please choose a value between 0 and 99.", prefixcolor, prefix, textcolor);
+		}
+
+		changeSetting[client] = "";
+		OpenMenuAddAdminValues(client);
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i", prefixcolor, prefix, textcolor, min, max);
+}
+
+
 public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 {
 	int min = 0;
@@ -684,3 +1164,147 @@ public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}List of flags is too long. Please use a shorter combination with %i to %i characters", prefixcolor, prefix, textcolor, min, max);
 }
+
+// *******************************************************************************************************************
+// ********************************************** WARNING & FLAGLIST *************************************************
+// *******************************************************************************************************************
+
+public void OpenMenuWarning(int client)
+{
+	Menu menu 
+	if (addoredit == 0) menu = new Menu(MenuHandlerAddWarning);
+	else if (addoredit == 1) menu = new Menu(MenuHandlerPromoteWarning);
+	menu.SetTitle("ATTENTION");
+	
+	char warning[128];
+	Format(warning, sizeof(warning), "Are you sure you want to grant %s ROOT ADMIN access?", clientName);
+	
+	menu.AddItem("", warning, ITEMDRAW_DISABLED);
+	menu.AddItem("", "ROOT ADMIN allows the user to add Admins or to remove SoccerMod Admins!", ITEMDRAW_DISABLED);
+	menu.AddItem("Yes", "Yes");
+	menu.AddItem("No", "No");
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+}
+
+public int MenuHandlerAddWarning(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "Yes"))
+		{
+			adminmode = 0;
+			AddAdminSimpleMenuFunc(client);
+		}
+		else if (StrEqual(menuItem, "No"))
+		{
+			OpenMenuAddAdminType(client);
+		}
+	}		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAddAdminType(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public int MenuHandlerPromoteWarning(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "Yes"))
+		{
+			adminmode = 0;
+			RemoveSoccerAdminMenuFunc(client)
+			AddAdminSimpleMenuFunc(client);
+		}
+		else if (StrEqual(menuItem, "No"))
+		{
+			OpenMenuPromoteAdminFlags(client);
+		}
+	}		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuPromoteAdminFlags(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuFlagInfo(int client, int mode)
+{
+	Menu menu = new Menu(MenuHandlerFlagInfo);
+	menu.SetTitle("Available Flags");
+	
+	if (mode == 0)
+	{
+		menu.AddItem("inputformat", "Example: abcejk", ITEMDRAW_DISABLED);
+	}
+	if (mode == 1)
+	{
+		menu.AddItem("inputformat", "Example: 50:abcejk", ITEMDRAW_DISABLED);
+		menu.AddItem("immunity", "Immunity: 0 - 99", ITEMDRAW_DISABLED);
+	}
+	menu.AddItem("a_flag", "[a] - reservation", ITEMDRAW_DISABLED);
+	menu.AddItem("b_flag", "[b] - generic (soccermod)", ITEMDRAW_DISABLED);
+	menu.AddItem("c_flag", "[c] - kick", ITEMDRAW_DISABLED);
+	menu.AddItem("d_flag", "[d] - ban", ITEMDRAW_DISABLED);
+	menu.AddItem("e_flag", "[e] - unban", ITEMDRAW_DISABLED);
+	menu.AddItem("f_flag", "[f] - slay", ITEMDRAW_DISABLED);
+	menu.AddItem("g_flag", "[g] - changemap", ITEMDRAW_DISABLED);
+	menu.AddItem("h_flag", "[h] - cvars", ITEMDRAW_DISABLED);
+	menu.AddItem("i_flag", "[i] - config", ITEMDRAW_DISABLED);
+	menu.AddItem("j_flag", "[j] - chat", ITEMDRAW_DISABLED);
+	menu.AddItem("k_flag", "[k] - vote", ITEMDRAW_DISABLED);
+	menu.AddItem("l_flag", "[l] - password", ITEMDRAW_DISABLED);
+	menu.AddItem("m_flag", "[m] - rcon (adminmanagement)", ITEMDRAW_DISABLED);
+	menu.AddItem("n_flag", "[n] - cheats", ITEMDRAW_DISABLED);
+	menu.AddItem("z_flag", "[z] - root", ITEMDRAW_DISABLED);
+	
+	
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerFlagInfo(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_End)					  menu.Close();
+}
+
+public void ResetAdminValues()
+{
+	adminName = "";
+	adminSteamID = "";
+	adminImmunity = "";
+	adminFlags = "";
+	adminGroup = "";
+}
+
+
+// *******************************************************************************************************************
+// ********************************************** UNUSED SNIPPETS *************************************************
+// *******************************************************************************************************************
+
+//CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the desired admingroup for %s", prefixcolor, prefix, textcolor, adminName);
+//changeSetting[client] = "AdminGroupValue";
+/*else if (StrEqual(menuItem, "sm_id"))
+*{
+*	CPrintToChat(client, "{%s}[%s] {%s}Type in the new SteamID for %s", prefixcolor, prefix, textcolor, adminName);
+*	changeSetting[client] = "AdminIdValue";
+*}
+*
+*if (StrEqual(type, "AdminGroupValue"))
+*{
+*	if(IsGroupDefined(admin_value))
+*	{
+*		UpdateAdmin(adminName, "group", admin_value, 1);
+*		CPrintToChat(client, "{%s}[%s] {%s}Updated Group to %s", prefixcolor, prefix, textcolor, admin_value);
+*	}
+*	else CPrintToChat(client, "{%s}[%s] {%s} Group does not exist or is invalid(flags, immunity)", prefixcolor, prefix, textcolor);
+*}
+*if (StrEqual(type, "AdminIdValue"))
+*{
+*	UpdateAdmin(adminName, "identity", admin_value, 1);
+*	CPrintToChat(client, "{%s}[%s] {%s}Updated SteamID to %s", prefixcolor, prefix, textcolor, admin_value);
+*}
+*/
+

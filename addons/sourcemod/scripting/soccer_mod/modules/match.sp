@@ -1041,12 +1041,14 @@ public void MatchStart(int client)
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a match", prefixcolor, prefix, textcolor, client);
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s (CT) will face %s (T)", prefixcolor, prefix, textcolor, custom_name_ct, custom_name_t);
 		}
+		
 		//if(FileExists(matchlogKV) && (matchlog == 1)) DeleteFile(matchlogKV, false);
 		if(passwordlock == 1 && pwchange == true)
 		{
-			ResetPass();
+			pwchange = false;		
 			AFKKickStop();
-			pwchange = false;
+			ResetPass();
+			CPrintToChatAll("{%s}[%s] Server password reset to default value.", prefixcolor, prefix);
 		}
 		
 		RenameMatchLog();		

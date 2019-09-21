@@ -1,5 +1,10 @@
 public void ConfigFunc()
 {
+	char adminSMFileBackup[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, adminSMFileKV, sizeof(adminSMFileKV), "configs/admins.cfg");
+	BuildPath(Path_SM, adminSMFileBackup, sizeof(adminSMFileBackup), "configs/admins.cfg.backup");
+	
+	if (!FileExists(adminSMFileBackup)) RenameFile(adminSMFileBackup, adminSMFileKV, false);
 	if (!FileExists(configFileKV)) CreateSoccerModConfig();
 	if (!FileExists(adminFileKV)) CreateAdminConfig();
 	if (!FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg"))
@@ -162,6 +167,38 @@ public void CreateDownloadFile()
 	if (FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg", false)) AutoExecConfig(false, "soccer_mod_downloads", "sm_soccermod");
 }
 
+public void AddSoccerTags()
+{
+	char oldtags[256], newtags[256];
+	//char soccertags[64] = "soccer,soccermod,soccer_mod";
+	int flags;
+	
+	ConVar tags = FindConVar("sv_tags");
+	flags = GetConVarFlags(tags);
+	flags &= ~FCVAR_NOTIFY;
+	SetConVarFlags(tags, flags);
+	
+	tags.GetString(oldtags, sizeof(oldtags));
+	//PrintToChatAll(oldtags);
+	if(SimpleRegexMatch(oldtags, "soccer\\W", false) == -1)
+	{
+		Format(newtags, sizeof(newtags), "%s,soccer", oldtags);
+		tags.SetString(newtags, false, false);
+	}
+	if(StrContains(oldtags, "soccermod,", false) == -1)
+	{
+		Format(newtags, sizeof(newtags), "%s,soccermod", oldtags);
+		tags.SetString(newtags, false, false);
+	}
+	if(StrContains(oldtags, "soccer_mod,", false) == -1)
+	{
+		Format(newtags, sizeof(newtags), "%s,soccer_mod", oldtags);
+		tags.SetString(newtags, false, false);
+	}
+	
+	CloseHandle(tags);
+}
+
 public void CreateAdminConfig()
 {
 	File hFile = OpenFile(adminFileKV, "w");
@@ -247,8 +284,8 @@ public void ReadFromConfig()
 	publicmode 				= kvConfig.GetNum("soccer_mod_pubmode", 1);
 	passwordlock 			= kvConfig.GetNum("soccer_mod_passwordlock", 1);
 	PWMAXPLAYERS			= (kvConfig.GetNum("soccer_mod_passwordlock_max", 13)-1);
-	afk_kicktime			= kvConfig.GetFloat("soccer_mod_afk_time", 120.0);
-	afk_menutime			= kvConfig.GetNum("soccer_mod_afk_menu", 30);
+	afk_kicktime			= kvConfig.GetFloat("soccer_mod_afk_time", 100.0);
+	afk_menutime			= kvConfig.GetNum("soccer_mod_afk_menu", 20);
 	matchlog				= kvConfig.GetNum("soccer_mod_matchlog", 0);
 	kvConfig.GoBack();
 	

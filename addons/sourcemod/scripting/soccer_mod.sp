@@ -1,28 +1,39 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.11092019"
+#define PLUGIN_VERSION "css.16092019"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
 // **************************************************************************************************************
+//Array
+ArrayList groupArray;
+
+//Bool
+bool bLATE_LOAD 		= false;
 bool capFightStarted	= false;
 bool currentMapAllowed	= false;
 bool goalScored			= false;
 bool matchStarted		= false;
+bool menuaccessed;
 bool roundEnded			= false;
 bool pwchange			= false;
-bool menuaccessed;
 
+//Strings
+char changeSetting[MAXPLAYERS + 1][32];
+char custom_name_ct[32]	= "CT";
+char custom_name_t[32]	= "T";
+char defaultpw[256];
 char gamevar[8]			= "cstrike";
 char prefix[32]			= "Soccer Mod";
 char prefixcolor[32]	= "green";
 char textcolor[32]		= "lightgreen";
-char custom_name_t[32]	= "T";
-char custom_name_ct[32]	= "CT";
 //char listOfChar[]		= "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
-char def_pass[32];
-char changeSetting[MAXPLAYERS + 1][32];
+//char def_pass[32];
+
+//Paths
+char adminSMFileKV[PLATFORM_MAX_PATH];
+char adminGroupFileKV[PLATFORM_MAX_PATH];
 
 char configFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod.cfg";
 char skinsKeygroup[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_skins.cfg";
@@ -32,26 +43,32 @@ char adminFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_admins.cfg";
 char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_positions.txt";
 char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
 
-ConVar pw;
+//Convars
 
-float afk_kicktime		= 120.0;
-int afk_menutime		= 30;
 
-int PWMAXPLAYERS		= 11 //
+//Floats
+float afk_kicktime		= 100.0;
+
+//Integer
+int afk_menutime		= 20;
+int PWMAXPLAYERS		= 11 
 int publicmode		 	= 1;
 int passwordlock		= 1;
 int djbenabled			= 1;
 int matchlog			= 0;
 
+//Handle
 Handle allowedMaps	  	= INVALID_HANDLE;
-bool bLATE_LOAD 		= false;
 Handle db			   	= INVALID_HANDLE;
-//Handle shortsprint	  = INVALID_HANDLE;
 
+
+//KeyValues
 KeyValues kvConfig;
 KeyValues kvSkins;
 KeyValues kvGKArea;
 KeyValues kvAdmins;
+KeyValues kvSMAdmins;
+//KeyValues kvAdminGroups;
 KeyValues LeagueMatchKV;
 
 // **************************************************************************************************************
@@ -116,6 +133,7 @@ public void OnPluginStart()
 	
 	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
 	if (!DirExists("cfg/sm_soccermod/logs"))	CreateDirectory("cfg/sm_soccermod/logs", 511, false);
+
 	
 	//GetGameFolderName(gamevar, sizeof(gamevar));
 
@@ -139,7 +157,7 @@ public void OnPluginStart()
 
 	//LoadTranslations("soccer_mod.phrases.txt");
 	
-	pw = FindConVar("sv_password");
+	//pw = FindConVar("sv_password");
 
 	ConnectToDatabase();
 	LoadAllowedMaps();
@@ -177,10 +195,12 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		char custom_tag[32];
 		char custom_flag[32];
 		char custom_teamname[32];
-
+		char admin_value[64];
+		
 		custom_tag = cmdArg1;
-		custom_teamname = cmdArg1;
 		custom_flag = cmdArg1;
+		custom_teamname = cmdArg1;
+		admin_value = cmdArg1;
 
 		if (StrEqual(changeSetting[client], "randomness"))
 		{
@@ -256,7 +276,32 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		{
 			LockSet(client, "MenuNum", intnumber, 10, 60);
 			return Plugin_Handled;			
-		}	
+		}
+		else if (StrEqual(changeSetting[client], "AdminNameValue"))
+		{
+			AdminSetListener(client, "AdminNameValue", admin_value, 0, 50);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "AdminFlagsValue"))
+		{
+			AdminSetListener(client, "AdminFlagsValue", admin_value, 0, 32);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "AdminImmunityValue"))
+		{
+			AdminSetListener(client, "AdminImmunityValue", admin_value, 0, 2);
+			return Plugin_Handled;
+		}
+		/*else if (StrEqual(changeSetting[client], "AdminGroupValue"))
+		{
+			AdminSetListener(client, "AdminGroupValue", admin_value, 0, 64);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "AdminIdValue"))
+		{
+			AdminSetListener(client, "AdminIdValue", admin_value, 0, 20);
+			return Plugin_Handled;
+		}*/
 	}
 
 	return Plugin_Continue;
@@ -343,9 +388,15 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
   return(APLRes_Success);
 }
 
+public void OnConfigsExecuted()
+{
+	//After every Config was executed change the tags to include soccer tags
+	AddSoccerTags();
+}
 
 public void OnMapStart()
 {
+	//Create missing ConfigFiles and/or read them
 	if (!FileExists(configFileKV) || !FileExists(adminFileKV) || !FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg") || !FileExists(allowedMapsConfigFile) || !FileExists(statsKeygroupGoalkeeperAreas) || !FileExists(skinsKeygroup) || !FileExists(pathCapPositionsFile))
 	{
 		ConfigFunc();
@@ -355,9 +406,17 @@ public void OnMapStart()
 	{
 		ReadFromConfig();
 	}
+	
+	//Get the server password from server.cfg
+	GetDefaultPassword(defaultpw, sizeof(defaultpw));
+	
+	//Get the available Admin Groups from admin_groups.cfg
+	groupArray = CreateArray(8);
+	ParseAdminGroups(groupArray);
+	
 	LoadAllowedMaps();
 	currentMapAllowed = IsCurrentMapAllowed();
-
+	
 	if (currentMapAllowed)
 	{
 		LoadConfigSoccer();
@@ -412,6 +471,12 @@ public void OnClientPutInServer(int client)
 		CPrintToChatAll("{%s}[%s] Threshold hit. Locking Server again");
 		RandPass();
 	}
+}
+
+public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)
+{
+	DJBOnPlayerRunCmd(client, buttons, impulse, vel, angles, weapon);
+	//if((passwordlock == 1) && (pwchange == true))	AFKKickOnPlayerRunCmd(client, buttons, impulse, vel, angles, weapon);
 }
 
 public void OnClientDisconnect(int client)

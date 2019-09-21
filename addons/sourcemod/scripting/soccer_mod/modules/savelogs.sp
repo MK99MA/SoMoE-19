@@ -101,7 +101,6 @@ public void KVRemoveScore()
 	matchScoreCT = CS_GetTeamScore(3);
 	matchScoreT = CS_GetTeamScore(2);
 	Format(scoreString, sizeof(scoreString), "%i:%i", matchScoreCT, matchScoreT);
-	//PrintToChatAll(scoreString);
 	
 	LeagueMatchKV = new KeyValues("Match Log");
 	LeagueMatchKV.ImportFromFile(matchlogKV);

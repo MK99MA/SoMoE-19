@@ -43,7 +43,7 @@ public void RegisterClientCommands()
 public Action AdminListCommand(int client, int args)
 {
 	menuaccessed = false;
-	if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode is set to everyone. Try using !menu yourself", prefixcolor, prefix, textcolor);
+	if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode set: !menu is freely accessable by everyone", prefixcolor, prefix, textcolor);
 	else 									OpenMenuOnlineAdmin(client);
 }
 
@@ -117,18 +117,17 @@ public Action StartCommand(int client, int args)
 		{
 			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 			{
-				ResetPass();
 				MatchStart(client);
 			}
 			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 		else if(publicmode == 1 || publicmode == 2)
 		{
-			ResetPass();
 			MatchStart(client);
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	
 	return Plugin_Handled;
 }
 
@@ -380,6 +379,8 @@ public Action Command_GetTag(int client, int args)
 	char PlayerClanTag[32];
 	CS_GetClientClanTag(client, PlayerClanTag, sizeof(PlayerClanTag));
 	CPrintToChat(client, "{%s}[%s] {%s} Your clantag is %s", prefixcolor, prefix, textcolor, PlayerClanTag);
+	//AddSoccerTags();
+	
 	return Plugin_Handled;
 }
 
@@ -430,29 +431,47 @@ public Action Command_Pass(int client, int args)
 // *******************************************************************************************************************
 // *********************************************** UTILITY FUNCTIONS *************************************************
 // *******************************************************************************************************************
-
-public Action ResetPass()
+public void GetDefaultPassword(char buffer[256], int buffersize)
 {
-	ServerCommand("sm_cvar sv_password %s", def_pass);
+	File hFile = OpenFile("cfg/server.cfg", "rt");
+	char cfgBuffer[256];
 	
-	return Plugin_Handled;
+	while (!IsEndOfFile(hFile) && (ReadFileLine(hFile, cfgBuffer, sizeof(cfgBuffer))))
+	{
+		if (StrContains(cfgBuffer, "sv_password") != -1)
+		{
+			ReplaceString(cfgBuffer, sizeof(cfgBuffer), "sv_password", "", false);
+			StripQuotes(cfgBuffer);
+			buffer = cfgBuffer;
+		}
+	}
+	
+	hFile.Close();
 }
 
-public Action RandPass()
+public void ResetPass()
 {
-	pw.GetString(def_pass, sizeof(def_pass));
+	ServerCommand("sm_cvar sv_password %s", defaultpw); //def_pass);
+}
+
+public void RandPass()
+{
+	int flags;
+	
+	ConVar pwflags = FindConVar("sv_password");
+	flags = GetConVarFlags(pwflags);
+	flags &= ~FCVAR_NOTIFY;
+	SetConVarFlags(pwflags, flags);
+
+	//pw.GetString(def_pass, sizeof(def_pass));
 	char newpass[32];
 	
-	/*for (int x = 1; x <= 26; x++)
-	{
-		int randomInt = GetRandomInt(0, 63);
-		StrCat(newpass, sizeof(newpass), listOfChar[randomInt]);
-	}*/
 	GetRandomString(newpass, 26);
 	
-	ServerCommand("sm_cvar sv_password %s", newpass);
+	pwflags.SetString(newpass, false, false);
+	//ServerCommand("sm_cvar sv_password %s", newpass);
 	
-	return Plugin_Handled;
+	//return Plugin_Handled;
 }
 
 // *******************************************************************************************************************

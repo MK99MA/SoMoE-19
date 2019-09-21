@@ -33,26 +33,23 @@ public void AFKKickOnClientPutInServer(int client)
 
 // ************************************************** START *********************************************************
 
-public Action AFKKick()
+public void AFKKick()
 {
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if(IsValidClient(i, true))
 		{
-			PrintToChat(i, "Your ID: %i", i);
 			// do for every client
 			AFKGetStartActions(i);
 			// start client timer
 			afk_Timer[i] = CreateTimer(afk_kicktime, Timer_AFKCheck, i, TIMER_REPEAT);
 		}
 	}
-	
-	return Plugin_Handled;
 }
 
 // ************************************************** STOP **********************************************************
 
-public Action AFKKickStop()
+public void AFKKickStop()
 {
 	CPrintToChatAll("{%s}[%s] AFK Kick disabled.", prefixcolor, prefix);
 
@@ -63,15 +60,13 @@ public Action AFKKickStop()
 			KillAFKTimer(i);
 		}
 	}
-	
-	return Plugin_Handled;
 }
 
 // *******************************************************************************************************************
 // ************************************************** FUNCTIONS ******************************************************
 // *******************************************************************************************************************
 
-public Action AFKGetStartActions(int client)
+public void AFKGetStartActions(int client)
 {
 	// get pos & view for a client
 	GetClientAbsOrigin(client, afk_Position[client]);
@@ -79,27 +74,33 @@ public Action AFKGetStartActions(int client)
 
 	afk_Buttons[client] = GetClientButtons(client);
 	afk_Matches[client] = 0;
-	
-	return Plugin_Handled;
 }
 
-/*public Action Timer_CheckMovement(int client);
+/*public Action AFKKickOnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)
 {
-	PrintToChatAll("Hi");
-	// as long as pwchange == true
-	// Check Eyes pos(client)
-	// buttons?(client)
-	// position(client)
-	// if no movement -> kill old afk timer, start new afk timer
+	int LastButtons[MAXPLAYERS+1];
+	if (LastButtons[client] == buttons)
+	{
+		KillAFKTimer(client);
+		afk_Timer[client] = CreateTimer(afk_kicktime, Timer_AFKCheck, client, TIMER_REPEAT);
+	}
+	LastButtons[client] = buttons;
+	
+	//return Plugin_Continue;
 }*/
 
 // *********************************************** KILL TIMER ********************************************************
 
-public Action KillAFKTimer(int client)
+public void KillAFKTimer(int client)
 {
 	// remove clienttimer
-	delete afk_Timer[client];
-	afk_Timer[client] = null;
+	if (afk_Timer[client] != INVALID_HANDLE) 
+	{ 
+		KillTimer(afk_Timer[client]); 
+	} 
+	afk_Timer[client] = INVALID_HANDLE; 
+	//delete afk_Timer[client];
+	//afk_Timer[client] = null;
 }
 
 // *********************************************** NUKE PLAYER *******************************************************
@@ -132,8 +133,6 @@ stock bool bVectorsEqual(float[3] v1, float[3] v2)
 
 public Action Timer_AFKCheck(Handle Timer, any client)
 {
-	PrintToChat(client, "Timer started, your ID: %i", client);
-
 	if (pwchange == false)
 	{
 		delete afk_Timer[client];
@@ -143,41 +142,45 @@ public Action Timer_AFKCheck(Handle Timer, any client)
 
 	if(IsValidClient(client, true))
 	{
-		float fPosition[3];
-		GetClientAbsOrigin(client, fPosition);
-
-		float fAngles[3];
-		GetClientEyeAngles(client, fAngles);
-
-		int iButtons = GetClientButtons(client);
-
-		int iMatches = 0;
-
-		if(bVectorsEqual(fPosition, afk_Position[client]))
+		if(!(CheckCommandAccess(client, "afk-kicker-immunity", ADMFLAG_RCON)))
 		{
-			iMatches++;
-		}
+		
+			float fPosition[3];
+			GetClientAbsOrigin(client, fPosition);
 
-		if(bVectorsEqual(fAngles, afk_Angles[client]))
-		{
-			iMatches++;
-		}
+			float fAngles[3];
+			GetClientEyeAngles(client, fAngles);
 
-		if(iButtons == afk_Buttons[client])
-		{
-			iMatches++;
-		}
+			int iButtons = GetClientButtons(client);
 
-		afk_Matches[client] = iMatches;
+			int iMatches = 0;
 
-		// if no movement
-		if(iMatches >= 2)
-		{
-			PopupAFKMenu(client, afk_menutime);
-			KillAFKTimer(client);
-			return Plugin_Stop;
+			if(bVectorsEqual(fPosition, afk_Position[client]))
+			{
+				iMatches++;
+			}
+
+			if(bVectorsEqual(fAngles, afk_Angles[client]))
+			{
+				iMatches++;
+			}
+
+			if(iButtons == afk_Buttons[client])
+			{
+				iMatches++;
+			}
+
+			afk_Matches[client] = iMatches;
+
+			// if no movement
+			if(iMatches >= 2)
+			{
+				PopupAFKMenu(client, afk_menutime);
+				KillAFKTimer(client);
+				return Plugin_Stop;
+			}
+			else AFKGetStartActions(client);	// get new pos & view
 		}
-		else AFKGetStartActions(client);	// get new pos & view
 	}
 	
 	return Plugin_Continue;
