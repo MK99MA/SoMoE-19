@@ -358,9 +358,9 @@ public Action Command_DefPass(int client, int args)
 	{
 		bRandPass = false;
 		ResetPass();
-		CPrintToChatAll("{%s}[%s] {%s} Password reset.", prefixcolor, prefix, textcolor);
+		CPrintToChatAll("{%s}[%s] {%s}Password reset.", prefixcolor, prefix, textcolor);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s} Already using default password.", prefixcolor, prefix, textcolor);
+	else CPrintToChat(client, "{%s}[%s] {%s}Already using default password.", prefixcolor, prefix, textcolor);
 	
 	return Plugin_Handled;
 }
@@ -369,7 +369,7 @@ public Action Command_RandPass(int client, int args)
 {
 	RandPass();
 	bRandPass = true;
-	CPrintToChatAll("{%s}[%s] {%s} Random Password set.", prefixcolor, prefix, textcolor);
+	CPrintToChatAll("{%s}[%s] {%s}Random password set.", prefixcolor, prefix, textcolor);
 	
 	return Plugin_Handled;
 }
@@ -378,7 +378,7 @@ public Action Command_GetTag(int client, int args)
 {
 	char PlayerClanTag[32];
 	CS_GetClientClanTag(client, PlayerClanTag, sizeof(PlayerClanTag));
-	CPrintToChat(client, "{%s}[%s] {%s} Your clantag is %s", prefixcolor, prefix, textcolor, PlayerClanTag);
+	CPrintToChat(client, "{%s}[%s] {%s}Your clantag is %s", prefixcolor, prefix, textcolor, PlayerClanTag);
 	//AddSoccerTags();
 	
 	return Plugin_Handled;
@@ -405,7 +405,7 @@ public Action Command_AddAdmin(int client, int args)
 	Handle hFile = OpenFile(szFile, "at");
 	
 	WriteFileLine(hFile, "\"%s\" \"%s\"	//%s", szTarget, szFlags2, szName); 
-	CPrintToChat(client, "{%s}[%s] {%s} %s added as an admin with the flags %s", prefixcolor, prefix, textcolor, szName, szFlags2);
+	CPrintToChat(client, "{%s}[%s] {%s}%s added as an admin with the flags %s", prefixcolor, prefix, textcolor, szName, szFlags2);
 
 	CloseHandle(hFile);
 	FakeClientCommandEx(client, "sm_reloadadmins");

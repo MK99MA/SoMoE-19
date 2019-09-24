@@ -1208,7 +1208,7 @@ public void EndStoppageTime()
 				{
 					if (IsClientInGame(player) && IsClientConnected(player))
 					{
-						CPrintToChat(player, "{%s}[%s] {%s} %s: %s %i - %i %s", prefixcolor, prefix, textcolor, "Final score", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
+						CPrintToChat(player, "{%s}[%s] {%s}%s: %s %i - %i %s", prefixcolor, prefix, textcolor, "Final score", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 					}
 				}
 

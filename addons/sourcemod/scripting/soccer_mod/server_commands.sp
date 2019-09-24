@@ -226,15 +226,15 @@ public Action ServerCommands(int args)
 		{
 			MVPEnabled = 1;
 			UpdateConfigInt("Admin Settings", "soccer_mod_mvp", MVPEnabled);
-			PrintToServer("[%s] MVP System enabled", prefix);
-			CPrintToChatAll("{%s}[%s] {%s}MVP System enabled", prefixcolor, prefix, textcolor);
+			PrintToServer("[%s] MVP display enabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}MVP display enabled", prefixcolor, prefix, textcolor);
 		}
 		else
 		{
 			MVPEnabled = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_mvp", MVPEnabled);
-			PrintToServer("[%s] MVP System disabled", prefix);
-			CPrintToChatAll("{%s}[%s] {%s}MVP System disabled", prefixcolor, prefix, textcolor);
+			PrintToServer("[%s] MVP display disabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}MVP display disabled", prefixcolor, prefix, textcolor);
 		}
 	}
 	else if (StrEqual(serverCommand, "soccer_mod_pubmode"))
@@ -246,7 +246,7 @@ public Action ServerCommands(int args)
 		if(value == 0)
 		{
 			PrintToServer("[%s] Publicmode set to Admins only", prefix);
-			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to Admins only", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to admins only", prefixcolor, prefix, textcolor);
 		}
 		else if(value == 1)
 		{
@@ -275,7 +275,7 @@ public Action ServerCommands(int args)
 		textcolor = cmdArg1
 		UpdateConfig("Chat Settings", "soccer_mod_textcolor", cmdArg1);
 		PrintToServer("[%s] is the new textcolor", textcolor);
-		CPrintToChatAll("{%s}[%s] {%s} This is the new textcolor", prefixcolor, prefix, textcolor);
+		CPrintToChatAll("{%s}[%s] {%s}This is the new textcolor", prefixcolor, prefix, textcolor);
 	}
 	else if (StrEqual(serverCommand, "soccer_mod_prefixcolor"))
 	{
@@ -339,7 +339,7 @@ public Action ServerCommands(int args)
 		afk_kicktime = value;
 		UpdateConfigFloat("Admin Settings", "soccer_mod_afk_time", afk_kicktime);
 		PrintToServer("[%s] AFK players will see the Captcha after %f seconds if a cap is started", prefix, value);
-		CPrintToChatAll("{%s}[%s] {%s}AFK players will see the Captcha after %f seconds if a cap is started", prefixcolor, prefix, textcolor, value);
+		CPrintToChatAll("{%s}[%s] {%s}AFK players will see the captcha after %f seconds if a cap is started", prefixcolor, prefix, textcolor, value);
 	}
 	else if (StrEqual(serverCommand, "soccer_mod_afk_menu"))
 	{

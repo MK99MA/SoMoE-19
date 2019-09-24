@@ -92,7 +92,7 @@ public int CapMenuHandler(Menu menu, MenuAction action, int client, int choice)
 				CapStartFight(client);
 				if(GetClientCount() >= PWMAXPLAYERS+1 && passwordlock == 1 && pwchange == true)
 				{
-					CPrintToChatAll("{%s}[%s] At least %i Players when the capfight started; Changing the pw...", prefixcolor, prefix, PWMAXPLAYERS+1);
+					CPrintToChatAll("{%s}[%s] At least %i players when the capfight started; Changing the pw...", prefixcolor, prefix, PWMAXPLAYERS+1);
 					RandPass();
 				}
 			}			

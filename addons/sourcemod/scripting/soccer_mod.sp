@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.16092019"
+#define PLUGIN_VERSION "css.24092019"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -468,7 +468,7 @@ public void OnClientPutInServer(int client)
 	RadioCommandsOnClientPutInServer(client);
 	if((pwchange == true) && (GetClientCount() == PWMAXPLAYERS+1) && (passwordlock == 1))
 	{
-		CPrintToChatAll("{%s}[%s] Threshold hit. Locking Server again");
+		CPrintToChatAll("{%s}[%s] Threshold hit. Locking server again");
 		RandPass();
 	}
 }

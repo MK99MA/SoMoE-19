@@ -105,7 +105,7 @@ public Action Command_StartSprint(int client, int args)
 
 		if(iP_SETTINGS[client] & PLAYER_MESSAGES)
 		{
-			CPrintToChat(client, "{%s}[%s] You are using Sprint!", prefixcolor, prefix);
+			CPrintToChat(client, "{%s}[%s] You are using sprint!", prefixcolor, prefix);
 
 			iCLIENT_STATUS[client] |= CLIENT_MESSAGEUSING;
 		}
@@ -196,7 +196,7 @@ public void PrintSprintCDMsgToClient(int client)
 {
 	if(iCLIENT_STATUS[client] & CLIENT_MESSAGEUSING)
 	{
-		CPrintToChat(client, "{%s}[%s] You can use Sprint", prefixcolor ,prefix);
+		CPrintToChat(client, "{%s}[%s] You can use sprint", prefixcolor ,prefix);
 		iCLIENT_STATUS[client] &= ~ CLIENT_MESSAGEUSING;
 	}
 	return;

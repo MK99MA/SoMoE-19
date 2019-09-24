@@ -118,14 +118,14 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 			playerindex = 1;
 			char targetName[50]
 			targetName = clientName;
-			if(IsSMAdmin(SteamID)) CPrintToChat(client, "{%s}[%s] {%s}%s (%s) is already SourceMod Admin.", prefixcolor, prefix, textcolor, targetName, clientName);
-			else CPrintToChat(client, "{%s}[%s] {%s}%s is already Admin (%s in: admins_simple.ini).", prefixcolor, prefix, textcolor, clientName, SteamID);
+			if(IsSMAdmin(SteamID)) CPrintToChat(client, "{%s}[%s] {%s}%s(%s) is already Sourcemod admin.", prefixcolor, prefix, textcolor, targetName, clientName);
+			else CPrintToChat(client, "{%s}[%s] {%s}%s is already admin (%s in: admins_simple.ini).", prefixcolor, prefix, textcolor, clientName, SteamID);
 			OpenMenuAddAdmin(client);
 		}
 		else if(IsSoccerAdmin(userindex2))
 		{
 			playerindex = 1;
-			CPrintToChat(client, "{%s}[%s] {%s}%s is already SoccerMod Admin.", prefixcolor, prefix, textcolor, clientName);
+			CPrintToChat(client, "{%s}[%s] {%s}%s is already Soccer Mod admin.", prefixcolor, prefix, textcolor, clientName);
 			OpenMenuAddAdmin(client);
 		}
 		else 
@@ -352,7 +352,7 @@ public void OpenMenuEditList(int client)
 	
 	if (kvSMAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
 		OpenMenuEditAdmin(client);
 		
 		kvSMAdmins.Rewind();
@@ -395,14 +395,14 @@ public int MenuHandlerEditList(Menu menu, MenuAction action, int client, int cho
 public void OpenMenuPromoteAdmin(int client)
 {
 	Menu menu = new Menu(MenuHandlerPromoteAdmin);
-	menu.SetTitle("SoccerMod Admin List");
+	menu.SetTitle("Soccer Mod Admin List");
 	
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
 	
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor)
+		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor)
 		OpenMenuEditAdmin(client);
 		
 		kvAdmins.Rewind();
@@ -535,7 +535,7 @@ public void OpenMenuRemoveSMAdmin(int client)
 	
 	if (kvSMAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
 		OpenMenuRemoveAdmin(client);
 		
 		kvSMAdmins.Rewind();
@@ -568,8 +568,9 @@ public int MenuHandlerRemoveSMAdmin(Menu menu, MenuAction action, int client, in
 	if (action == MenuAction_Select)
 	{
 		RemoveSMAdminMenuFunc(clientName);
+		FakeClientCommandEx(client, "sm_reloadadmins");
 		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SourceMod Adminlist", prefixcolor, prefix, textcolor, clientName);
+		CPrintToChat(client, "{%s}[%s] {%s}%s was removed from the Sourcemod adminlist", prefixcolor, prefix, textcolor, clientName);
 		OpenMenuRemoveAdmin(client);
 	}
 		
@@ -580,14 +581,14 @@ public int MenuHandlerRemoveSMAdmin(Menu menu, MenuAction action, int client, in
 public void OpenMenuRemoveSoccerAdmin(int client)
 {
 	Menu menu = new Menu(MenuHandlerRemoveSoccerAdmin);
-	menu.SetTitle("SoccerMod Admin List");
+	menu.SetTitle("Soccer Mod Admin List");
 	
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
 	
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor)
+		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor)
 		OpenMenuRemoveAdmin(client);
 		
 		kvAdmins.Rewind();
@@ -619,12 +620,12 @@ public void OpenMenuRemoveSoccerAdmin(int client)
 public int MenuHandlerRemoveSoccerAdmin(Menu menu, MenuAction action, int client, int choice)
 {
 	adminRemoved = false;
-	menu.GetItem(choice, clientName, sizeof(clientName));
+	menu.GetItem(choice, SteamID, sizeof(SteamID));
 	if (action == MenuAction_Select)
 	{
 		RemoveSoccerAdminMenuFunc(client);
 		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s} %s was removed from the SoccerMod Adminlist", prefixcolor, prefix, textcolor, clientName);
+		CPrintToChat(client, "{%s}[%s] {%s}%s was removed from the Soccer Mod adminlist", prefixcolor, prefix, textcolor, clientName);
 		OpenMenuRemoveAdmin(client);
 	}
 		
@@ -640,7 +641,7 @@ public void OpenMenuAdminLists(int client)
 	Menu menu = new Menu(MenuHandlerAdminLists);
 	menu.SetTitle("Admin Lists");
 	
-	menu.AddItem("Soccerlist", "SoccerMod List");
+	menu.AddItem("Soccerlist", "Soccer Mod List");
 	menu.AddItem("SMlist", "Admins.cfg List");
 	menu.AddItem("Simplelist", "Admins_simple.ini List");
 
@@ -685,7 +686,7 @@ public void OpenMenuAdminListSM(int client)
 	
 	if (kvSMAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Admins found in admins.cfg", prefixcolor, prefix, textcolor)
+		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
 		OpenMenuAdminLists(client);
 		
 		kvSMAdmins.Rewind();
@@ -751,7 +752,7 @@ public void OpenMenuAdminListSimple(int client)
 	
 	if(GetMenuItemCount(menu) == 1)
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Admins found", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}No admins found", prefixcolor, prefix, textcolor);
 		OpenMenuAdminLists(client);
 	}
 	
@@ -776,14 +777,14 @@ public int MenuHandlerAdminlistSimple(Menu menu, MenuAction action, int client, 
 public void OpenMenuAdminListSoccerMod(int client)
 {
 	Menu menu = new Menu(MenuHandlerAdminlistSoccerMod);
-	menu.SetTitle("Soccermod Admin List");
+	menu.SetTitle("Soccer Mod Admin List");
 	
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
 	
 	if (kvAdmins.GotoFirstSubKey() == false) 
 	{
-		CPrintToChat(client, "{%s}[%s] {%s} No Soccermod Admins found", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor);
 		OpenMenuAdminLists(client);
 		
 		kvAdmins.Rewind();
@@ -830,7 +831,7 @@ public void OpenMenuOnlineAdmin(int client)
 {
 	bool onserver = false;
 	
-	Menu menu = new Menu(MenuHandlerOnlineAdminSourceMod);
+	Menu menu = new Menu(MenuHandlerOnlineAdminSourcemod);
 	menu.SetTitle("Online Admins");
 
 	for (playerindex = 1; playerindex <= MaxClients; playerindex++)
@@ -861,7 +862,7 @@ public void OpenMenuOnlineAdmin(int client)
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int MenuHandlerOnlineAdminSourceMod(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerOnlineAdminSourcemod(Menu menu, MenuAction action, int client, int choice)
 {
 	menu.GetItem(choice, clientName, sizeof(clientName));
 	if (action == MenuAction_Select)
@@ -884,17 +885,18 @@ public bool IsSoccerAdmin(int client)
 	GetClientAuthId(client, AuthId_Engine, SteamID, sizeof(SteamID))
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
-	kvAdmins.GotoFirstSubKey();
-	
-	do
+	if(kvAdmins.GotoFirstSubKey())
 	{
-		kvAdmins.GetSectionName(buffer, sizeof(buffer));
-		if (StrEqual(buffer, SteamID)) check = true;
+		do
+		{
+			kvAdmins.GetSectionName(buffer, sizeof(buffer));
+			if (StrEqual(buffer, SteamID)) check = true;
+		}
+		while (kvAdmins.GotoNextKey());
 	}
-	while (kvAdmins.GotoNextKey());
+	else return false;
 	
 	kvAdmins.Rewind();
-	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
 	
 	if(check) return true;
@@ -1048,13 +1050,13 @@ public void AddAdminSimpleMenuFunc(int client)
 	if(adminmode == 2)
 	{
 		OpenMenuFlagInfo(client, 1);
-		CPrintToChat(client, "{%s}[%s] {%s}Enter the desired flags, remember to include flag 'b' for soccermod rights.", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}Enter the desired flags, remember to include flag 'b' for Soccer Mod rights.", prefixcolor, prefix, textcolor);
 		changeSetting[client] = "CustFlag";
 	}
 	else if (adminmode == 0)
 	{
 		WriteFileLine(hFile, "\"%s\" \"99:z\"	//%s", szTarget2, clientName);
-		CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Full Admin.", prefixcolor, prefix, textcolor, clientName);
+		CPrintToChat(client, "{%s}[%s] {%s}%s was added as with root access.", prefixcolor, prefix, textcolor, clientName);
 		OpenMenuAddAdmin(client);
 	}
 
@@ -1078,7 +1080,7 @@ public void AddSoccerAdminMenuFunc(int client)
 	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
 	
-	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod Admin.", prefixcolor, prefix, textcolor, clientName);
+	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod admin.", prefixcolor, prefix, textcolor, clientName);
 	OpenMenuAddAdmin(client);
 }
 
@@ -1107,13 +1109,13 @@ public void AdminSetListener(int client, char type[32], char admin_value[64], in
 		{
 			UpdateAdmin(adminName, "", admin_value, 0);
 			
-			CPrintToChat(client, "{%s}[%s] {%s}Updated Adminname to %s", prefixcolor, prefix, textcolor, admin_value);
+			CPrintToChat(client, "{%s}[%s] {%s}Updated name to %s", prefixcolor, prefix, textcolor, admin_value);
 		}
 		if (StrEqual(type, "AdminFlagsValue"))
 		{
 			UpdateAdmin(adminName, "flags", admin_value, 1);
 
-			CPrintToChat(client, "{%s}[%s] {%s}Updated Flags to %s", prefixcolor, prefix, textcolor, admin_value);
+			CPrintToChat(client, "{%s}[%s] {%s}Updated flags to %s", prefixcolor, prefix, textcolor, admin_value);
 		}
 		if (StrEqual(type, "AdminImmunityValue"))
 		{
@@ -1122,9 +1124,9 @@ public void AdminSetListener(int client, char type[32], char admin_value[64], in
 			{
 				UpdateAdmin(adminName, "immunity", admin_value, 1);
 				
-				CPrintToChat(client, "{%s}[%s] {%s}Updated Immunity to %s", prefixcolor, prefix, textcolor, admin_value);
+				CPrintToChat(client, "{%s}[%s] {%s}Updated immunity to %s", prefixcolor, prefix, textcolor, admin_value);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s} Please choose a value between 0 and 99.", prefixcolor, prefix, textcolor);
+			else CPrintToChat(client, "{%s}[%s] {%s}Please choose a value between 0 and 99.", prefixcolor, prefix, textcolor);
 		}
 
 		changeSetting[client] = "";
@@ -1180,7 +1182,7 @@ public void OpenMenuWarning(int client)
 	Format(warning, sizeof(warning), "Are you sure you want to grant %s ROOT ADMIN access?", clientName);
 	
 	menu.AddItem("", warning, ITEMDRAW_DISABLED);
-	menu.AddItem("", "ROOT ADMIN allows the user to add Admins or to remove SoccerMod Admins!", ITEMDRAW_DISABLED);
+	menu.AddItem("", "ROOT ADMIN allows the user to add, edit or remove admins!", ITEMDRAW_DISABLED);
 	menu.AddItem("Yes", "Yes");
 	menu.AddItem("No", "No");
 
@@ -1297,9 +1299,9 @@ public void ResetAdminValues()
 *	if(IsGroupDefined(admin_value))
 *	{
 *		UpdateAdmin(adminName, "group", admin_value, 1);
-*		CPrintToChat(client, "{%s}[%s] {%s}Updated Group to %s", prefixcolor, prefix, textcolor, admin_value);
+*		CPrintToChat(client, "{%s}[%s] {%s}Updated group to %s", prefixcolor, prefix, textcolor, admin_value);
 *	}
-*	else CPrintToChat(client, "{%s}[%s] {%s} Group does not exist or is invalid(flags, immunity)", prefixcolor, prefix, textcolor);
+*	else CPrintToChat(client, "{%s}[%s] {%s}Group does not exist or is invalid(flags, immunity)", prefixcolor, prefix, textcolor);
 *}
 *if (StrEqual(type, "AdminIdValue"))
 *{

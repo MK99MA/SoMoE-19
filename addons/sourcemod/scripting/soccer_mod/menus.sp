@@ -437,7 +437,7 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "dpasswordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Manually reset to password to default / previous one", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "passwordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Print the current password to console or change it", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "rpasswordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Manually set a random password", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "addadmin"))	CPrintToChat(client, "{%s}[%s] {%s} !addadmin <SteamId>: Add the Steamid to soccermod admins.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "addadmin"))	CPrintToChat(client, "{%s}[%s] {%s}!addadmin <SteamId>: Add the Steamid to soccermod admins.", prefixcolor, prefix, textcolor);	
 
 		OpenMenuCommands(client);
 	}

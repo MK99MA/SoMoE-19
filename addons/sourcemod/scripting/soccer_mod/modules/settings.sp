@@ -37,7 +37,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 			if(!pwchange) OpenMenuLockSet(client);
 			else 
 			{
-				CPrintToChat(client, "{%s}[%s] {%s}You can't access this menu until the Capmatch started!", prefixcolor, prefix, textcolor);
+				CPrintToChat(client, "{%s}[%s] {%s}You can't access this menu until the capmatch started!", prefixcolor, prefix, textcolor);
 				OpenMenuSettings(client);
 			}
 		}
@@ -106,7 +106,7 @@ public int MenuHandlerLockSet(Menu menu, MenuAction action, int client, int choi
 		{
 			passwordlock = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_passwordlock", passwordlock);
-			CPrintToChatAll("{%s}[%s] {%s}Server won't lock itself", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Server will not lock itself", prefixcolor, prefix, textcolor);
 			OpenMenuLockSet(client);
 		}
 		else if (StrEqual(menuItem, "locknumber"))
@@ -159,7 +159,7 @@ public int MenuHandlerPubMode(Menu menu, MenuAction action, int client, int choi
 		{
 			publicmode = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
-			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to Admins only", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to admins only", prefixcolor, prefix, textcolor);
 			OpenMenuPubMode(client);
 		}
 		else if (StrEqual(menuItem, "pub_com"))
@@ -489,7 +489,7 @@ public int MenuHandlerGKAreas(Menu menu, MenuAction action, int client, int choi
 		// distance = SquareRoot((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ)) / 36.0;
 		// IN METERS
 		distance = SquareRoot((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ)) * 0.0254;
-		CPrintToChatAll("{%s}[%s] {%s} dist: %fm | x: %f, y: %f, z: %f | x len: %f, y len: %f, z len: %f", prefixcolor, prefix, textcolor, distance, origin[0], origin[1], origin[2], xWidth, yWidth, zWidth);
+		CPrintToChatAll("{%s}[%s] {%s}dist: %fm | x: %f, y: %f, z: %f | x len: %f, y len: %f, z len: %f", prefixcolor, prefix, textcolor, distance, origin[0], origin[1], origin[2], xWidth, yWidth, zWidth);
 
 		int beam;
 		while ((beam = GetEntityIndexByName("gk_area_beam", "env_beam")) != -1) AcceptEntityInput(beam, "Kill");

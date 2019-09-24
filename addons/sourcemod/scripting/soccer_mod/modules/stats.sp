@@ -134,7 +134,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				//  table, rankingPointsForSave, saverSteamid);
 				// ExecuteQuery(queryString);
 
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %N has made a save", prefixcolor, prefix, textcolor, statsSaver);
+				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has made a save", prefixcolor, prefix, textcolor, statsSaver);
 			}
 		}
 
@@ -155,7 +155,7 @@ public void StatsOnTakeDamage(int ball, int client)
 		statsTGKAreaMinZ <= ballPosition[2] <= statsTGKAreaMaxZ)
 	{
 		statsSaver = client;
-		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %N has knifed the ball in the T gk area", prefixcolor, prefix, textcolor, client);
+		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the T gk area", prefixcolor, prefix, textcolor, client);
 	}
 
 	if (client != statsScorerClientid)
@@ -184,7 +184,7 @@ public void StatsOnTakeDamage(int ball, int client)
 			else if (statsAssisterTeam == 3) statsPossessionCT += possession;
 			statsPossessionTotal += possession;
 			// AddPlayerStatPossession(statsAssisterSteamid, possession, statsAssisterTeam);
-			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %s had the ball for %f", prefixcolor, prefix, textcolor, statsAssisterName, possession);
+			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsAssisterName, possession);
 
 			if (team == statsAssisterTeam)
 			{
@@ -198,7 +198,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %s has passed the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has passed the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
 			}
 			else
 			{
@@ -211,7 +211,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				//  table, rankingPointsForInterception, steamid);
 				// ExecuteQuery(queryString);
 
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %s has intercepted the ball from %s", prefixcolor, prefix, textcolor, name, statsAssisterName);
+				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has intercepted the ball from %s", prefixcolor, prefix, textcolor, name, statsAssisterName);
 
 				ball_loss = true;
 				if (statsAssisterTeam == 2) statsBallLossesT++;
@@ -223,7 +223,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %s has lost the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has lost the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
 			}
 		}
 		// else
@@ -433,7 +433,7 @@ public void StatsEventRoundStart(Event event)
 	statsCTGKAreaMaxX = kvGKArea.GetFloat("ct_max_x", 0.0);
 	statsCTGKAreaMaxY = kvGKArea.GetFloat("ct_max_y", 0.0);
 	statsCTGKAreaMaxZ = kvGKArea.GetFloat("ct_max_z", 0.0);
-	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} CT GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsCTGKAreaMinX, statsCTGKAreaMinY, statsCTGKAreaMinZ, 
+	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}CT GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsCTGKAreaMinX, statsCTGKAreaMinY, statsCTGKAreaMinZ, 
 		statsCTGKAreaMaxX, statsCTGKAreaMaxY, statsCTGKAreaMaxZ);
 
 	statsTGKAreaMinX = kvGKArea.GetFloat("t_min_x", 0.0);
@@ -442,7 +442,7 @@ public void StatsEventRoundStart(Event event)
 	statsTGKAreaMaxX = kvGKArea.GetFloat("t_max_x", 0.0);
 	statsTGKAreaMaxY = kvGKArea.GetFloat("t_max_y", 0.0);
 	statsTGKAreaMaxZ = kvGKArea.GetFloat("t_max_z", 0.0);
-	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} T GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsTGKAreaMinX, statsTGKAreaMinY, statsTGKAreaMinZ, 
+	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}T GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsTGKAreaMinX, statsTGKAreaMinY, statsTGKAreaMinZ, 
 		statsTGKAreaMaxX, statsTGKAreaMaxY, statsTGKAreaMaxZ);
 
 	kvGKArea.Close();
@@ -490,7 +490,7 @@ public void StatsEventRoundEnd(Event event)
 		{
 			float possession = GetGameTime() - statsScorerTimestamp;
 			AddPlayerStatPossession(statsScorerSteamid, possession, statsScorerTeam);
-			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s} %s had the ball for %f", prefixcolor, prefix, textcolor, statsScorerName, possession);
+			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsScorerName, possession);
 
 			if (statsScorerTeam == winner)
 			{
