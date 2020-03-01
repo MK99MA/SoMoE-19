@@ -36,12 +36,13 @@ I incorporated parts of the following plugins and only modified it in a way so i
   ● soccer_mod_skins.cfg - List of models, changeable ingame. You have to add them to the file manually!  
     
 #### Admin Management:  
-![AdminManagementImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/adminmgmt.png)  
- ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
- ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
- ● Promote a Soccermod Admin to a Sourcemod Admin ingame  
+![AdminManagementImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/adminmgmt.png)   
  ● Admin Lists for both, Sourcemod (admins_simple.ini only) and Soccermod Admins  
  ● Online List, showing everyone who can access the admin portion of the menu  
+ ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
+ NOT ADVISED BUT POSSIBLE: (Backup the files if you plan on using it!)  
+ ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
+ ● Promote a Soccermod Admin to a Sourcemod Admin ingame
   
 #### Chat Settings:  
 ![ChatSetImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/chatsettings.png)  
