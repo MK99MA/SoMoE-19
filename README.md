@@ -118,6 +118,8 @@ Copy or upload the folders to your server's "cstrike" folder, for example:
   
 Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
 
+## MISC  
+
 ![lockimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/lockmenu.png)
 ![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
 ![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
