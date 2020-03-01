@@ -87,43 +87,13 @@ I incorporated parts of the following plugins and only modified it in a way so i
   
 ### Removed:
  ● Code to auto-spectate players during a match if they would exceed a set threshold  
-  
-## Installation
-### 1. Download the required plugins
-To run Soccer Mod on your server you need the following plugins:  
- ● Metamod:Source 1.10 or higher  
-http://www.sourcemm.net/downloads.php?branch=stable  
- ● SourceMod 1.7 or higher  
-https://www.sourcemod.net/downloads.php?branch=stable  
- ● Soccer Mod (2019 Edit)  
-https://github.com/MK99MA/soccermod-2019edit/releases  
-[>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
- ● (OPTIONAL) Download soccer skins  
- [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
- [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
-### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow the generated examples for the default values for your desired skins!.  
-  
-Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
-  
-### 2. Extract the zip files
-Right click on each zip file and select "Extract Here". After extracting the 3 zip files you should have 3 folders on your desktop:  
- ● addons  
- ● cfg  
- ● maps  
-  
-### 3. Copy or upload the folders
-Copy or upload the folders to your server's "cstrike" folder, for example:  
- ● D:\Servers\Counter-Strike Source\cstrike (local server)  
- ● /home/cstrike (hosted server)  
-  
-Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
-
+ 
 ## MISC  
 
 ![lockimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/lockmenu.png)
 ![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
 ![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
-![matchset](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchsettings.png)
+![matchset](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchsettings.png)  
 
 #### Example MatchLog file:  
 ```
@@ -166,4 +136,34 @@ Soccer Mod is now fully installed and will be loaded automatically when the serv
 		}  
 	}  
 }  
-```
+```  
+  
+## Installation
+### 1. Download the required plugins
+To run Soccer Mod on your server you need the following plugins:  
+ ● Metamod:Source 1.10 or higher  
+http://www.sourcemm.net/downloads.php?branch=stable  
+ ● SourceMod 1.7 or higher  
+https://www.sourcemod.net/downloads.php?branch=stable  
+ ● Soccer Mod (2019 Edit)  
+https://github.com/MK99MA/soccermod-2019edit/releases  
+[>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
+ ● (OPTIONAL) Download soccer skins  
+ [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
+ [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
+### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow the generated examples for the default values for your desired skins!.  
+  
+Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
+  
+### 2. Extract the zip files
+Right click on each zip file and select "Extract Here". After extracting the 3 zip files you should have 3 folders on your desktop:  
+ ● addons  
+ ● cfg  
+ ● maps  
+  
+### 3. Copy or upload the folders
+Copy or upload the folders to your server's "cstrike" folder, for example:  
+ ● D:\Servers\Counter-Strike Source\cstrike (local server)  
+ ● /home/cstrike (hosted server)  
+  
+Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.
