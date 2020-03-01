@@ -462,7 +462,8 @@ public void CapCreatePickMenu(int client)
 
 				char menuString[64];
 				if (positions[0]) Format(menuString, sizeof(menuString), "%s %s", playerName, positions);
-				else menuString = playerName;
+				else Format(menuString, sizeof(menuString), "%s", playerName);
+				//menuString = playerName;
 				menu.AddItem(playerid, menuString);
 			}
 		}

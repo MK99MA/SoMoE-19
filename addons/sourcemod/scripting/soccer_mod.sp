@@ -920,7 +920,7 @@ stock bool GetAimOrigin(int client, float aimOrigin[3])
 
 public bool TraceEntityFilterPlayer(int entity, int contentsMask) 
 {
-	return entity > GetMaxClients();
+	return entity > MaxClients;
 }
 
 // ****************************************************************************************************************

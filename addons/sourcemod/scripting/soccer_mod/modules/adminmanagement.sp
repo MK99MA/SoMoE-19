@@ -113,7 +113,7 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 		GetClientAuthId(userindex2, AuthId_Engine, SteamID, sizeof(SteamID))
 		//PrintToChatAll(SteamID);
 		AdminId ID = GetUserAdmin(userindex2);
-		if(ID != INVALID_ADMIN_ID)
+		/*if(ID != INVALID_ADMIN_ID)
 		{
 			playerindex = 1;
 			char targetName[50]
@@ -131,8 +131,8 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 		else 
 		{
 			OpenMenuAddAdminType(client);
-		}
-		//OpenMenuAddAdminType(client);
+		}*/
+		OpenMenuAddAdminType(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -1056,8 +1056,9 @@ public void AddAdminSimpleMenuFunc(int client)
 	else if (adminmode == 0)
 	{
 		WriteFileLine(hFile, "\"%s\" \"99:z\"	//%s", szTarget2, clientName);
-		CPrintToChat(client, "{%s}[%s] {%s}%s was added as with root access.", prefixcolor, prefix, textcolor, clientName);
-		OpenMenuAddAdmin(client);
+		CPrintToChat(client, "{%s}[%s] {%s}%s was added with root access.", prefixcolor, prefix, textcolor, clientName);
+		if(addoredit == 0) OpenMenuAddAdmin(client);
+		else OpenMenuPromoteAdmin(client)
 	}
 
 	hFile.Close();
@@ -1142,8 +1143,9 @@ public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 	int max = 40;
 	if (strlen(custom_flag) >= min && strlen(custom_flag) <= max)
 	{
-		char steamid[32];
-		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		//char steamid[32];
+		//GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		GetClientName(client, clientName, sizeof(clientName));
 		szTarget2 = SteamID;
 	
 		char szFile[256];
@@ -1161,7 +1163,7 @@ public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 			CloseHandle(hFile);
 
 			changeSetting[client] = "";
-			OpenMenuAddAdmin(client);
+			OpenMenuAdminSet(client);
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}List of flags is too long. Please use a shorter combination with %i to %i characters", prefixcolor, prefix, textcolor, min, max);
