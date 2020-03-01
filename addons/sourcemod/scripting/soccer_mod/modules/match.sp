@@ -379,7 +379,7 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 			else if(playerNumT == 1)
 			{
 				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
-				PrintCenterTextAll(tagName);
+				//PrintCenterTextAll(tagName);
 				if(!(strlen(tagName) > 0))
 				{
 					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
@@ -411,7 +411,7 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 			else if(playerNumCT == 1)
 			{
 				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
-				if(StrEqual(tagName, ""))
+				if(!(strlen(tagName) > 0))
 				{
 					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
 					OpenMenuTeamName(client);
