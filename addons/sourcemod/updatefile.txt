@@ -15,3 +15,10 @@
 		"Plugin"	"Path_SM/plugins/soccer_mod.smx"
 	}
 }
+
+
+
+ ● (OPTIONAL BUT RECOMMENDED) Updater.smx (WIP)  
+Adding this to your server will allow you to automatically update the plugin whenever a new version is uploaded. For more information check the [alliedmodders thread](https://forums.alliedmods.net/showthread.php?p=1570806).  
+[Steamworks](http://users.alliedmods.net/~kyles/builds/SteamWorks/)  
+[Updater](https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx)  
