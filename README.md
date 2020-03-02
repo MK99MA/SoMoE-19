@@ -150,7 +150,7 @@ https://github.com/MK99MA/soccermod-2019edit/releases
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
  ● (OPTIONAL BUT RECOMMENDED) Updater.smx (WIP)  
 Adding this to your server will allow you to automatically update the plugin whenever a new version is uploaded. For more information check the link(s) below:  
-[Steamworks](https://forums.alliedmods.net/showthread.php?t=229556)
+[Steamworks](http://users.alliedmods.net/~kyles/builds/SteamWorks/)
 [Updater](https://forums.alliedmods.net/showthread.php?p=1570806)  
  ● (OPTIONAL) Download soccer skins  
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
