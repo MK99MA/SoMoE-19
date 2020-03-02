@@ -1,0 +1,17 @@
+"Updater"
+{
+	"Information"
+	{
+		"Version"
+		{
+			"Latest"	"1.0.0"
+		}
+		
+		"Notes"	"Added Updater"
+	}
+	
+	"Files"
+	{
+		"Plugin"	"Path_SM/plugins/soccer_mod.smx"
+	}
+}
