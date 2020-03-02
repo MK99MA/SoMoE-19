@@ -1,7 +1,8 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "css.24092019"
+#define PLUGIN_VERSION "css.02032020"
+#define UPDATE_URL "https://github.com/MK99MA/soccermod-2019edit/tree/master/addons/sourcemod/updatefile.txt"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -81,6 +82,7 @@ KeyValues LeagueMatchKV;
 #include <regex>
 #include <morecolors>
 #include <clientprefs>
+#include <updater>
 
 #pragma newdecls required
 
@@ -131,6 +133,13 @@ public void OnPluginStart()
 {
 	CreateConVar("soccer_mod_version", PLUGIN_VERSION, "Soccer Mod version", FCVAR_NOTIFY| FCVAR_DONTRECORD);
 	
+	// Updater******************************************
+	if (LibraryExists("updater"))
+    {
+        Updater_AddPlugin(UPDATE_URL)
+    }
+	//**************************************************
+	
 	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
 	if (!DirExists("cfg/sm_soccermod/logs"))	CreateDirectory("cfg/sm_soccermod/logs", 511, false);
 
@@ -179,6 +188,15 @@ public void OnPluginStart()
 	LoadRadioCommandsFix();
 }
 
+// Updater******************************************
+public void OnLibraryAdded(const char []name)
+{
+    if (StrEqual(name, "updater"))
+    {
+        Updater_AddPlugin(UPDATE_URL);
+    }
+}
+//**************************************************
 
 // ***********************************************************************************************************************
 // ************************************************** COMMAND LISTENERS **************************************************
