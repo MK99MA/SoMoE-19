@@ -82,6 +82,7 @@ KeyValues LeagueMatchKV;
 #include <regex>
 #include <morecolors>
 #include <clientprefs>
+#undef REQUIRE_PLUGIN
 #include <updater>
 
 #pragma newdecls required
@@ -135,9 +136,9 @@ public void OnPluginStart()
 	
 	// Updater******************************************
 	if (LibraryExists("updater"))
-    {
-        Updater_AddPlugin(UPDATE_URL)
-    }
+	{
+		Updater_AddPlugin(UPDATE_URL)
+	}
 	//**************************************************
 	
 	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
@@ -191,10 +192,10 @@ public void OnPluginStart()
 // Updater******************************************
 public void OnLibraryAdded(const char []name)
 {
-    if (StrEqual(name, "updater"))
-    {
-        Updater_AddPlugin(UPDATE_URL);
-    }
+	if (StrEqual(name, "updater"))
+	{
+		Updater_AddPlugin(UPDATE_URL);
+	}
 }
 //**************************************************
 
