@@ -145,8 +145,12 @@ To run Soccer Mod on your server you need the following plugins:
 http://www.sourcemm.net/downloads.php?branch=stable  
  ● SourceMod 1.7 or higher  
 https://www.sourcemod.net/downloads.php?branch=stable  
+ ● (OPTIONAL BUT RECOMMENDED) Updater.smx  
+Adding this to your server will allow you to automatically update the plugin whenever a new version is uploaded. For more information check the [alliedmodders thread](https://forums.alliedmods.net/showthread.php?p=1570806).  
+[Steamworks](http://users.alliedmods.net/~kyles/builds/SteamWorks/)  
+[Updater](https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx)  
  ● Soccer Mod (2019 Edit)  
-https://github.com/MK99MA/soccermod-2019edit/releases  
+https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.0.0  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
  ● (OPTIONAL) Download soccer skins  
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
