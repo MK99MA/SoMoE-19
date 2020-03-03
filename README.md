@@ -12,11 +12,13 @@ I merely edited and added stuff without any prior knowledge, so expect some heav
 ## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#installation)  
   
 ## Credits:
-I incorporated parts of the following plugins and only modified it in a way so it would fit into one plugin file. Therefore almost all credit should go to:  
+I incorporated parts of the following plugins and only modified them partially to my needs or in a way so they would fit all into one plugin file. Therefore almost all credit should go to:  
   ● Original version by Marco Boogers - https://github.com/marcoboogers/soccermod  
   ● Duckjump Script by Marco Boogers  
   ● Allchat (aka DeadChat) by Frenzzy - https://forums.alliedmods.net/showthread.php?t=171734  
   ● ShortSprint by walmar - https://forums.alliedmods.net/showthread.php?p=2294299  
+Not included in soccer_mod.smx but relied on:
+  ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095  
   
 ## Changelog
 ### New:
