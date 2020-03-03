@@ -376,6 +376,8 @@ public void CapStartFight(int client)
 		}
 		capFightStarted = true;
 		capPicksLeft = (matchMaxPlayers - 1) * 2;
+		
+		bool noPos = false;
 
 		CreateTimer(0.0, TimerCapFightCountDown, 3);
 		CreateTimer(1.0, TimerCapFightCountDown, 2);
@@ -402,15 +404,17 @@ public void CapStartFight(int client)
 					int mf = keygroup.GetNum("mf", 0);
 					int lw = keygroup.GetNum("lw", 0);
 					int rw = keygroup.GetNum("rw", 0);
-
-					if (!gk && !lb && !rb && !mf && !lw && !rw)
+					
+					if (!(gk || lb || rb || mf || lw || rw > 0))
 					{
 						OpenCapPositionMenu(player);
-						CPrintToChat(client, "{%s}[%s] {%s}Please set your position to help the caps with picking", prefixcolor, prefix, textcolor);
+						noPos = true;
 					}
 				}
 			}
 		}
+		
+		if (noPos == true) CPrintToChat(client, "{%s}[%s] {%s}Please set your position to help the caps with picking", prefixcolor, prefix, textcolor);
 
 		keygroup.Close();
 
@@ -465,6 +469,7 @@ public void CapCreatePickMenu(int client)
 				else Format(menuString, sizeof(menuString), "%s", playerName);
 				//menuString = playerName;
 				menu.AddItem(playerid, menuString);
+				keygroup.Rewind();
 			}
 		}
 	}

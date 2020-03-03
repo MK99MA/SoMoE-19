@@ -1,8 +1,8 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.0"
-//#define UPDATE_URL "https://github.com/MK99MA/soccermod-2019edit/tree/master/addons/sourcemod/updatefile.txt"
+#define PLUGIN_VERSION "1.0.2fix"
+#define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
@@ -135,10 +135,10 @@ public void OnPluginStart()
 	CreateConVar("soccer_mod_version", PLUGIN_VERSION, "Soccer Mod version", FCVAR_NOTIFY| FCVAR_DONTRECORD);
 	
 	// Updater******************************************
-	//if (LibraryExists("updater"))
-	//{
-	//	Updater_AddPlugin(UPDATE_URL)
-	//}
+	if (LibraryExists("updater"))
+	{
+		Updater_AddPlugin(UPDATE_URL)
+	}
 	//**************************************************
 	
 	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
@@ -171,6 +171,7 @@ public void OnPluginStart()
 
 	ConnectToDatabase();
 	LoadAllowedMaps();
+	if (StrEqual(gamevar, "cstrike")) trainingModelBall = "models/soccer_mod/ball_2011.mdl";
 	ConfigFunc();
 	LoadConfigSoccer();
 	LoadConfigPublic();
@@ -190,13 +191,13 @@ public void OnPluginStart()
 }
 
 // Updater******************************************
-//public void OnLibraryAdded(const char []name)
-//{
-//	if (StrEqual(name, "updater"))
-//	{
-//		Updater_AddPlugin(UPDATE_URL);
-//	}
-//}
+public void OnLibraryAdded(const char []name)
+{
+	if (StrEqual(name, "updater"))
+	{
+		Updater_AddPlugin(UPDATE_URL);
+	}
+}
 //**************************************************
 
 // ***********************************************************************************************************************

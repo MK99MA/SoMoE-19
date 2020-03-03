@@ -682,7 +682,7 @@ public void MatchSet(int client, char type[32], int intnumber, int min, int max)
 		if (StrEqual(type, "CustomPeriodBreakLength"))
 		{
 			matchPeriodBreakLength = intnumber;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_break_length", matchPeriodBreakLength);
+			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
 
 			for (int player = 1; player <= MaxClients; player++)
 			{
@@ -1035,13 +1035,22 @@ public void MatchStart(int client)
 		matchStarted = true;
 		matchKickOffTaken = true;
 		matchToss = GetRandomInt(2, 3);
-
+		
+		char goldenstate[32];
+		if(matchGoldenGoal == 1) goldenstate = "On";
+		else if(matchGoldenGoal == 0) goldenstate = "Off";
+		
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a match", prefixcolor, prefix, textcolor, client);
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s (CT) will face %s (T)", prefixcolor, prefix, textcolor, custom_name_ct, custom_name_t);
+			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{fullred}[%s] Halftime length: %.1f Minutes | Break length: %i seconds | Golden Goal: %s", prefix, (float(matchPeriodLength)/60), matchPeriodBreakLength, goldenstate);
+			//if (matchPeriodLength != 900)
+			//{
+			//	if (IsClientInGame(player) && IsClientConnected(player)) PrintCenterText(player, "Halftime length is: %.1f", (float(matchPeriodLength)/60));
+			//}
 		}
-		
+
 		//if(FileExists(matchlogKV) && (matchlog == 1)) DeleteFile(matchlogKV, false);
 		if(passwordlock == 1 && pwchange == true)
 		{

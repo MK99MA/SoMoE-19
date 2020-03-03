@@ -839,10 +839,12 @@ public void OpenMenuOnlineAdmin(int client)
 		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
 		{
 			if (adminRemoved)	RemoveAllMenuItems(menu);
-			AdminId ID = GetUserAdmin(playerindex);
-			if(ID != INVALID_ADMIN_ID)
+			//AdminId ID = GetUserAdmin(playerindex);
+			//if(ID != INVALID_ADMIN_ID)
+			if(GetUserAdmin(playerindex) != INVALID_ADMIN_ID)
 			{
 				char AdminName[64];
+				//GetClientName(playerindex, AdminName, sizeof(AdminName));
 				GetClientName(playerindex, AdminName, sizeof(AdminName));
 				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
 				if(!onserver) onserver = true;
