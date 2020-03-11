@@ -20,7 +20,7 @@ I incorporated parts of the following plugins and only modified them partially t
 Not included in soccer_mod.smx but relied on:  
   ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095  
   
-## Changelog
+## Example Changes
 ### New:
 #### Centralized and generated config files in cfg/sm_soccermod:  
   ● logs - Location for old soccer_mod_last_match.txt; Renamed to: match_CTName_vs_TName_Date.txt  
@@ -35,12 +35,12 @@ Not included in soccer_mod.smx but relied on:
     
 #### Admin Management:  
 ![AdminManagementImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/adminmgmt.png)   
- ● Admin Lists for both, Sourcemod (admins_simple.ini only) and Soccermod Admins  
+ ● Admin Lists for Sourcemod (admins.cfg(recommended) and admins_simple.ini) and Soccermod Admins  
  ● Online List, showing everyone who can access the admin portion of the menu  
  ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
- NOT ADVISED BUT POSSIBLE: (Backup the files if you plan on using it!)  
+ ● Creates a Backup of your original admins.cfg upon first start, as well as copying existing Admins to the new file    
  ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
- ● Promote a Soccermod Admin to a Sourcemod Admin ingame
+ ● Promote a Soccermod Admin to a Sourcemod Admin ingame  
   
 #### Chat Settings:  
 ![ChatSetImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/chatsettings.png)  
@@ -83,7 +83,7 @@ Not included in soccer_mod.smx but relied on:
 ### Modified:
  ● Toggleable MVP stars & messages  
  ● Replaced "Hold-shift" Sprint with walmars ShortSprint  
- ● (TEST) Reduced restart time when a match starts from 5 secs to 1 sec  
+ ● Reduced restart time when a match starts from 5 secs to 1 sec  
  ● Unpausing countdown will also display as centertext  
  ● Every mod chat message will use the set chat settings  
   
@@ -154,6 +154,7 @@ Adding this to your server will allow you to automatically update the plugin whe
  ● Soccer Mod (2019 Edit)  
 https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.0.0  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
+New and Upcoming changes, as well as possible additions can be found (and requested) [here](https://github.com/MK99MA/soccermod-2019edit/issues/1)  
  ● (OPTIONAL) Download soccer skins  
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
  [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
