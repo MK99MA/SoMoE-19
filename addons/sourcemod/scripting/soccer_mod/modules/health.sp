@@ -36,7 +36,7 @@ public void HealthEventPlayerHurt(Event event)
         if (team > 1)
         {
             SetEntProp(client, Prop_Send, "m_iHealth", healthAmount);
-
+			
             int attacker = event.GetInt("attacker");
             if (attacker) SetEntPropFloat(client, Prop_Send, "m_flVelocityModifier", 1.0);
         }

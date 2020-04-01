@@ -1,9 +1,24 @@
-bool bRandPass = false;
+bool bRandPass					= false;
+bool ffActive 					= false;
+bool ForfeitRRCheck				= false;
+
+int ffcounter 					= 0;
+int ffCTScore;
+int ffTScore;
+int iHelp						= 0;
+
+float cdTime					= 450.0;
+float abortTime					= 5.0;
+
+Handle forfeitTimer				= null;
+Handle ffDelayTimer				= null;
+Handle ffRRCheckTimer			= null;
 
 public void RegisterClientCommands()
 {
 	RegConsoleCmd("sm_madmin", AdminCommand, "Opens the Soccer Mod admin menu");
 	RegConsoleCmd("sm_menu", ClientCommands, "Opens the Soccer Mod main menu");
+	RegConsoleCmd("sm_rdy", rdyCommand, "Opens the ReadyCheck Panel");
 
 	RegConsoleCmd("sm_admins", AdminListCommand, "Shows a list of Online Admins");
 	RegConsoleCmd("sm_cap", CapCommand, "Opens the Soccer Mod cap menu");
@@ -27,6 +42,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_training", TrainingCommand, "Opens the Soccer Mod training menu");
 	RegConsoleCmd("sm_unp", UnpauseCommand, "Unpauses a match");
 	RegConsoleCmd("sm_unpause", UnpauseCommand, "Unpauses a match");
+	RegConsoleCmd("sm_forfeit", Command_Forfeit, "Starts a forfeit vote");
 
 	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "Adds an admin to admins_simple.ini");
 	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "Reset the sv password");
@@ -40,11 +56,114 @@ public void RegisterClientCommands()
 // ************************************************ CLIENT COMMANDS **************************************************
 // *******************************************************************************************************************
 
+public Action rdyCommand(int client, int args)
+{
+	if (FileExists(tempReadyFileKV)) 
+	{
+		OpenReadyPanel(client);
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action ClientCommands(int client, int args)
+{
+	OpenMenuSoccer(client);
+
+	return Plugin_Handled;
+}
+
+public Action Command_Forfeit(int client, int args)
+{	
+	if (IsValidClient(client) && GetClientTeam(client) != 1)	
+	{
+		if(matchStarted)
+		{
+			if ((ForfeitEnabled == 1 && ForfeitCapMode == 1) || (ForfeitEnabled == 1 && ForfeitCapMode == 0)) 
+			{
+				if (4 <= ForfeitScore <= 15)
+				{
+					ffTScore = CS_GetTeamScore(2); // T score
+					ffCTScore = CS_GetTeamScore(3); // CT score
+					if ((ffTScore-ffCTScore >= ForfeitScore) || (ffCTScore-ffTScore >= ForfeitScore))
+					{
+						if (!ffActive)
+						{
+							if (ffcounter < 3)
+							{
+								iHelp = 0;
+								
+								if (ForfeitPublic == 1)
+								{	
+									// Prevent multiple uses at once & +1 votecount
+									//CPrintToChatAll("{%s}[%s] Forfeit vote started.");
+									ffActive = true;
+									ffcounter++;
+									
+									for (int i = 1; i <= MaxClients; i++)
+									{
+										if (IsValidClient(i) && GetClientTeam(i) != 1)
+										{
+											iHelp++;
+										}	
+									}
+									
+									ForfeitVoteMenu();
+										
+									// Start CD Timer
+									forfeitTimer = CreateTimer(1.0, ForfeitCDTimer, _, TIMER_REPEAT); //1 sec timer
+								}
+								else if (ForfeitPublic == 0)
+								{
+									if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+									{
+										// Prevent multiple uses at once & +1 votecount
+										//CPrintToChatAll("{%s}[%s] Forfeit vote started.");
+										ffActive = true;
+										ffcounter++;
+										
+										for (int i = 1; i <= MaxClients; i++)
+										{
+											if (IsValidClient(i) && GetClientTeam(i) != 1)
+											{
+												iHelp++;
+											}	
+										}
+										
+										ForfeitVoteMenu();
+					
+										// Start CD Timer
+										forfeitTimer = CreateTimer(1.0, ForfeitCDTimer, _, TIMER_REPEAT);
+									}
+									else CPrintToChat(client, "{%s}[%s] {%s}The forfeit vote can only be started by an admin.", prefixcolor, prefix, textcolor);
+								}
+							}
+							else CPrintToChat(client, "{%s}[%s] {%s}You can only start up to 3 Forfeit votes per match.", prefixcolor, prefix, textcolor);
+						}
+						else CPrintToChat(client, "{%s}[%s] {%s}Forfeit vote is on cooldown! Try again in %.0f seconds.", prefixcolor, prefix, textcolor, cdTime);
+					}
+					else CPrintToChat(client, "{%s}[%s] {%s}A forfeit vote is only possible if a team is leading by %i goals!", prefixcolor, prefix, textcolor, ForfeitScore);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}Forfeit vote condition has to be between 4 and 15 goals.", prefixcolor, prefix, textcolor);
+			}
+			else if(ForfeitEnabled == 0) CPrintToChat(client, "{%s}[%s] {%s}The forfeit vote is disabled for this match.", prefixcolor, prefix, textcolor);
+			else if(ForfeitEnabled == 0 && ForfeitCapMode == 1) CPrintToChat(client, "{%s}[%s] {%s}Forfeit vote is only allowed for cap matches.", prefixcolor, prefix, textcolor);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You can't forfeit without starting a match.", prefixcolor, prefix, textcolor);
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}You can't start a forfeit vote as a spectator.", prefixcolor, prefix, textcolor);
+	
+	return Plugin_Handled;
+}
+
+
 public Action AdminListCommand(int client, int args)
 {
 	menuaccessed = false;
-	if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode set: !menu is freely accessable by everyone", prefixcolor, prefix, textcolor);
+	if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode set - !menu is freely accessable by everyone", prefixcolor, prefix, textcolor);
 	else 									OpenMenuOnlineAdmin(client);
+	
+	return Plugin_Handled;
 }
 
 public Action MaprrCommand(int client, int args)
@@ -170,6 +289,22 @@ public Action StopCommand(int client, int args)
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	
+	if (FileExists(tempReadyFileKV)) 
+	{
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+			{
+				if(GetClientMenu(i) != MenuSource_None )
+				{
+					CancelClientMenu(i,true);
+					DeleteTempFile();
+				} 
+			}
+		}
+	}
+	
 	return Plugin_Handled;
 }
 
@@ -181,13 +316,13 @@ public Action UnpauseCommand(int client, int args)
 		{
 			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 			{
-				MatchUnpause(client);
+				UnpauseCheck(client);
 			}
 			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 		else if(publicmode == 1 || publicmode == 2)
 		{
-			MatchUnpause(client);
+			UnpauseCheck(client);
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor); 
@@ -431,6 +566,183 @@ public Action Command_Pass(int client, int args)
 // *******************************************************************************************************************
 // *********************************************** UTILITY FUNCTIONS *************************************************
 // *******************************************************************************************************************
+
+// *********************************************** FORFEIT FUNCTIONS *************************************************
+// CD Timer
+public Action ForfeitCDTimer(Handle timer)
+{
+	if(cdTime <= 0)
+	{
+		ffActive = false;
+	
+		//if ((ffTScore-ffCTScore >= ForfeitScore) || (ffCTScore-ffTScore>= ForfeitScore))  //CPrintToChatAll("{%s}[%s]A new Forfeit vote is possible now.", prefixcolor, prefix)
+		
+		KillTimer(forfeitTimer);
+		cdTime = float(matchPeriodLength/2);
+
+	}
+	
+	cdTime--;
+	
+	return Plugin_Continue;
+}
+
+//DelayedffAbort Timer
+public Action DelayedffAbort(Handle timer)
+{
+	// Countdown
+	if(abortTime >= 1.0)	
+	{
+		PrintCenterTextAll("Aborting in: %.0f", abortTime);
+		PlaySound("buttons/button17.wav");
+	}
+	
+	if(abortTime == 0.0)
+	{
+		// Stop the DelayTimer
+		KillTimer(ffDelayTimer);
+		
+		// Give some information
+		PrintCenterTextAll("");
+		PrintHintTextToAll("");
+		PlaySound("soccermod/endmatch.wav");
+		for (int player = 1; player <= MaxClients; player++)
+		{
+			if (IsClientInGame(player) && IsClientConnected(player)) 
+			{
+				CPrintToChat(player, "{%s}[%s] {%s}The match was stopped by forfeit vote.", prefixcolor, prefix, textcolor);
+			}
+		}
+		
+		//Stop the Match
+		MatchReset();
+		ForfeitReset();
+		abortTime++;
+		
+		if(ForfeitAutoSpec == 1) 
+		{
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player))
+				{
+					CPrintToChat(player, "{%s}[%s] {%s}Put everyone to spectator.", prefixcolor, prefix, textcolor);
+					if (GetClientTeam(player) != 1) ChangeClientTeam(player, 1);
+				}
+			}
+		}
+		
+		UnfreezeAll();
+	}
+	
+	abortTime--;
+	
+	return Plugin_Continue;
+}
+
+public void ForfeitReset()
+{
+	// Reset Forfeitstuff
+	cdTime = 0.0;
+	ffActive = false;
+	abortTime = 5.0;
+	ffcounter = 0;
+
+	// Set ForfeitEnabled to 0 for capmode only and no RR
+	if(ForfeitCapMode == 1 && !ForfeitRRCheck) 
+	{
+		ForfeitEnabled = 0;
+		UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
+	}
+	// Kill RR Check timer
+	if(ffRRCheckTimer != null)
+	{
+		KillTimer(ffRRCheckTimer);
+		ffRRCheckTimer = null;
+	}
+}
+
+// VoteMenu
+public int Handle_ForfeitVoteMenu(Menu menu, MenuAction action, int param1, int param2)
+{
+	if (action == MenuAction_End)
+	{
+		/* This is called after VoteEnd */
+		delete menu;
+	}
+}
+ 
+// Handling the results 
+public void Handle_VoteResults(Menu menu, int num_votes, int num_clients, const int[][] client_info, int num_items, const int[][] item_info)
+{
+	char item[65];
+	float result;
+	int yesVotes = 0;
+	
+	// item_info[0][VOTEINFO_ITEM_INDEX] = Sieger
+	menu.GetItem(item_info[0][VOTEINFO_ITEM_INDEX], item, sizeof(item));
+	if(StrEqual(item, "Yes", false))
+	{
+		yesVotes = item_info[0][VOTEINFO_ITEM_VOTES];
+	}
+	else 
+	{
+		yesVotes = item_info[1][VOTEINFO_ITEM_VOTES];
+	}
+	
+	result = (float(yesVotes)/float(num_votes))*100;
+	
+	if (result > 66.0)
+	{
+		if(!matchPaused || !matchPeriodBreak)		FreezeAll();
+		CPrintToChatAll("{%s}[%s] %.2f\% out of %i votes were Yes. Aborting the match in %.0f seconds.", prefixcolor, prefix, result, num_votes, abortTime);
+				
+		// Create small delay prior abort
+		ffDelayTimer = CreateTimer(1.0, DelayedffAbort, _, TIMER_REPEAT);
+	}
+	else CPrintToChatAll("{%s}[%s] %.2f\% out of %i votes were Yes. Match will continue. Try again in %.0f seconds.", prefixcolor, prefix, result, num_votes, cdTime);
+	
+	if(num_votes == 0) CPrintToChatAll("{%s}[%s] No votes were casted. Match will continue.");
+}
+
+void ForfeitVoteMenu()
+{
+	if (IsVoteInProgress())
+	{
+		return;
+	}
+ 
+	Menu menu = new Menu(Handle_ForfeitVoteMenu);
+	menu.VoteResultCallback = Handle_VoteResults;
+	menu.SetTitle("Abort this match?");
+	menu.AddItem("yes", "Yes");
+	menu.AddItem("no", "No");
+	menu.ExitButton = false;
+	DisplayVoteMenuToTeam(menu, 60, 1);
+}
+
+stock bool DisplayVoteMenuToTeam(Handle menu, int iTime, int iTeam)
+{
+	int iTotal;
+	int[] iPlayers = new int[MaxClients];
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsValidClient(i) || GetClientTeam(i) == iTeam)
+		{
+			continue;
+		}
+
+		if(iTotal <= iHelp)
+		{
+			iPlayers[iTotal++] = i;
+		}
+	}
+
+	return VoteMenu(menu, iPlayers, iTotal, 30, 0);
+}
+
+// *********************************************** PASSWORD FUNCTIONS ************************************************
+
 public void GetDefaultPassword(char buffer[256], int buffersize)
 {
 	File hFile = OpenFile("cfg/server.cfg", "rt");
@@ -472,119 +784,4 @@ public void RandPass()
 	//ServerCommand("sm_cvar sv_password %s", newpass);
 	
 	//return Plugin_Handled;
-}
-
-// *******************************************************************************************************************
-// ************************************************* ALT COMMANDS ****************************************************
-// *******************************************************************************************************************
-public Action ClientCommands(int client, int args)
-{
-	char cmdArg[32];
-	GetCmdArg(1, cmdArg, sizeof(cmdArg));
-
-	if (StrEqual(cmdArg, "admin"))
-	{
-		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-		{
-			OpenMenuAdmin(client);
-		}
-	}
-	else if (StrEqual(cmdArg, "cap"))
-	{
-		if (currentMapAllowed)
-		{
-			OpenCapMenu(client);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "match"))
-	{
-		if (currentMapAllowed)
-		{
-			OpenMatchMenu(client);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "training"))
-	{
-		if (currentMapAllowed)
-		{
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenTrainingMenu(client);
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "rr"))
-	{
-		if (currentMapAllowed)
-		{
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				// TEMPORARY CODE TO FIND FIX FOR DISSAPPEARING BALL
-				//int index = GetEntityIndexByName("ball", "prop_physics");
-				//float position[3];
-				//GetEntPropVector(index, Prop_Send, "m_vecOrigin", position);
-				//LogMessage("Ball position (round restarted): %f, %f, %f", position[0], position[1], position[2]);
-				// END TEMPORARY CODE
-
-				CS_TerminateRound(1.0, CSRoundEnd_Draw);
-
-				for (int player = 1; player <= MaxClients; player++)
-				{
-					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the round", prefixcolor, prefix, textcolor, client);
-				}
-
-				char steamid[20];
-				GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
-				LogMessage("%N <%s> has restarted the round", client, steamid);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "pick"))
-	{
-		if (currentMapAllowed) OpenCapPickMenu(client);
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "getview"))
-	{
-		if (currentMapAllowed)
-		{
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				float viewCoord[3];
-				GetAimOrigin(client, viewCoord);
-				CPrintToChat(client, "%s%s X: %f, Y: %f, Z: %f", prefixcolor, prefix, viewCoord[0], viewCoord[1], viewCoord[2]);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "stats"))
-	{
-		if (currentMapAllowed) OpenStatisticsMenu(client);
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "rank"))
-	{
-		if (currentMapAllowed) ClientCommandPublicRanking(client);
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "gk"))
-	{
-		if (currentMapAllowed) ClientCommandSetGoalkeeperSkin(client);
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "pos") || StrEqual(cmdArg, "position"))
-	{
-		if (currentMapAllowed) OpenCapPositionMenu(client);
-		else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
-	}
-	else if (StrEqual(cmdArg, "help"))								  OpenMenuHelp(client);
-	else if (StrEqual(cmdArg, "commands"))							  OpenMenuCommands(client);
-	else if (StrEqual(cmdArg, "credits") || StrEqual(cmdArg, "info"))   OpenMenuCredits(client);
-	else OpenMenuSoccer(client);
-
-	return Plugin_Handled;
 }

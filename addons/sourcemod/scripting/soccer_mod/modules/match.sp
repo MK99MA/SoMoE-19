@@ -1,21 +1,32 @@
-int matchLastScored			 = 0;
-int matchPeriod				 = 1;
+// ************************************************** VARIABLES **************************************************
+//Integer
+int matchLastScored				= 0;
+int matchPeriod					= 1;
 int matchScoreCT				= 0;
-int matchScoreT				 = 0;
-int matchStoppageTime		   = 0;
-int matchTime				   = 0;
-int matchToss				   = 2;
-bool matchGoldenGoalActive	  = false;
-bool matchKickOffTaken		  = false;
-bool matchPaused				= false;
-bool matchPeriodBreak		   = false;
-bool matchStoppageTimeStarted   = false;
-Handle matchTimer			   = null;
+int matchScoreT					= 0;
+int matchStoppageTime			= 0;
+int matchTime					= 0;
+int matchToss					= 2;
+
+int tagindex					= 1;
 int teamIndicator;
 
-char tagName[32];
-int tagindex = 1;
+int forfeitHelper;
 
+//Bool
+bool matchGoldenGoalActive		= false;
+bool matchKickOffTaken			= false;
+bool matchStoppageTimeStarted	= false;
+
+//Handle
+Handle matchTimer				= null;
+
+//Strings
+char tagName[32];
+char infostring1[512];
+char infostring2[512];
+
+//Float
 float matchBallStartPosition[3];
 
 // ********************************************************************************************************************
@@ -45,6 +56,7 @@ public void MatchOnStartTouch(int caller, int activator)
 public void MatchOnMapStart()
 {
 	MatchReset();
+	ForfeitReset();
 }
 
 public void MatchEventRoundStart(Event event)
@@ -53,6 +65,11 @@ public void MatchEventRoundStart(Event event)
 
 	if (matchStarted)
 	{
+		if (matchStart)
+		{
+			PlaySound("soccermod/kickoff.wav");
+			CreateTimer(10.0, matchStartTimer);
+		}
 		matchKickOffTaken = false;
 
 		if (matchPaused || matchPeriodBreak) FreezeAll();
@@ -118,6 +135,7 @@ public void MatchEventRoundEnd(Event event)
 public void MatchEventCSWinPanelMatch(Event event)
 {
 	MatchReset();
+	ForfeitReset();
 }
 
 // ****************************************************************************************************************
@@ -189,7 +207,7 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 		{
 			if (matchPaused)
 			{
-			MatchUnpause(client);
+			UnpauseCheck(client);
 			OpenMatchMenu(client);
 			}
 			else if (!matchPaused)
@@ -197,11 +215,6 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 			MatchPause(client);
 			OpenMatchMenu(client);
 			}
-		}
-		else if (StrEqual(menuItem, "unpause"))
-		{
-			MatchUnpause(client);
-			OpenMatchMenu(client);
 		}
 		else if (StrEqual(menuItem, "stop"))
 		{
@@ -275,10 +288,12 @@ public void OpenMenuMatchSettings(int client)
 	else if(matchlog == 1)	TLMstring = "Match Log: ON"
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("LeagueMatch", TLMstring);
-
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("name_t_menu", "Change Terrorists Name");
 	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("name_ct_menu", "Change CTs Name");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("forfeitset", "Forfeit Vote settings");
+	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("nameset", "Team Name settings");
+	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("matchinfoset", "Match-Info settings");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -286,48 +301,389 @@ public void OpenMenuMatchSettings(int client)
 
 public int MenuHandlerMatchSettings(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if (!matchStarted)
 	{
-		char menuItem[16];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "period"))					   OpenMenuMatchPeriod(client);
-		else if (StrEqual(menuItem, "break"))				   OpenMenuMatchBreak(client);
-		else if (StrEqual(menuItem, "golden"))				  OpenMenuMatchGolden(client);
-		else if (StrEqual(menuItem, "name_t_menu"))	
-		{
-			teamIndicator = 2;
-			OpenMenuTeamName(client);
-		}
-		else if (StrEqual(menuItem, "name_ct_menu"))
-		{
-			teamIndicator = 3;
-			OpenMenuTeamName(client);
-		}
-		else if (StrEqual(menuItem, "LeagueMatch"))
-		{
-			if(matchlog == 0)		
+			if (StrEqual(menuItem, "period"))						OpenMenuMatchPeriod(client);
+			else if (StrEqual(menuItem, "break"))					OpenMenuMatchBreak(client);
+			else if (StrEqual(menuItem, "golden"))				  	OpenMenuMatchGolden(client);
+			else if (StrEqual(menuItem, "nameset"))					OpenMenuNameSettings(client);
+			else if (StrEqual(menuItem, "forfeitset"))				OpenMenuForfeitSettings(client);
+			else if (StrEqual(menuItem, "LeagueMatch"))
 			{
-				matchlog = 1;
-				UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-				CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
-				OpenMenuMatchSettings(client);
+				if(matchlog == 0)		
+				{
+					matchlog = 1;
+					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+					CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
+					OpenMenuMatchSettings(client);
+				}
+				else if (matchlog == 1)
+				{
+					matchlog = 0;
+					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+					CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
+					OpenMenuMatchSettings(client);
+				}
 			}
-			else if (matchlog == 1)
-			{
-				matchlog = 0;
-				UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-				CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
-				OpenMenuMatchSettings(client);
-			}
+			else if (StrEqual(menuItem, "matchinfoset"))			OpenMenuMatchInfoSet(client);
 		}
+
+		else if (action == MenuAction_Cancel && choice == -6)	OpenMatchMenu(client);
+		else if (action == MenuAction_End)						  menu.Close();
 	}
-
-	else if (action == MenuAction_Cancel && choice == -6)	OpenMatchMenu(client);
-	else if (action == MenuAction_End)						  menu.Close();
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
+// ************************************** MATCHINFO SETTINGS ***********************************************
+public void OpenMenuMatchInfoSet(int client)
+{
+	kvConfig = new KeyValues("Soccer Mod Config");
+	kvConfig.ImportFromFile(configFileKV);
+	kvConfig.JumpToKey("Match Info", true);
+	
+	char MIstring[32], MIstring1[32], MIstring2[32];
+	
+	Menu menu = new Menu(MenuHandlerMatchInfoSettings);
+	menu.SetTitle("Soccer Mod - Match Info Settings");	
+	
+	int keyValue = kvConfig.GetNum("soccer_mod_period_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Halftime length info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);
+	menu.AddItem("soccer_mod_period_info", 	MIstring);
+		
+	keyValue = kvConfig.GetNum("soccer_mod_break_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Break length info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);
+	menu.AddItem("soccer_mod_break_info", MIstring);
+	
+	keyValue = kvConfig.GetNum("soccer_mod_golden_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Golden goal info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);
+	menu.AddItem("soccer_mod_golden_info", MIstring);
+	
+	keyValue = kvConfig.GetNum("soccer_mod_forfeit_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Forfeit vote info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);
+	menu.AddItem("soccer_mod_forfeit_info", MIstring);
+	
+	keyValue = kvConfig.GetNum("soccer_mod_forfeitset_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Forfeit vote settings info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);	
+	menu.AddItem("soccer_mod_forfeitset_info", MIstring);
+	
+	keyValue = kvConfig.GetNum("soccer_mod_matchlog_info", 0);
+	Format(MIstring1, sizeof(MIstring1), "Matchlog info")
+	if(keyValue) Format(MIstring2, sizeof(MIstring2), "Yes")
+	else Format(MIstring2, sizeof(MIstring2), "No")
+	Format(MIstring, sizeof(MIstring), "%s: %s", MIstring1, MIstring2);
+	menu.AddItem("soccer_mod_matchlog_info", MIstring);
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);	
+	
+	kvConfig.GoBack();
+	
+	kvConfig.Rewind();
+	kvConfig.Close();
+}
+
+public int MenuHandlerMatchInfoSettings(Menu menu, MenuAction action, int client, int choice)
+{
+	if (!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			char menuItem[32];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+			
+			kvConfig = new KeyValues("Soccer Mod Config");
+			kvConfig.ImportFromFile(configFileKV);
+			kvConfig.JumpToKey("Match Info", true);
+			
+			int keyValue = kvConfig.GetNum(menuItem, 0);
+			if(keyValue) kvConfig.SetNum(menuItem, 0);
+			else kvConfig.SetNum(menuItem, 1);
+			
+			kvConfig.Rewind();
+			kvConfig.ExportToFile(configFileKV);
+			kvConfig.Close();
+			
+			MatchInfoFunction();
+			OpenMenuMatchInfoSet(client);
+		}
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
+public void MatchInfoFunction()
+{
+	kvConfig = new KeyValues("Soccer Mod Config");
+	kvConfig.ImportFromFile(configFileKV);
+	kvConfig.JumpToKey("Match Info", true);
+	infoPeriods				= kvConfig.GetNum("soccer_mod_period_info", 1);
+	infoBreak				= kvConfig.GetNum("soccer_mod_break_info",	1);
+	infoGolden				= kvConfig.GetNum("soccer_mod_golden_info", 1);
+	infoForfeit				= kvConfig.GetNum("soccer_mod_forfeit_info", 1);
+	infoForfeitSet			= kvConfig.GetNum("soccer_mod_forfeitset_info", 0);
+	infoMatchlog			= kvConfig.GetNum("soccer_mod_matchlog_info", 0);
+	kvConfig.GoBack();
+	kvConfig.Rewind();
+	kvConfig.Close();
+
+	int infonum;	
+	infonum = infoPeriods + infoBreak + infoGolden + infoForfeit + infoForfeitSet + infoMatchlog;
+	
+	infostring1 = "";
+	infostring2 = "";
+	
+	char halftimestate[32];
+	char timestamp[32];
+	FormatTime(timestamp, sizeof(timestamp), "%M:%S", matchPeriodLength);
+	Format(halftimestate, sizeof(halftimestate), "Halftime length: %s Minutes", timestamp);
+		
+	char breakstate[32];
+	Format(breakstate, sizeof(breakstate), "Break length: %i seconds", matchPeriodBreakLength);
+		
+	char goldenstate[32];
+	if(matchGoldenGoal == 1) goldenstate = "Golden Goal: On";
+	else if(matchGoldenGoal == 0) goldenstate = "Golden Goal: Off";
+		
+	char forfeitstate[32];
+	if(ForfeitEnabled == 1 && ForfeitCapMode == 0) forfeitstate = "FF vote: Enabled";
+	else if(ForfeitEnabled == 0 && ForfeitCapMode == 0) forfeitstate = "FF vote: Disabled";
+	else if(ForfeitEnabled == 0 && ForfeitCapMode == 1) forfeitstate = "FF vote: Cap only (Off)"; 
+	else if(ForfeitEnabled == 1 && ForfeitCapMode == 1) forfeitstate = "FF vote: Cap only (On)";
+		
+	char forfeitsetstate[64];
+	char forfeitsetstate2[32];
+	if(ForfeitAutoSpec == 0)			forfeitsetstate2 = "OFF"
+	else if(ForfeitAutoSpec == 1)		forfeitsetstate2 = "ON"
+	Format(forfeitsetstate, sizeof(forfeitsetstate), "FF Condition: %i goals | FF Auto-Spec: %s", ForfeitScore, forfeitsetstate2);
+		
+	char matchlogstate[32];
+	if(matchlog == 1) matchlogstate = "Matchlog: On";
+	else if(matchlog == 0) matchlogstate = "Matchlog: Off";
+		
+	if(infonum > 3)
+	{
+		char info1[128] = "";
+		char info2[128] = "";
+		if (infoPeriods == 1)		Format(info1, sizeof(info1), "%s %s |", info1, halftimestate);
+		if (infoBreak == 1)			Format(info1, sizeof(info1), "%s %s |", info1, breakstate);
+		if (infoGolden == 1)		Format(info1, sizeof(info1), "%s %s |", info1, goldenstate);
+		if (infoForfeit == 1)		Format(info2, sizeof(info2), "%s %s |", info2, forfeitstate);
+		if (infoForfeitSet == 1)	Format(info2, sizeof(info2), "%s %s |", info2, forfeitsetstate);
+		if (infoMatchlog == 1)		Format(info2, sizeof(info2), "%s %s |", info2, matchlogstate);
+			
+		Format(infostring1, sizeof(infostring1), "%s", info1);
+		Format(infostring2, sizeof(infostring2), "%s", info2);
+	}
+	else 
+	{
+		char info1[256] = "";
+		if (infoPeriods == 1)		Format(info1, sizeof(info1), "%s %s |", info1, halftimestate);
+		if (infoBreak == 1)			Format(info1, sizeof(info1), "%s %s |", info1, breakstate);
+		if (infoGolden == 1)		Format(info1, sizeof(info1), "%s %s |", info1, goldenstate);
+		if (infoForfeit == 1)		Format(info1, sizeof(info1), "%s %s |", info1, forfeitstate);
+		if (infoForfeitSet == 1)	Format(info1, sizeof(info1), "%s %s |", info1, forfeitsetstate);
+		if (infoMatchlog == 1)		Format(info1, sizeof(info1), "%s %s |", info1, matchlogstate);
+			
+		Format(infostring1, sizeof(infostring1), "%s", info1);
+	}	
+}
+
+// **************************************** FORFEIT SETTINGS ***********************************************
+public void OpenMenuForfeitSettings(int client)
+{
+	char FFVstring[32], FFVPstring[32], FFVSstring[32], FFVCstring[32];
+	char currentCondition[64];
+	
+	Menu menu = new Menu(MenuHandlerForfeitSettings);
+
+	menu.SetTitle("Soccer Mod - Forfeit Settings");	
+	
+	if(ForfeitEnabled == 0 && ForfeitCapMode == 0)			FFVstring = "Forfeit Vote: OFF"
+	else if(ForfeitEnabled == 1 && ForfeitCapMode == 0)		FFVstring = "Forfeit Vote: ON"
+	else if(ForfeitCapMode == 1)							FFVstring = "Forfeit Vote: CAP ONLY"
+	
+	if(ForfeitPublic == 0)				FFVPstring = "Availability: Admins only"
+	else if(ForfeitPublic == 1)			FFVPstring = "Availability: Everyone"
+	
+	if(ForfeitAutoSpec == 0)			FFVSstring = "Auto-Spec: OFF"
+	else if(ForfeitAutoSpec == 1)		FFVSstring = "Auto-Spec: ON"
+	
+	if(ForfeitCapMode == 0)				FFVCstring = "Cap only mode: OFF"
+	else if(ForfeitCapMode == 1)		FFVCstring = "Cap only mode: ON"
+	
+	Format(currentCondition, sizeof(currentCondition), "Vote Condition: %i goals", ForfeitScore);
+	
+	if(ForfeitCapMode == 0) menu.AddItem("forfeittoggle", FFVstring); 
+	else if(ForfeitCapMode == 1) menu.AddItem("forfeittoggle", FFVstring, ITEMDRAW_DISABLED); 
+	menu.AddItem("forfeitgoals", currentCondition);
+	menu.AddItem("forfeitpublic", FFVPstring);
+	menu.AddItem("forfeitautospec", FFVSstring);
+	menu.AddItem("forfeitcapmode", FFVCstring);
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, int choice)
+{
+	if (!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+			
+			if(StrEqual(menuItem, "forfeittoggle"))	
+			{
+				if(ForfeitEnabled == 0)		
+				{
+					ForfeitEnabled = 1;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
+					CPrintToChat(client, "{%s}[%s] Forfeit vote enabled!", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+				else if(ForfeitEnabled == 1)
+				{
+					ForfeitEnabled = 0;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
+					CPrintToChat(client, "{%s}[%s] Forfeit vote disabled!", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+
+			}
+			else if(StrEqual(menuItem, "forfeitgoals"))
+			{
+				CPrintToChat(client, "{%s}[%s] {%s}Type in the required difference on the scoreboard to allow a forfeit vote, 0 to stop.", prefixcolor, prefix, textcolor);
+				changeSetting[client] = "ForfeitScoreSet"; //ERROR
+			}
+			else if(StrEqual(menuItem, "forfeitpublic"))
+			{
+				if(ForfeitPublic == 0)
+				{
+					ForfeitPublic = 1;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitpublic", ForfeitPublic);
+					CPrintToChat(client, "{%s}[%s] Everyone can now start the vote if the conditions are met!", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+				else if(ForfeitPublic == 1)
+				{
+					ForfeitPublic = 0;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitpublic", ForfeitPublic);
+					CPrintToChat(client, "{%s}[%s] Only Admins can now start the vote if the conditions are met!", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+			}
+			else if(StrEqual(menuItem, "forfeitautospec"))
+			{
+				if(ForfeitAutoSpec == 0)
+				{
+					ForfeitAutoSpec = 1;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitautospec", ForfeitAutoSpec);
+					CPrintToChat(client, "{%s}[%s] Everyone will be put to spectator after a successful forfeit vote.", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+				else if(ForfeitAutoSpec == 1)
+				{
+					ForfeitAutoSpec = 0;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitautospec", ForfeitAutoSpec);
+					CPrintToChat(client, "{%s}[%s] Disabled auto-spec after a successful forfeit vote.", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+			}
+			else if(StrEqual(menuItem, "forfeitcapmode"))
+			{
+				if(ForfeitCapMode == 0)
+				{
+					ForfeitCapMode = 1;
+					forfeitHelper = ForfeitEnabled;
+					ForfeitEnabled = 0;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitcapmode", ForfeitCapMode);
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
+					CPrintToChat(client, "{%s}[%s] Enabled forfeit vote for cap matches only.", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+				else if(ForfeitCapMode == 1)
+				{
+					ForfeitCapMode = 0;
+					ForfeitEnabled = forfeitHelper;
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitcapmode", ForfeitCapMode);
+					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
+					CPrintToChat(client, "{%s}[%s] Disabled forfeit vote for cap matches only.", prefixcolor, prefix);
+					OpenMenuForfeitSettings(client);
+				}
+			}
+		}
+		
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
+
 // ****************************************** NAME SETTINGS ************************************************
+
+public void OpenMenuNameSettings(int client)
+{
+	Menu menu = new Menu(MenuHandlerNameSettings);
+
+	menu.SetTitle("Soccer Mod - Name Settings");	
+	
+	menu.AddItem("name_t_menu", "Change Terrorists Name");
+	menu.AddItem("name_ct_menu", "Change CTs Name");
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerNameSettings(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[16];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			if (StrEqual(menuItem, "name_t_menu"))	
+			{
+				teamIndicator = 2;
+				OpenMenuTeamName(client);
+			}
+			else if (StrEqual(menuItem, "name_ct_menu"))
+			{
+				teamIndicator = 3;
+				OpenMenuTeamName(client);
+			}
+		}
+		
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
 
 public void OpenMenuTeamName(int client)
 {
@@ -359,82 +715,98 @@ public void OpenMenuTeamName(int client)
 
 public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if(!matchStarted)
 	{
-		int playerNumT, playerNumCT;
-		//tagCount = GetClientCount(true);
-		char menuItem[16];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
-		
-		playerNumT = GetTeamClientCount(2);
-		playerNumCT = GetTeamClientCount(3);
+		if (action == MenuAction_Select)
+		{
+			int playerNumT, playerNumCT;
+			//tagCount = GetClientCount(true);
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+			
+			playerNumT = GetTeamClientCount(2);
+			playerNumCT = GetTeamClientCount(3);
 
-		if (StrEqual(menuItem, "tag_name_t"))
-		{
-			if (playerNumT == 0)
+			if (StrEqual(menuItem, "tag_name_t"))
 			{
-				CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
-				OpenMenuTeamName(client);
-			}
-			else if(playerNumT == 1)
-			{
-				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
-				//PrintCenterTextAll(tagName);
-				if(!(strlen(tagName) > 0))
+				if (playerNumT == 0)
 				{
 					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
 					OpenMenuTeamName(client);
 				}
-				else OpenMenuTeamNameList(client);
+				else if(playerNumT == 1)
+				{
+					for (tagindex = 1; tagindex <= MaxClients; tagindex++)
+					{	
+						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
+						{
+							CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
+							//PrintCenterTextAll(tagName);
+							if(!(strlen(tagName) > 0))
+							{
+								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
+								OpenMenuTeamName(client);
+							}
+							else OpenMenuTeamNameList(client);
+						}
+					}
+				}
+				else if (playerNumT >= 1)	OpenMenuTeamNameList(client);
 			}
-			else if (playerNumT > 1)	OpenMenuTeamNameList(client);
-		}
-		else if (StrEqual(menuItem, "cust_name_t"))
-		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the Terrorists team, current name is %s", prefixcolor, prefix, textcolor, custom_name_t);
-			changeSetting[client] = "CustomNameTeamT";
-		}
-		else if (StrEqual(menuItem, "def_name_t"))
-		{
-			custom_name_t = "T";
-			UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
-			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to T", prefixcolor, prefix, textcolor, client);
-			OpenMenuTeamName(client);
-		}
-		else if (StrEqual(menuItem, "tag_name_ct"))
-		{
-			if (playerNumCT == 0)
+			else if (StrEqual(menuItem, "cust_name_t"))
 			{
-				CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
+				CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the Terrorists team, !cancel to stop. Current name is {%s}%s.", prefixcolor, prefix, textcolor, prefixcolor, custom_name_t);
+				changeSetting[client] = "CustomNameTeamT";
+			}
+			else if (StrEqual(menuItem, "def_name_t"))
+			{
+				custom_name_t = "T";
+				UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to T.", prefixcolor, prefix, textcolor, client);
 				OpenMenuTeamName(client);
 			}
-			else if(playerNumCT == 1)
+			else if (StrEqual(menuItem, "tag_name_ct"))
 			{
-				CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
-				if(!(strlen(tagName) > 0))
+				if (playerNumCT == 0)
 				{
 					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
 					OpenMenuTeamName(client);
 				}
+				else if(playerNumCT == 1)
+				{
+					for (tagindex = 1; tagindex <= MaxClients; tagindex++)
+					{	
+						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
+						{
+							CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
+							if(!(strlen(tagName) > 0))
+							{
+								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
+								OpenMenuTeamName(client);
+							}
+							else OpenMenuTeamNameList(client);
+						}
+					}
+				}
 				else OpenMenuTeamNameList(client);
 			}
-			else OpenMenuTeamNameList(client);
+			else if (StrEqual(menuItem, "cust_name_ct"))
+			{
+				CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the Counter-Terrorists team, !cancel to stop. Current name is {%s}%s.", prefixcolor, prefix, textcolor, prefixcolor, custom_name_ct);
+				changeSetting[client] = "CustomNameTeamCT";
+			}
+			else if (StrEqual(menuItem, "def_name_ct"))
+			{
+				custom_name_ct = "CT";
+				UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to CT.", prefixcolor, prefix, textcolor, client);
+				OpenMenuTeamName(client);
+			}
 		}
-		else if (StrEqual(menuItem, "cust_name_ct"))
-		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the Counter-Terrorists team, current name is %s", prefixcolor, prefix, textcolor, custom_name_ct);
-			changeSetting[client] = "CustomNameTeamCT";
-		}
-		else if (StrEqual(menuItem, "def_name_ct"))
-		{
-			custom_name_ct = "CT";
-			UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
-			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to CT", prefixcolor, prefix, textcolor, client);
-			OpenMenuTeamName(client);
-		}
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuNameSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
-	else if (action == MenuAction_End)					  menu.Close();
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
 
@@ -477,30 +849,34 @@ public void OpenMenuTeamNameList(int client)
 
 public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if(!matchStarted)
 	{
-		if(teamIndicator == 2)
+		if (action == MenuAction_Select)
 		{
-			
-			menu.GetItem(choice, tagName, sizeof(tagName));
-			custom_name_t = tagName;
-			UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
-			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
-			OpenMenuTeamName(client);
+			if(teamIndicator == 2)
+			{
+				
+				menu.GetItem(choice, tagName, sizeof(tagName));
+				custom_name_t = tagName;
+				UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
+				OpenMenuTeamName(client);
+			}
+			else if(teamIndicator == 3)
+			{
+				menu.GetItem(choice, tagName, sizeof(tagName));
+				custom_name_ct = tagName;
+				UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
+				OpenMenuTeamName(client);
+			}
 		}
-		else if(teamIndicator == 3)
-		{
-			menu.GetItem(choice, tagName, sizeof(tagName));
-			custom_name_ct = tagName;
-			UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
-			CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
-			OpenMenuTeamName(client);
-		}
-	}
 
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuTeamName(client);
-	else if (action == MenuAction_End)					  menu.Close();
-	tagindex = 1;
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuTeamName(client);
+		else if (action == MenuAction_End)					  menu.Close();
+		tagindex = 1;
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
 // ****************************************** PERIOD SETTINGS ************************************************
@@ -524,40 +900,44 @@ public void OpenMenuMatchPeriod(int client)
 
 public int MenuHandlerMatchPeriod(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if(!matchStarted)
 	{
-		char menuItem[16];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "15Mins"))
-		{
-			matchPeriodLength = 900;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodLength);
-			OpenMenuMatchSettings(client);
+			if (StrEqual(menuItem, "15Mins"))
+			{
+				matchPeriodLength = 900;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
+				CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i.", prefixcolor, prefix, textcolor, matchPeriodLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "10Mins"))
+			{
+				matchPeriodLength = 600;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
+				CPrintToChatAll("{%s}[%s] {%s}Period length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "75Mins"))
+			{
+				matchPeriodLength = 450;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
+				CPrintToChatAll("{%s}[%s] {%s}Period length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "Custom"))
+			{
+				CPrintToChat(client, "{%s}[%s] {%s}Type a value for the period length, 0 to stop. Current value is %i.", prefixcolor, prefix, textcolor, matchPeriodLength);
+				changeSetting[client] = "CustomPeriodLength";
+			}
 		}
-		else if (StrEqual(menuItem, "10Mins"))
-		{
-			matchPeriodLength = 600;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "75Mins"))
-		{
-			matchPeriodLength = 450;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
-			CPrintToChatAll("{%s}[%s] {%s}Period length was set to %i", prefixcolor, prefix, textcolor, matchPeriodLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "Custom"))
-		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type a value for the period length, current value is %i", prefixcolor, prefix, textcolor, matchPeriodLength);
-			changeSetting[client] = "CustomPeriodLength";
-		}
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
-	else if (action == MenuAction_End)					  menu.Close();
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
 // ****************************************** BREAK SETTINGS ************************************************
@@ -583,48 +963,52 @@ public void OpenMenuMatchBreak(int client)
 
 public int MenuHandlerMatchBreak(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if(!matchStarted)
 	{
-		char menuItem[16];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "FullMin"))
-		{
-			matchPeriodBreakLength = 60;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "HalfMin"))
-		{
-			matchPeriodBreakLength = 30;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "QuartMin"))
-		{
-			matchPeriodBreakLength = 15;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "5Secs"))
-		{
-			matchPeriodBreakLength = 5;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
-			CPrintToChatAll("{%s}[%s] {%s}Break length was set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "Custom"))
-		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type a value for the break length, current value is %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-			changeSetting[client] = "CustomPeriodBreakLength";
-		}
+			if (StrEqual(menuItem, "FullMin"))
+			{
+				matchPeriodBreakLength = 60;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+				CPrintToChatAll("{%s}[%s] {%s}Break length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "HalfMin"))
+			{
+				matchPeriodBreakLength = 30;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+				CPrintToChatAll("{%s}[%s] {%s}Break length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "QuartMin"))
+			{
+				matchPeriodBreakLength = 15;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+				CPrintToChatAll("{%s}[%s] {%s}Break length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "5Secs"))
+			{
+				matchPeriodBreakLength = 5;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
+				CPrintToChatAll("{%s}[%s] {%s}Break length was set to: %i.", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "Custom"))
+			{
+				CPrintToChat(client, "{%s}[%s] {%s}Type a value for the break length, 0 to stop. Current value is %i.", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
+				changeSetting[client] = "CustomPeriodBreakLength";
+			}
 
+		}
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
-	else if (action == MenuAction_End)					  menu.Close();
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
 // ****************************************** GOLDEN GOAL SETTINGS ************************************************
@@ -644,29 +1028,33 @@ public void OpenMenuMatchGolden(int client)
 
 public int MenuHandlerMatchGolden(Menu menu, MenuAction action, int client, int choice)
 {
-	if (action == MenuAction_Select)
+	if(!matchStarted)
 	{
-		char menuItem[16];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
-
-		if (StrEqual(menuItem, "EnableGolden"))
+		if (action == MenuAction_Select)
 		{
-			matchGoldenGoal = 1;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_golden_goal", matchGoldenGoal);
-			CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was enabled", prefixcolor, prefix, textcolor);
-			OpenMenuMatchSettings(client);
-		}
-		else if (StrEqual(menuItem, "DisableGolden"))
-		{
-			matchGoldenGoal = 0;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_golden_goal", matchGoldenGoal);
-			CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was disabled", prefixcolor, prefix, textcolor);
-			OpenMenuMatchSettings(client);
-		}
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
+			if (StrEqual(menuItem, "EnableGolden"))
+			{
+				matchGoldenGoal = 1;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_golden_goal", matchGoldenGoal);
+				CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was enabled.", prefixcolor, prefix, textcolor);
+				OpenMenuMatchSettings(client);
+			}
+			else if (StrEqual(menuItem, "DisableGolden"))
+			{
+				matchGoldenGoal = 0;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_golden_goal", matchGoldenGoal);
+				CPrintToChat(client, "{%s}[%s] {%s}Golden Goal was disabled.", prefixcolor, prefix, textcolor);
+				OpenMenuMatchSettings(client);
+			}
+
+		}
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
-	else if (action == MenuAction_End)					  menu.Close();
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
 }
 
 // ***********************************************************************************************************************
@@ -674,40 +1062,94 @@ public int MenuHandlerMatchGolden(Menu menu, MenuAction action, int client, int 
 // ***********************************************************************************************************************
 public void MatchSet(int client, char type[32], int intnumber, int min, int max)
 {
-	if (intnumber >= min && intnumber <= max)
+	if (intnumber >= min && intnumber <= max || intnumber == 0)
 	{
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 
 		if (StrEqual(type, "CustomPeriodBreakLength"))
 		{
-			matchPeriodBreakLength = intnumber;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(intnumber != 0)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the break length to %i", prefixcolor, prefix, textcolor, client, intnumber);
-			}
+				matchPeriodBreakLength = intnumber;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
 
-			LogMessage("%N <%s> has set the break length to %i", client, steamid, intnumber);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the break length to %i.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
+
+				LogMessage("%N <%s> has set the break length to %i", client, steamid, intnumber);
+				
+				changeSetting[client] = "";
+				OpenMenuMatchSettings(client);
+
+			}
+			else 
+			{
+				OpenMenuMatchBreak(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		else if (StrEqual(type, "CustomPeriodLength"))
 		{
-			matchPeriodLength = intnumber;
-			UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
-			
-			for (int player = 1; player <= MaxClients; player++)
+			if(intnumber != 0)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the match period length to %i", prefixcolor, prefix, textcolor, client, intnumber);
-			}
+				matchPeriodLength = intnumber;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
+				
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the match period length to %i.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
 
-			LogMessage("%N <%s> has set the period length to %i", client, steamid, intnumber);
+				LogMessage("%N <%s> has set the period length to %i", client, steamid, intnumber);
+				
+				changeSetting[client] = "";
+				OpenMenuMatchSettings(client);
+			}
+			else 
+			{
+				OpenMenuMatchPeriod(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
+		}
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i.", prefixcolor, prefix, textcolor, min, max);
+}
+
+public void ForfeitSet(int client, char type[32], int intnumber, int min, int max)
+{
+	if (intnumber >= min && intnumber <= max || intnumber == 0)
+	{
+		char steamid[32];
+		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+
+		if (StrEqual(type, "ForfeitScoreSet"))
+		{
+			if(intnumber != 0)
+			{
+				ForfeitScore = intnumber;
+				UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitscore", ForfeitScore);
+
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the forfeit vote condition to %i goals difference.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
+
+				LogMessage("%N <%s> has set the forfeit vote condition to %i", client, steamid, intnumber);
+			}
+			else 
+			{
+				OpenMenuForfeitSettings(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 
 		changeSetting[client] = "";
-		OpenMenuMatchSettings(client);
+		OpenMenuForfeitSettings(client);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i", prefixcolor, prefix, textcolor, min, max);
+	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i.", prefixcolor, prefix, textcolor, min, max);	
 }
 
 public void NameSet(int client, char type[32], char custom_teamname[32])
@@ -721,33 +1163,49 @@ public void NameSet(int client, char type[32], char custom_teamname[32])
 
 		if (StrEqual(type, "CustomNameTeamT"))
 		{
-			custom_name_t = custom_teamname;
-			UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(!StrEqual(custom_teamname, "!cancel"))
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, custom_teamname);
-			}
+				custom_name_t = custom_teamname;
+				UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
 
-			LogMessage("%N <%s> has set the name of the terrorists to %s", client, steamid, custom_teamname);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the name of the Terrorists to: {%s}%s.", prefixcolor, prefix, textcolor, client, prefixcolor, custom_teamname);
+				}
+
+				LogMessage("%N <%s> has set the name of the terrorists to %s", client, steamid, custom_teamname);
+			}
+			else 
+			{
+				OpenMenuTeamName(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "CustomNameTeamCT"))
 		{
-			custom_name_ct = custom_teamname;
-			UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(!StrEqual(custom_teamname, "!cancel"))
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to %s", prefixcolor, prefix, textcolor, client, custom_teamname);
-			}
+				custom_name_ct = custom_teamname;
+				UpdateConfig("Match Settings", "soccer_mod_teamnamect", custom_name_ct);
 
-			LogMessage("%N <%s> has set the name of the counter-terrorists to %s", client, steamid, custom_teamname);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the name of the Counter-Terrorists to: {%s}%s.", prefixcolor, prefix, textcolor, client, prefixcolor, custom_teamname);
+				}
+
+				LogMessage("%N <%s> has set the name of the counter-terrorists to %s", client, steamid, custom_teamname)
+			}
+			else 
+			{
+				OpenMenuTeamName(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 
 		changeSetting[client] = "";
 		OpenMenuTeamName(client);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i", prefixcolor, prefix, textcolor, min, max);
+	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i.", prefixcolor, prefix, textcolor, min, max);
 }
 
 // ************************************************************************************************************
@@ -941,16 +1399,20 @@ public Action MatchUnpauseCountdown(Handle timer, any time)
 	{
 		PrintHintTextToAll("Unpausing in %i seconds", time);
 		PrintCenterTextAll("Unpausing in %i seconds", time);
+		PlaySound("buttons/button17.wav");
 	}
-	else
+	else if (time == 1)
 	{
 		PrintHintTextToAll("Unpausing in %i second", time);
 		PrintCenterTextAll("Unpausing in %i second", time);
+		PlaySound("buttons/button17.wav");
 	}
 
 	if (time < 1)
 	{
 		UnfreezeAll();
+		PrintCenterTextAll("");
+		PlaySound("soccermod/whistle.wav");
 
 		if (matchGoldenGoalActive)
 		{
@@ -980,13 +1442,15 @@ public Action DelayMatchEnd(Handle timer)
 {
 	char timeString[16];
 	getTimeString(timeString, matchTime);
+	
+	PlaySound("soccermod/endmatch.wav");
 
 	for (int player = 1; player <= MaxClients; player++)
 	{
 		if (IsClientInGame(player) && IsClientConnected(player))
 		{
 			PrintHintText(player, "%s: %s %i - %i %s | %s", "Goal scored", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t, timeString);
-			CPrintToChat(player, "{%s}[%s] {%s}1 %s: %s %i - %i %s", prefixcolor, prefix, textcolor, "Final score", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
+			CPrintToChat(player, "{%s}[%s] {%s} %s: %s %i - %i %s", prefixcolor, prefix, textcolor, "Final score", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 		}
 	}
 
@@ -994,6 +1458,7 @@ public Action DelayMatchEnd(Handle timer)
 
 	ShowManOfTheMatch();
 	MatchReset();
+	ForfeitReset();
 	ServerCommand("mp_restartgame 5");
 }
 
@@ -1002,10 +1467,10 @@ public Action DelayMatchEnd(Handle timer)
 // ***************************************************************************************************************
 public void MatchReset()
 {
-	matchGoldenGoalActive	   = false;
+	matchGoldenGoalActive		= false;
 	matchStarted				= false;
-	matchKickOffTaken		   = false;
-	matchPaused				 = false;
+	matchKickOffTaken			= false;
+	matchPaused					= false;
 	matchPeriodBreak			= false;
 	matchStoppageTimeStarted	= false;
 
@@ -1019,6 +1484,7 @@ public void MatchReset()
 
 	matchScoreT = 0;
 	matchScoreCT = 0;
+	
 }
 
 public void MatchStart(int client)
@@ -1033,25 +1499,35 @@ public void MatchStart(int client)
 		ResetMatchStats();
 
 		matchStarted = true;
+		matchStart = true;
 		matchKickOffTaken = true;
 		matchToss = GetRandomInt(2, 3);
-		
-		char goldenstate[32];
-		if(matchGoldenGoal == 1) goldenstate = "On";
-		else if(matchGoldenGoal == 0) goldenstate = "Off";
+
+		MatchInfoFunction();
+		int infonum;	
+		infonum = infoPeriods + infoBreak + infoGolden + infoForfeit + infoForfeitSet + infoMatchlog;
+
+		if (matchPeriodLength != 900) cdTime = float(matchPeriodLength/2);
+		if (ForfeitRRCheck == true) ffRRCheckTimer = CreateTimer(120.0, RRCheckTimer);
 		
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a match", prefixcolor, prefix, textcolor, client);
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s (CT) will face %s (T)", prefixcolor, prefix, textcolor, custom_name_ct, custom_name_t);
-			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{fullred}[%s] Halftime length: %.1f Minutes | Break length: %i seconds | Golden Goal: %s", prefix, (float(matchPeriodLength)/60), matchPeriodBreakLength, goldenstate);
-			//if (matchPeriodLength != 900)
-			//{
-			//	if (IsClientInGame(player) && IsClientConnected(player)) PrintCenterText(player, "Halftime length is: %.1f", (float(matchPeriodLength)/60));
-			//}
+			if (IsClientInGame(player) && IsClientConnected(player))
+			{
+				if((infonum != 0) && (infonum <= 3)) 
+				{
+					CPrintToChat(player, "{fullred}[MatchInfo] %s", infostring1);
+				}
+				else if((infonum != 0) && (infonum > 3))
+				{
+					CPrintToChat(player, "{fullred}[MatchInfo] %s", infostring1);
+					CPrintToChat(player, "{fullred}[MatchInfo] %s", infostring2);
+				}
+			}			
 		}
 
-		//if(FileExists(matchlogKV) && (matchlog == 1)) DeleteFile(matchlogKV, false);
 		if(passwordlock == 1 && pwchange == true)
 		{
 			pwchange = false;		
@@ -1067,7 +1543,7 @@ public void MatchStart(int client)
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		LogMessage("%N <%s> has started a match", client, steamid);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Match already started", prefixcolor, prefix, textcolor);
+	else CPrintToChat(client, "{%s}[%s] {%s}Match already started.", prefixcolor, prefix, textcolor);
 }
 
 public void MatchPause(int client)
@@ -1076,18 +1552,34 @@ public void MatchPause(int client)
 	{
 		if (!matchPaused)
 		{
+			pauseRdyTimer = CreateTimer(0.0, pauseReadyTimer);
+			
 			matchPaused = true;
+
+			PlaySound("soccermod/whistle.wav");
+
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has paused the match", prefixcolor, prefix, textcolor, client);
+			}
 
 			if (!matchPeriodBreak)
 			{
 				FreezeAll();
 				KillMatchTimer();
 				matchTimer = CreateTimer(0.0, MatchDisplayTimerMessage);
-			}
-
-			for (int player = 1; player <= MaxClients; player++)
-			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has paused the match", prefixcolor, prefix, textcolor, client);
+				
+				if(matchReadyCheck == 2 || matchReadyCheck == 1)
+				{
+					for (int i = 1; i <= MaxClients; i++)
+					{
+						if (IsValidClient(i) && GetClientTeam(i) != 1)		
+						{
+							OpenReadyPanel(i);
+							CPrintToChat(i, "{%s}[%s] {%s}Menu missing? Type !rdy to display the menu again.", prefixcolor, prefix, textcolor);
+						}
+					}
+				}
 			}
 
 			char steamid[32];
@@ -1105,12 +1597,14 @@ public void MatchUnpause(int client)
 	{
 		if (matchPaused)
 		{
+			KillPauseReadyTimer();
+			CPrintToChatAll("{%s}[%s] {%s}Match was paused for %s minutes", prefixcolor, prefix, textcolor, totalpausetime);
 			matchPaused = false;
-
+			
 			if (!matchPeriodBreak)
 			{
 				KillMatchTimer();
-				matchTimer = CreateTimer(0.0, MatchUnpauseCountdown, 5);
+				matchTimer = CreateTimer(0.0, MatchUnpauseCountdown, 5);				
 			}
 
 			for (int player = 1; player <= MaxClients; player++)
@@ -1131,6 +1625,7 @@ public void MatchStop(int client)
 {
 	if (matchStarted)
 	{
+		KillPauseReadyTimer();
 		MatchReset();
 		UnfreezeAll();
 
@@ -1142,6 +1637,8 @@ public void MatchStop(int client)
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		LogMessage("%N <%s> has stopped the match", client, steamid);
+		
+		ForfeitReset();
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}No match started", prefixcolor, prefix, textcolor);
 }
@@ -1187,7 +1684,7 @@ public void EndStoppageTime()
 		if (matchPeriod <= matchPeriods)
 		{
 			matchPeriodBreak = true;
-			//EmitAmbientSound("soccer_mod/match/halftime.wav", 
+			PlaySound("soccermod/halftime.wav"); 
 			
 			PrintCenterTextAll("Halftime break");
 			
@@ -1200,6 +1697,7 @@ public void EndStoppageTime()
 			{
 				matchGoldenGoalActive = true;
 				matchToss = GetRandomInt(2, 3);
+				PlaySound("soccermod/halftime.wav");
 
 				FreezeAll();
 
@@ -1213,6 +1711,8 @@ public void EndStoppageTime()
 			else
 			{
 
+				PlaySound("soccermod/endmatch.wav");
+
 				for (int player = 1; player <= MaxClients; player++)
 				{
 					if (IsClientInGame(player) && IsClientConnected(player))
@@ -1225,6 +1725,7 @@ public void EndStoppageTime()
 
 				ShowManOfTheMatch();
 				MatchReset();
+				ForfeitReset();
 				ServerCommand("mp_restartgame 5");
 			}
 		}
@@ -1238,4 +1739,14 @@ public void KillMatchTimer()
 		KillTimer(matchTimer);
 		matchTimer = null;
 	}
+}
+
+public Action RRCheckTimer(Handle timer)
+{
+	ForfeitRRCheck = false;
+}
+
+public Action matchStartTimer(Handle timer)
+{
+	matchStart = false;
 }

@@ -7,6 +7,8 @@
 char iCLIENT_STATUS[MAXPLAYERS+1];
 
 Handle h_SPRINT_TIMERS[MAXPLAYERS+1];
+Handle h_SPRINT_REFILL[MAXPLAYERS+1];
+Handle h_SPRINT_DURATION[MAXPLAYERS+1];
 Handle antiflood;
 
 //INCLUDES
@@ -94,6 +96,9 @@ public Action Command_StartSprint(int client, int args)
 
 		//Set sprint speed
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", fSPRINT_SPEED);
+		//SetEntProp(client, Prop_Send, "m_ArmorValue", 0.0);
+		//h_SPRINT_DURATION[client] = CreateTimer((fSPRINT_TIME/20), Sprint_Dur, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+		
 		//----
 	
 		//Outputs
@@ -109,11 +114,34 @@ public Action Command_StartSprint(int client, int args)
 
 			iCLIENT_STATUS[client] |= CLIENT_MESSAGEUSING;
 		}
+		
+		if (iP_SETTINGS[client] & PLAYER_ARMOR)
+		{
+			h_SPRINT_DURATION[client] = CreateTimer((fSPRINT_TIME/20), Sprint_Dur, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+		}
 		//----
 
 		h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_TIME, Timer_SprintEnd, client);
 	}
 	return(Plugin_Handled);
+}
+
+public Action Sprint_Dur(Handle timer, int client)
+{
+	int armor_val2 = GetClientArmor(client);
+	
+	if (armor_val2 > 0) SetEntProp(client, Prop_Send, "m_ArmorValue", (armor_val2-(100/RoundFloat(fSPRINT_TIME*(20/fSPRINT_TIME)))));
+	else if (armor_val2 == 0)
+	{
+		if(h_SPRINT_DURATION[client] != null)
+		{
+			KillTimer(h_SPRINT_DURATION[client]);
+			h_SPRINT_DURATION[client] = null;
+		}
+		SetEntProp(client, Prop_Send, "m_ArmorValue", 0);
+	}
+	
+	return;
 }
 
 public void OnGameFrame()

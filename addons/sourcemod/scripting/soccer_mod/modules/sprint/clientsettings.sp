@@ -2,6 +2,7 @@
 #define PLAYER_MESSAGES      (1<<1)
 #define PLAYER_PROGRESS_BAR  (1<<2)
 #define PLAYER_SOUND         (1<<3)
+#define PLAYER_ARMOR         (1<<4)
 #define DEF_SPRINT_COOKIE    PLAYER_MESSAGES|PLAYER_SOUND
 
 Handle h_SPRINT_COOKIE 		= INVALID_HANDLE;

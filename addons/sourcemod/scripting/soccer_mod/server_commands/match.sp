@@ -4,6 +4,13 @@ int matchPeriodLength	   = 900;
 int matchPeriods			= 2;
 int matchGoldenGoal			= 1;
 
+int infoPeriods					= 1;
+int infoBreak					= 1;
+int infoGolden					= 1;
+int infoForfeit					= 1;
+int infoForfeitSet				= 0;
+int infoMatchlog				= 0;
+
 public void RegisterServerCommandsMatch()
 {
 	RegServerCmd

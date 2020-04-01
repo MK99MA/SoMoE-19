@@ -45,10 +45,10 @@ public Action Command_InfoPanel(int client, int args)
 	DrawPanelText(h_Infopanel, " ")
 
 	int cStatus = '-';
-	char sItem_display[3][27] = {"Messages",
-	"Progress Bar", "Sound"};
+	char sItem_display[4][32] = {"Messages",
+	"Progress Bar", "Sound", "Armor"};
 
-	for(int i = 1; i <= 3; i++)
+	for(int i = 1; i <= 4; i++)
 	{
 		cStatus = '-';
 		if(iP_SETTINGS[client] & (1<<i))
@@ -84,7 +84,7 @@ public Action Command_InfoPanel(int client, int args)
 
 public int InfoPanelReturn(Handle panel, MenuAction action, int client, int key)
 {
-	if(action == MenuAction_Select && key >= 1 && key <= 3)
+	if(action == MenuAction_Select && key >= 1 && key <= 4)
 	{
 		int iP_setting = key;
 

@@ -1,10 +1,18 @@
 public void ConfigFunc()
 {
 	char adminSMFileBackup[PLATFORM_MAX_PATH];
+	char adminSMFileBackupOld[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, adminSMFileKV, sizeof(adminSMFileKV), "configs/admins.cfg");
-	BuildPath(Path_SM, adminSMFileBackup, sizeof(adminSMFileBackup), "configs/admins.cfg.backup");
+	BuildPath(Path_SM, adminSMFileBackup, sizeof(adminSMFileBackup), "configs/admins.cfg.presoccermod");
+	BuildPath(Path_SM, adminSMFileBackupOld, sizeof(adminSMFileBackupOld), "configs/admins.cfg.backup");
 	
-	if (!FileExists(adminSMFileBackup)) RenameFile(adminSMFileBackup, adminSMFileKV, false);
+	if (!(FileExists(adminSMFileBackup)) && !(FileExists(adminSMFileBackupOld))) 
+	{
+		RenameFile(adminSMFileBackup, adminSMFileKV, false);
+		ImportAdminFile();
+		ImportFailed();
+		ServerCommand("sm_reloadadmins 1");
+	}
 	if (!FileExists(configFileKV)) CreateSoccerModConfig();
 	if (!FileExists(adminFileKV)) CreateAdminConfig();
 	if (!FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg"))
@@ -18,6 +26,70 @@ public void ConfigFunc()
 	if (!FileExists(statsKeygroupGoalkeeperAreas)) CreateGKAreaConfig();
 	
 	if (FileExists(configFileKV)) ReadFromConfig();
+}
+
+public void ImportAdminFile()
+{
+	char adminSMFileBackup[PLATFORM_MAX_PATH];
+	char line[255];
+	int i = 0;
+	int comment = 0;
+	bool example = false;
+	
+	BuildPath(Path_SM, adminSMFileKV, sizeof(adminSMFileKV), "configs/admins.cfg");
+	BuildPath(Path_SM, adminSMFileBackup, sizeof(adminSMFileBackup), "configs/admins.cfg.presoccermod");
+	
+	File hFile = OpenFile(adminSMFileKV, "w");
+	File cFile = OpenFile(adminSMFileBackup, "r");
+	while (!cFile.EndOfFile())
+	{	
+		// Reading lines; i = number of lines in File
+		if (!ReadFileLine(cFile, line, sizeof(line)))continue;
+		else i++;
+			
+		// Checking for Comment lines; comment = number of comment lines
+		if (line[0] == '/' || line[1] == '*' || strlen(line) == 1)
+		{
+			comment++;
+		}
+		
+		// Check for default example
+		if((StrContains(line, "Example:") != -1) && (example == false))
+		{
+			comment = comment + 6;
+			example = true;
+		}	
+		
+		// Write important parts to new file
+		if (i > comment)
+		{
+			WriteFileString(hFile, line, false);
+		}
+	}
+	
+	hFile.Close();
+	cFile.Close();
+}
+
+public void ImportFailed()
+{
+	File hFile = OpenFile(adminSMFileKV, "r");
+	File nFile;
+
+	char info[255];
+	char adminSMFileError[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, adminSMFileError, sizeof(adminSMFileError), "configs/admins.cfg.error");
+	
+	ReadFileLine(hFile, info, sizeof(info));
+	hFile.Close();
+	
+	if (StrContains(info, "Admins") == -1)
+	{
+		RenameFile(adminSMFileError, adminSMFileKV, false);
+		nFile = OpenFile(adminSMFileKV, "w");
+	}
+	
+	nFile.Close();
 }
 
 public void CreateSoccerModConfig()
@@ -34,7 +106,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_afk_menu",						afk_menutime);
 	kvConfig.SetNum("soccer_mod_matchlog",						matchlog);
 	kvConfig.GoBack();
-	
+
 	kvConfig.JumpToKey("Chat Settings", true);
 	kvConfig.SetString("soccer_mod_prefix", 					prefix);
 	kvConfig.SetString("soccer_mod_textcolor", 					textcolor);
@@ -51,6 +123,24 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_match_golden_goal",				matchGoldenGoal);
 	kvConfig.SetString("soccer_mod_teamnamect", 				custom_name_ct);
 	kvConfig.SetString("soccer_mod_teamnamet", 					custom_name_t);
+	kvConfig.SetNum("soccer_mod_match_readycheck", 				matchReadyCheck);
+	kvConfig.GoBack();
+	
+	kvConfig.JumpToKey("Match Info", true);
+	kvConfig.SetNum("soccer_mod_period_info",					infoPeriods);
+	kvConfig.SetNum("soccer_mod_break_info",					infoBreak);
+	kvConfig.SetNum("soccer_mod_golden_info",					infoGolden);
+	kvConfig.SetNum("soccer_mod_forfeit_info",					infoForfeit);
+	kvConfig.SetNum("soccer_mod_forfeitset_info",				infoForfeitSet);
+	kvConfig.SetNum("soccer_mod_matchlog_info",					infoMatchlog);
+	kvConfig.GoBack();
+	
+	kvConfig.JumpToKey("Forfeit Settings", true);
+	kvConfig.SetNum("soccer_mod_forfeitvote",					ForfeitEnabled);
+	kvConfig.SetNum("soccer_mod_forfeitscore",					ForfeitScore);
+	kvConfig.SetNum("soccer_mod_forfeitpublic",					ForfeitPublic);
+	kvConfig.SetNum("soccer_mod_forfeitautospec",				ForfeitAutoSpec);
+	kvConfig.SetNum("soccer_mod_forfeitcapmode",				ForfeitCapMode);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Misc Settings", true);
@@ -158,10 +248,8 @@ public void CreateDownloadFile()
 {
 	File hFile = OpenFile("cfg/sm_soccermod/soccer_mod_downloads.cfg", "at");
 	hFile.WriteLine("//Adds a directory and all the subdirectories to the downloads - values: path/to/dir");
-	hFile.WriteLine("soccer_mod_downloads_add_dir materials\\models\\player\\soccer_mod");
-	hFile.WriteLine("soccer_mod_downloads_add_dir models\\player\\soccer_mod");
-	hFile.WriteLine("soccer_mod_downloads_add_dir materials\\models\\soccer_mod");
-	hFile.WriteLine("soccer_mod_downloads_add_dir models\\soccer_mod");
+	hFile.WriteLine("//Example (without //):");
+	hFile.WriteLine("//soccer_mod_downloads_add_dir materials\\models\\player\\soccer_mod");
 	hFile.Close();
 	
 	if (FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg", false)) AutoExecConfig(false, "soccer_mod_downloads", "sm_soccermod");
@@ -216,7 +304,6 @@ public void CreateCapPositionsConfig()
 	File hFile = OpenFile(pathCapPositionsFile, "at");
 	hFile.Close();	
 }
-
 
 public void CreateSkinsConfig()
 {
@@ -275,6 +362,17 @@ public void CreateGKAreaConfig()
 	kvGKArea.Close();
 }
 
+public void SoundSetup()
+{
+	PrecacheSound("player/suit_sprint.wav");
+	//PrecacheSound("weapons/c4/c4_beep1.wav");
+	PrecacheSound("buttons/button17.wav");
+	if (FileExists("sound/soccermod/endmatch.wav"))		PrecacheSound("soccermod/endmatch.wav");
+	if (FileExists("sound/soccermod/halftime.wav"))		PrecacheSound("soccermod/halftime.wav");
+	if (FileExists("sound/soccermod/kickoff.wav"))		PrecacheSound("soccermod/kickoff.wav");
+	if (FileExists("sound/soccermod/whistle.wav"))		PrecacheSound("soccermod/whistle.wav");
+}
+
 public void ReadFromConfig()
 {
 	kvConfig = new KeyValues("Soccer Mod Config");
@@ -287,8 +385,8 @@ public void ReadFromConfig()
 	afk_kicktime			= kvConfig.GetFloat("soccer_mod_afk_time", 100.0);
 	afk_menutime			= kvConfig.GetNum("soccer_mod_afk_menu", 20);
 	matchlog				= kvConfig.GetNum("soccer_mod_matchlog", 0);
-	kvConfig.GoBack();
-	
+	kvConfig.GoBack();	
+
 	kvConfig.JumpToKey("Chat Settings", false);
 	kvConfig.GetString("soccer_mod_prefix", prefix, sizeof(prefix), "Soccer Mod");
 	kvConfig.GetString("soccer_mod_textcolor", textcolor, sizeof(textcolor), "lightgreen");
@@ -305,6 +403,24 @@ public void ReadFromConfig()
 	matchGoldenGoal			= kvConfig.GetNum("soccer_mod_match_golden_goal", 1);
 	kvConfig.GetString("soccer_mod_teamnamect", custom_name_ct, sizeof(custom_name_ct), "CT");
 	kvConfig.GetString("soccer_mod_teamnamet", custom_name_t, sizeof(custom_name_t), "T");
+	matchReadyCheck			= kvConfig.GetNum("soccer_mod_match_readycheck", 1);
+	kvConfig.GoBack();
+	
+	kvConfig.JumpToKey("Match Info", true);
+	infoPeriods				= kvConfig.GetNum("soccer_mod_period_info", 1);
+	infoBreak				= kvConfig.GetNum("soccer_mod_break_info",	1);
+	infoGolden				= kvConfig.GetNum("soccer_mod_golden_info", 1);
+	infoForfeit				= kvConfig.GetNum("soccer_mod_forfeit_info", 1);
+	infoForfeitSet			= kvConfig.GetNum("soccer_mod_forfeitset_info", 0);
+	infoMatchlog			= kvConfig.GetNum("soccer_mod_matchlog_info", 0);
+	kvConfig.GoBack();
+	
+	kvConfig.JumpToKey("Forfeit Settings", true);
+	ForfeitEnabled			= kvConfig.GetNum("soccer_mod_forfeitvote", 0);
+	ForfeitScore			= kvConfig.GetNum("soccer_mod_forfeitscore", 8);
+	ForfeitPublic			= kvConfig.GetNum("soccer_mod_forfeitpublic", 0);
+	ForfeitAutoSpec			= kvConfig.GetNum("soccer_mod_forfeitautospec", 0);
+	ForfeitCapMode			= kvConfig.GetNum("soccer_mod_forfeitcapmode", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Misc Settings", true);

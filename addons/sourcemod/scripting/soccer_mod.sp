@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.2fix"
+#define PLUGIN_VERSION "1.0.3"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 
 // **************************************************************************************************************
@@ -15,10 +15,16 @@ bool bLATE_LOAD 		= false;
 bool capFightStarted	= false;
 bool currentMapAllowed	= false;
 bool goalScored			= false;
-bool matchStarted		= false;
 bool menuaccessed;
 bool roundEnded			= false;
 bool pwchange			= false;
+//bool readycheck			= false;
+//MatchBool
+bool matchStarted		= false;
+bool matchStart			= false;
+bool matchPaused		= false;
+bool matchPeriodBreak	= false;
+
 
 //Strings
 char changeSetting[MAXPLAYERS + 1][32];
@@ -29,8 +35,6 @@ char gamevar[8]			= "cstrike";
 char prefix[32]			= "Soccer Mod";
 char prefixcolor[32]	= "green";
 char textcolor[32]		= "lightgreen";
-//char listOfChar[]		= "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
-//char def_pass[32];
 
 //Paths
 char adminSMFileKV[PLATFORM_MAX_PATH];
@@ -42,7 +46,9 @@ char allowedMapsConfigFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_all
 char statsKeygroupGoalkeeperAreas[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_GKAreas.cfg";
 char adminFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_admins.cfg";
 char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_positions.txt";
+char pathRefCardsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_referee_cards.txt";
 char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
+char tempReadyFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/temp_readycheck.txt";
 
 //Convars
 
@@ -57,10 +63,18 @@ int publicmode		 	= 1;
 int passwordlock		= 1;
 int djbenabled			= 1;
 int matchlog			= 0;
+int matchReadyCheck		= 1;
+int ForfeitEnabled		= 0;
+int ForfeitScore		= 8;
+int ForfeitPublic		= 0;
+int ForfeitAutoSpec 	= 0;
+int ForfeitCapMode		= 0;
+int startplayers		= 0;
 
 //Handle
 Handle allowedMaps	  	= INVALID_HANDLE;
 Handle db			   	= INVALID_HANDLE;
+Handle pauseRdyTimer	= null;
 
 
 //KeyValues
@@ -78,6 +92,7 @@ KeyValues LeagueMatchKV;
 #include <sourcemod>
 #include <sdktools>
 #include <sdktools_functions>
+#include <sdkhooks>
 #include <cstrike>
 #include <regex>
 #include <morecolors>
@@ -87,8 +102,8 @@ KeyValues LeagueMatchKV;
 
 #pragma newdecls required
 
-#include "soccer_mod\client_commands.sp"
 #include "soccer_mod\server_commands.sp"
+#include "soccer_mod\client_commands.sp"
 #include "soccer_mod\colormenu.sp"
 #include "soccer_mod\database.sp"
 #include "soccer_mod\menus.sp"
@@ -100,6 +115,7 @@ KeyValues LeagueMatchKV;
 #include "soccer_mod\modules\deadchat.sp"
 #include "soccer_mod\modules\duckjumpblock.sp"
 #include "soccer_mod\modules\health.sp"
+#include "soccer_mod\modules\readycheck.sp"
 #include "soccer_mod\modules\match.sp"
 #include "soccer_mod\modules\ranking.sp"
 #include "soccer_mod\modules\referee.sp"
@@ -107,6 +123,7 @@ KeyValues LeagueMatchKV;
 #include "soccer_mod\modules\settings.sp"
 #include "soccer_mod\modules\skins.sp"
 #include "soccer_mod\modules\sprint.sp"
+#include "soccer_mod\modules\sounds.sp"
 #include "soccer_mod\modules\stats.sp"
 #include "soccer_mod\modules\training.sp"
 #include "soccer_mod\modules\savelogs.sp"
@@ -141,7 +158,7 @@ public void OnPluginStart()
 	}
 	//**************************************************
 	
-	if (!DirExists("cfg/sm_soccermod"))	CreateDirectory("cfg/sm_soccermod", 511, false);
+	if (!DirExists("cfg/sm_soccermod"))			CreateDirectory("cfg/sm_soccermod", 511, false);
 	if (!DirExists("cfg/sm_soccermod/logs"))	CreateDirectory("cfg/sm_soccermod/logs", 511, false);
 
 	
@@ -149,6 +166,7 @@ public void OnPluginStart()
 
 	AddCommandListener(SayCommandListener, "say");
 	AddCommandListener(SayCommandListener, "say_team");
+	AddAmbientSoundHook(AmbientSHook);
 
 	HookEntityOutput("func_physbox",	"OnAwakened",	   OnAwakened);
 	HookEntityOutput("prop_physics",	"OnAwakened",	   OnAwakened);
@@ -252,6 +270,11 @@ public Action SayCommandListener(int client, char[] command, int argc)
 			MatchSet(client, "CustomPeriodBreakLength", intnumber, 5, 60);
 			return Plugin_Handled;			
 		}		
+		else if (StrEqual(changeSetting[client], "ForfeitScoreSet"))
+		{
+			ForfeitSet(client, "ForfeitScoreSet", intnumber, 4, 16);
+			return Plugin_Handled;			
+		}
 		else if (StrEqual(changeSetting[client], "CustomPrefix"))
 		{
 			ChatSet(client, "CustomPrefix", custom_tag);
@@ -426,6 +449,7 @@ public void OnMapStart()
 	{
 		ReadFromConfig();
 	}
+	if (FileExists(tempReadyFileKV)) DeleteTempFile();
 	
 	//Get the server password from server.cfg
 	GetDefaultPassword(defaultpw, sizeof(defaultpw));
@@ -441,7 +465,7 @@ public void OnMapStart()
 	{
 		LoadConfigSoccer();
 		LoadConfigPublic();
-		PrecacheSound("player/suit_sprint.wav");
+		SoundSetup();
 		if(bLATE_LOAD)
 		{
 			SetEveryClientDefaultSettings();
@@ -453,6 +477,21 @@ public void OnMapStart()
 		return;
 	}
 	else LoadConfigNonSoccer();
+
+	MatchOnMapStart();
+	SkinsOnMapStart();
+	StatsOnMapStart();
+	TrainingOnMapStart();
+	
+	// Kill possibly running ForfeitTimer
+	ForfeitReset();
+}
+
+public void OnAllPluginsLoaded()
+{
+	AddDirToDownloads("sound/soccermod");
+	AddDirToDownloads("materials/models/soccer_mod");
+	AddDirToDownloads("models/soccer_mod");
 	
 	if (StrEqual(gamevar, "cstrike"))
 	{
@@ -464,20 +503,14 @@ public void OnMapStart()
 		AddDirToDownloads("materials/models/player/soccermod");
 		AddDirToDownloads("models/player/soccermod");
 	}
-
-	AddDirToDownloads("materials/models/soccer_mod");
-	AddDirToDownloads("models/soccer_mod");
-
-	MatchOnMapStart();
-	SkinsOnMapStart();
-	StatsOnMapStart();
-	TrainingOnMapStart();
 }
 
 public void OnClientPutInServer(int client)
 {
 	changeSetting[client] = "";
 
+	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamageArmor);
+	
 	DatabaseCheckPlayer(client);
 
 	RespawnOnClientPutInServer(client);
@@ -493,6 +526,24 @@ public void OnClientPutInServer(int client)
 	}
 }
 
+public Action OnTakeDamageArmor(int victim, int& attacker, int& inflictor, float& damage, int& damagetype)
+{
+	if(!capFightStarted)
+	{
+		char sEntity[64], sEntity2[64];
+		GetEdictClassname(inflictor, sEntity, sizeof(sEntity));
+		GetEdictClassname(inflictor, sEntity2, sizeof(sEntity2));
+		
+		if(StrEqual(sEntity, "func_physbox", false) || StrEqual(sEntity, "prop_physics", false) || StrEqual(sEntity2, "func_physbox", false) || StrEqual(sEntity2, "prop_physics", false))
+		{
+			damage = 0.0;
+			return Plugin_Changed;
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
 public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)
 {
 	DJBOnPlayerRunCmd(client, buttons, impulse, vel, angles, weapon);
@@ -506,6 +557,7 @@ public void OnClientDisconnect(int client)
 	RespawnOnClientDisconnect(client);
 
 	RadioCommandsOnClientDisconnect(client);
+	ReadyCheckOnClientDisconnect(client);
 	WriteClientCookie(client);
 }
 
@@ -540,11 +592,12 @@ public Action EventPlayerSpawn(Event event, const char[] name, bool dontBroadcas
 		RefereeEventPlayerSpawn(event);
 		SkinsEventPlayerSpawn(event);
 		StatsEventPlayerSpawn(event);
-
+		
 		RemoveKnivesEventPlayerSpawn(event);
 		//Sprint
 		char iClient = GetClientOfUserId(GetEventInt(event, "userid"));
 		ResetSprint(iClient);
+		SetEntProp(iClient, Prop_Send, "m_ArmorValue", 100);
 		PrintSprintCDMsgToClient(iClient);
 		iCLIENT_STATUS[iClient] &= ~ CLIENT_SPRINTUNABLE;
 	}
@@ -863,7 +916,7 @@ public void AddDirToDownloads(char path[PLATFORM_MAX_PATH])
 			if (!StrEqual(filename, ".") && !StrEqual(filename, ".."))
 			{
 				Format(full, sizeof(full), "%s/%s", path, filename);
-
+				
 				if (type == FileType_File) AddFileToDownloadsTable(full);
 				else if (type == FileType_Directory) AddDirToDownloads(full);
 			}

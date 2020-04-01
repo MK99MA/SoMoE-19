@@ -33,7 +33,7 @@ public void OpenMenuAdminSet(int client)
 	menu.AddItem("EditAdmin", "Edit Admin");
 	menu.AddItem("RemoveAdmin", "Remove Admin");
 	menu.AddItem("AdminLists", "Admin Lists");
-	menu.AddItem("OnlineAdmin", "Online Admins");
+	menu.AddItem("OnlineLists", "Online Lists");
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -62,11 +62,12 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 		{
 			OpenMenuAdminLists(client);
 		}
-		else if (StrEqual(menuItem, "OnlineAdmin"))
+		else if (StrEqual(menuItem, "OnlineLists"))
 		{
 			menuaccessed = true;
 			OpenMenuOnlineAdmin(client);
 		}
+
 	}	
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -112,7 +113,7 @@ public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int cho
 		//PrintToChatAll(clientName);
 		GetClientAuthId(userindex2, AuthId_Engine, SteamID, sizeof(SteamID))
 		//PrintToChatAll(SteamID);
-		AdminId ID = GetUserAdmin(userindex2);
+		//AdminId ID = GetUserAdmin(userindex2);
 		/*if(ID != INVALID_ADMIN_ID)
 		{
 			playerindex = 1;
@@ -232,18 +233,18 @@ public int MenuHandlerAddAdminValues(Menu menu, MenuAction action, int client, i
 	{
 		if (StrEqual(menuItem, "sm_name"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the new name for %s", prefixcolor, prefix, textcolor, adminName);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the new name for %s, !cancel to stop.", prefixcolor, prefix, textcolor, adminName);
 			changeSetting[client] = "AdminNameValue";
 		}
 		else if (StrEqual(menuItem, "sm_flag"))
 		{
 			OpenMenuFlagInfo(client, 0);
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired flags (see menu) for %s", prefixcolor, prefix, textcolor, adminName);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired flags (see menu) for %s, !cancel to stop.", prefixcolor, prefix, textcolor, adminName);
 			changeSetting[client] = "AdminFlagsValue";
 		}
 		else if (StrEqual(menuItem, "sm_immunity"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired immunity (0-99) for %s", prefixcolor, prefix, textcolor, adminName);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired immunity (0-99) for %s, !cancel to stop.", prefixcolor, prefix, textcolor, adminName);
 			changeSetting[client] = "AdminImmunityValue";
 		}
 		else if (StrEqual(menuItem, "sm_group"))
@@ -701,7 +702,7 @@ public void OpenMenuAdminListSM(int client)
 			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
 			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
 			
-			menu.AddItem(clientName, clientName);
+			menu.AddItem(clientName, clientName, ITEMDRAW_DISABLED);
 		}
 		while (kvSMAdmins.GotoNextKey());
 	}
@@ -750,10 +751,11 @@ public void OpenMenuAdminListSimple(int client)
 	}
 	hFile.Close();
 	
-	if(GetMenuItemCount(menu) == 1)
+	if(GetMenuItemCount(menu) == 0)
 	{
-		CPrintToChat(client, "{%s}[%s] {%s}No admins found", prefixcolor, prefix, textcolor);
-		OpenMenuAdminLists(client);
+		menu.AddItem(SteamID, "No admins found", ITEMDRAW_DISABLED);
+		//CPrintToChat(client, "{%s}[%s] {%s}No admins found", prefixcolor, prefix, textcolor);
+		//OpenMenuAdminLists(client);
 	}
 	
 	menu.ExitBackButton = true;
@@ -829,38 +831,120 @@ public int MenuHandlerAdminlistSoccerMod(Menu menu, MenuAction action, int clien
 
 public void OpenMenuOnlineAdmin(int client)
 {
-	bool onserver = false;
+	Menu menu = new Menu(MenuHandlerOnlineAdmin);
+	menu.SetTitle("Online Admin lists");
+	
+	menu.AddItem("Adminonline", "Admin Online List");
+	menu.AddItem("SMonline", "Sourcemod Online List");
+	menu.AddItem("Socceronline", "Soccer Online List");
+	
+	if(menuaccessed == true) menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerOnlineAdmin(Menu menu, MenuAction action, int client, int choice)
+{
+	char menuItem[32];
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	if (action == MenuAction_Select)
+	{
+		if (StrEqual(menuItem, "SMonline"))
+		{
+			OpenMenuOnlineAdminSourcemod(client);
+		}
+		else if (StrEqual(menuItem, "Socceronline"))
+		{
+			OpenMenuOnlineSoccerAdmin(client);
+		}
+		else if (StrEqual(menuItem, "Adminonline"))
+		{
+			OpenMenuOnlineAdminAll(client);
+		}
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuOnlineAdminAll(int client)
+{
+	//bool onserver = false;
+	int onlinecount = 0;
+	
+	Menu menu = new Menu(MenuHandlerOnlineAdminAll);
+	menu.SetTitle("Online Admins");
+
+	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
+	{
+		if (IsClientInGame(clientindex))
+		{
+			if (adminRemoved)	RemoveAllMenuItems(menu);
+			if(GetUserAdmin(clientindex) != INVALID_ADMIN_ID)
+			{
+				char AdminName[64];
+				GetClientName(clientindex, AdminName, sizeof(AdminName));
+				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
+				onlinecount++;
+				//if(!onserver) onserver = true;
+			}
+			else if (IsSoccerAdmin(clientindex))
+			{
+				char AdminName[64];
+				GetClientName(clientindex, AdminName, sizeof(AdminName));
+				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
+				onlinecount++;
+				//if(!onserver) onserver = true;
+			}
+			else if(onlinecount == 0) menu.AddItem("", "No Admins on the server", ITEMDRAW_DISABLED);
+		}
+	}
+	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerOnlineAdminAll(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, clientName, sizeof(clientName));
+	if (action == MenuAction_Select)
+	{
+		PrintToChatAll("bla");
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+
+public void OpenMenuOnlineAdminSourcemod(int client)
+{
+	//bool onserver = false;
+	int onlinecount = 0;
 	
 	Menu menu = new Menu(MenuHandlerOnlineAdminSourcemod);
 	menu.SetTitle("Online Admins");
 
-	for (playerindex = 1; playerindex <= MaxClients; playerindex++)
+	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
 	{
-		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
+		if (IsClientInGame(clientindex))
 		{
 			if (adminRemoved)	RemoveAllMenuItems(menu);
-			//AdminId ID = GetUserAdmin(playerindex);
-			//if(ID != INVALID_ADMIN_ID)
-			if(GetUserAdmin(playerindex) != INVALID_ADMIN_ID)
+			if(GetUserAdmin(clientindex) != INVALID_ADMIN_ID)
 			{
 				char AdminName[64];
-				//GetClientName(playerindex, AdminName, sizeof(AdminName));
-				GetClientName(playerindex, AdminName, sizeof(AdminName));
+				GetClientName(clientindex, AdminName, sizeof(AdminName));
 				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				if(!onserver) onserver = true;
+				onlinecount++;
+				//if(!onserver) onserver = true;
 			}
-			else if (IsSoccerAdmin)
-			{
-				char AdminName[64];
-				GetClientName(playerindex, AdminName, sizeof(AdminName));
-				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				if(!onserver) onserver = true;
-			}
+			else if(onlinecount == 0) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 		}
 	}
-	if(!onserver) menu.AddItem("", "No Admins on the server");
+	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 	
-	if(menuaccessed == true) menu.ExitBackButton = true;
+	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
@@ -872,7 +956,48 @@ public int MenuHandlerOnlineAdminSourcemod(Menu menu, MenuAction action, int cli
 		PrintToChatAll("bla");
 	}
 		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuOnlineSoccerAdmin(int client)
+{
+	//bool onserver = false;
+	int onlinecount = 0;
+	
+	Menu menu = new Menu(MenuHandlerOnlineAdminSoccermod);
+	menu.SetTitle("Online Soccer Admins");
+
+	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
+	{
+		if (IsClientInGame(clientindex))
+		{
+			if (IsSoccerAdmin(clientindex))
+			{
+				char AdminName[64];
+				GetClientName(clientindex, AdminName, sizeof(AdminName));
+				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
+				onlinecount++;
+				//if(!onserver) onserver = true;
+			}
+			else if(onlinecount == 0) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
+		}
+	}
+	//if(!onserver) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerOnlineAdminSoccermod(Menu menu, MenuAction action, int client, int choice)
+{
+	menu.GetItem(choice, clientName, sizeof(clientName));
+	if (action == MenuAction_Select)
+	{
+		PrintToChatAll("bla");
+	}
+		
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
@@ -1052,7 +1177,7 @@ public void AddAdminSimpleMenuFunc(int client)
 	if(adminmode == 2)
 	{
 		OpenMenuFlagInfo(client, 1);
-		CPrintToChat(client, "{%s}[%s] {%s}Enter the desired flags, remember to include flag 'b' for Soccer Mod rights.", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}Enter the desired flags, remember to include flag 'b' for Soccer Mod rights. !cancel to stop.", prefixcolor, prefix, textcolor);
 		changeSetting[client] = "CustFlag";
 	}
 	else if (adminmode == 0)
@@ -1110,32 +1235,56 @@ public void AdminSetListener(int client, char type[32], char admin_value[64], in
 	{
 		if (StrEqual(type, "AdminNameValue"))
 		{
-			UpdateAdmin(adminName, "", admin_value, 0);
-			
-			CPrintToChat(client, "{%s}[%s] {%s}Updated name to %s", prefixcolor, prefix, textcolor, admin_value);
+			if(!StrEqual(admin_value, "!cancel"))
+			{
+				UpdateAdmin(adminName, "", admin_value, 0);
+				
+				CPrintToChat(client, "{%s}[%s] {%s}Updated name to %s", prefixcolor, prefix, textcolor, admin_value);
+			}
+			else 
+			{
+				OpenMenuAddAdminValues(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "AdminFlagsValue"))
 		{
-			UpdateAdmin(adminName, "flags", admin_value, 1);
+			if(!StrEqual(admin_value, "!cancel"))
+			{
+				UpdateAdmin(adminName, "flags", admin_value, 1);
 
-			CPrintToChat(client, "{%s}[%s] {%s}Updated flags to %s", prefixcolor, prefix, textcolor, admin_value);
+				CPrintToChat(client, "{%s}[%s] {%s}Updated flags to %s", prefixcolor, prefix, textcolor, admin_value);
+			}
+			else 
+			{
+				OpenMenuAddAdminValues(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "AdminImmunityValue"))
 		{
-			int buffer = StringToInt(admin_value);
-			if(buffer <= 99)
+			if(!StrEqual(admin_value, "!cancel"))
 			{
-				UpdateAdmin(adminName, "immunity", admin_value, 1);
-				
-				CPrintToChat(client, "{%s}[%s] {%s}Updated immunity to %s", prefixcolor, prefix, textcolor, admin_value);
+				int buffer = StringToInt(admin_value);
+				if(buffer <= 99)
+				{
+					UpdateAdmin(adminName, "immunity", admin_value, 1);
+					
+					CPrintToChat(client, "{%s}[%s] {%s}Updated immunity to %s", prefixcolor, prefix, textcolor, admin_value);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}Please choose a value between 0 and 99.", prefixcolor, prefix, textcolor);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}Please choose a value between 0 and 99.", prefixcolor, prefix, textcolor);
+			else 
+			{
+				OpenMenuAddAdminValues(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 
 		changeSetting[client] = "";
 		OpenMenuAddAdminValues(client);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i", prefixcolor, prefix, textcolor, min, max);
+	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i.", prefixcolor, prefix, textcolor, min, max);
 }
 
 
@@ -1157,15 +1306,23 @@ public void CustomFlagListener(int client, char type[32], char custom_flag[32])
 
 		if (StrEqual(type, "CustFlag"))
 		{
-			szFlags = custom_flag;
-		
-			WriteFileLine(hFile, "\"%s\" \"%s\"	// %s", szTarget2, szFlags, clientName);
-			CPrintToChat(client, "{%s}[%s] {%s}%s was added with the flags of %s.", prefixcolor, prefix, textcolor, clientName, szFlags);
+			if(!StrEqual(custom_flag, "!cancel"))
+			{
+				szFlags = custom_flag;
+			
+				WriteFileLine(hFile, "\"%s\" \"%s\"	// %s", szTarget2, szFlags, clientName);
+				CPrintToChat(client, "{%s}[%s] {%s}%s was added with the flags of %s.", prefixcolor, prefix, textcolor, clientName, szFlags);
 
-			CloseHandle(hFile);
+				CloseHandle(hFile);
 
-			changeSetting[client] = "";
-			OpenMenuAdminSet(client);
+				changeSetting[client] = "";
+				OpenMenuAdminSet(client);
+			}
+			else 
+			{
+				OpenMenuAdminSet(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}List of flags is too long. Please use a shorter combination with %i to %i characters", prefixcolor, prefix, textcolor, min, max);
@@ -1284,33 +1441,3 @@ public void ResetAdminValues()
 	adminFlags = "";
 	adminGroup = "";
 }
-
-
-// *******************************************************************************************************************
-// ********************************************** UNUSED SNIPPETS *************************************************
-// *******************************************************************************************************************
-
-//CPrintToChat(client, "{%s}[%s] {%s}Type in the name of the desired admingroup for %s", prefixcolor, prefix, textcolor, adminName);
-//changeSetting[client] = "AdminGroupValue";
-/*else if (StrEqual(menuItem, "sm_id"))
-*{
-*	CPrintToChat(client, "{%s}[%s] {%s}Type in the new SteamID for %s", prefixcolor, prefix, textcolor, adminName);
-*	changeSetting[client] = "AdminIdValue";
-*}
-*
-*if (StrEqual(type, "AdminGroupValue"))
-*{
-*	if(IsGroupDefined(admin_value))
-*	{
-*		UpdateAdmin(adminName, "group", admin_value, 1);
-*		CPrintToChat(client, "{%s}[%s] {%s}Updated group to %s", prefixcolor, prefix, textcolor, admin_value);
-*	}
-*	else CPrintToChat(client, "{%s}[%s] {%s}Group does not exist or is invalid(flags, immunity)", prefixcolor, prefix, textcolor);
-*}
-*if (StrEqual(type, "AdminIdValue"))
-*{
-*	UpdateAdmin(adminName, "identity", admin_value, 1);
-*	CPrintToChat(client, "{%s}[%s] {%s}Updated SteamID to %s", prefixcolor, prefix, textcolor, admin_value);
-*}
-*/
-

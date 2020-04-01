@@ -17,24 +17,37 @@ public void CapEventPlayerDeath(Event event)
 	{
 		int attacker = event.GetInt("attacker");
 
-		if (attacker)
+		if (attacker == 0) CPrintToChatAll("{%s}[%s]Cap fight invalid. Please restart the fight.", prefixcolor, prefix);
+		else
 		{
-			int attackerid = GetClientOfUserId(attacker);
-			capPicker = attackerid;
-
-			int userid = event.GetInt("userid");
-			int deadid = GetClientOfUserId(userid);
-			int team = GetClientTeam(attackerid);
-
-			if (team == 2)
+			if (attacker)
 			{
-				capCT = deadid;
-				capT = attackerid;
+				int attackerid = GetClientOfUserId(attacker);
+				capPicker = attackerid;
+
+				int userid = event.GetInt("userid");
+				int deadid = GetClientOfUserId(userid);
+				int team = GetClientTeam(attackerid);
+
+				if (team == 2)
+				{
+					capCT = deadid;
+					capT = attackerid;
+				}
+				else if (team == 3)
+				{
+					capCT = attackerid;
+					capT = deadid;
+				}
 			}
-			else if (team == 3)
+			
+			//Check for Cap only mode in ffvote			
+			if(ForfeitCapMode == 1) 
 			{
-				capCT = attackerid;
-				capT = deadid;
+				ForfeitEnabled = 1;
+				ForfeitRRCheck = true;
+				CPrintToChatAll("{%s}[%s]CapFight detected. Forfeit vote will be enabled for the match");
+				UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
 			}
 		}
 	}
@@ -45,10 +58,18 @@ public void CapEventRoundEnd(Event event)
 	if (capFightStarted)
 	{
 		capFightStarted = false;
+		//reenable sprint
+		bSPRINT_ENABLED = 1;
 
 		int winner = event.GetInt("winner");
-		if (winner == 2) OpenCapPickMenu(capT);
-		else if (winner == 3) OpenCapPickMenu(capCT);
+		if (winner == 2) 
+		{
+			OpenCapPickMenu(capT);
+		}
+		else if (winner == 3) 
+		{
+			OpenCapPickMenu(capCT);
+		}
 	}
 }
 
@@ -210,7 +231,7 @@ public void OpenCapPositionMenu(int client)
 
 	Menu menu = new Menu(CapPositionMenuHandler);
 
-	menu.SetTitle("Soccer Mod - Cap - Posistions");
+	menu.SetTitle("Soccer Mod - Cap - Positions");
 
 	int keyValue = keygroup.GetNum("gk", 0);
 	Format(langString1, sizeof(langString1), "Goalkeeper", client);
@@ -307,7 +328,13 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 		if (IsClientInGame(player) && IsClientConnected(player))
 		{
 			PrintCenterText(player, "[%s] FIGHT!", prefix);
-			if (IsPlayerAlive(player)) SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
+			if (IsPlayerAlive(player)) 
+			{
+				SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
+				//Set Armor to 0 and cancel Timer
+				SetEntProp(player, Prop_Send, "m_iHealth", 101)
+				SetEntProp(player, Prop_Send, "m_ArmorValue", 0.0);
+			}
 		}
 	}
 
@@ -374,6 +401,8 @@ public void CapStartFight(int client)
 			CPrintToChatAll("{%s}[%s] AFK Kick enabled.", prefixcolor, prefix);
 			AFKKick();
 		}
+		
+		bSPRINT_ENABLED = 0;
 		capFightStarted = true;
 		capPicksLeft = (matchMaxPlayers - 1) * 2;
 		

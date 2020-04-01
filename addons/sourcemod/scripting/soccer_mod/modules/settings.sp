@@ -7,9 +7,16 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
+	char ReadyString[32], ReadyState[32];
+	if(matchReadyCheck == 0)			ReadyState = "OFF";
+	else if (matchReadyCheck == 1)		ReadyState = "AUTO";
+	else if (matchReadyCheck == 2)		ReadyState = "ON USE";
+	Format(ReadyString, sizeof(ReadyString), "Ready Check: %s", ReadyState);
+
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("chatset", "Chat Settings");
 	menu.AddItem("maps", "Allowed Maps");
+	menu.AddItem("ready", ReadyString);
 	menu.AddItem("pubmode", "Public Mode");
 	menu.AddItem("lockenabled", "Lock Server");
 
@@ -32,6 +39,21 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "chatset"))			OpenMenuChat(client);
 		else if (StrEqual(menuItem, "pubmode"))			OpenMenuPubMode(client);
 		else if (StrEqual(menuItem, "skinsmenu"))		OpenSkinsMenu(client);
+		else if (StrEqual(menuItem, "ready"))
+		{
+			if(matchReadyCheck < 2) 
+			{
+				matchReadyCheck++;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_readycheck", matchReadyCheck);
+				OpenMenuSettings(client);
+			}
+			else 
+			{
+				matchReadyCheck = 0;
+				UpdateConfigInt("Match Settings", "soccer_mod_match_readycheck", matchReadyCheck);
+				OpenMenuSettings(client);
+			}
+		}
 		else if (StrEqual(menuItem, "lockenabled"))
 		{
 			if(!pwchange) OpenMenuLockSet(client);
@@ -48,7 +70,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		}
 		else
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map.", prefixcolor, prefix, textcolor);
 			OpenMenuSettings(client);
 		}
 	}
@@ -99,29 +121,29 @@ public int MenuHandlerLockSet(Menu menu, MenuAction action, int client, int choi
 		{
 			passwordlock = 1;
 			UpdateConfigInt("Admin Settings", "soccer_mod_passwordlock", passwordlock);
-			CPrintToChatAll("{%s}[%s] {%s}Server will lock itself", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Server will lock itself.", prefixcolor, prefix, textcolor);
 			OpenMenuLockSet(client);
 		}
 		else if (StrEqual(menuItem, "disable"))
 		{
 			passwordlock = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_passwordlock", passwordlock);
-			CPrintToChatAll("{%s}[%s] {%s}Server will not lock itself", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Server will not lock itself.", prefixcolor, prefix, textcolor);
 			OpenMenuLockSet(client);
 		}
 		else if (StrEqual(menuItem, "locknumber"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the maximum allowed players for a cap, current setting is %i", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the maximum allowed players for a cap, 0 to stop. Current setting is %i.", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
 			changeSetting[client] = "LockServerNum";
 		}
 		else if (StrEqual(menuItem, "afktime"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds before the captcha appears. Current setting is %f", prefixcolor, prefix, textcolor, afk_kicktime);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds before the captcha appears, 0 to stop. Current setting is %f.", prefixcolor, prefix, textcolor, afk_kicktime);
 			changeSetting[client] = "CaptchaNum";
 		}
 		else if (StrEqual(menuItem, "menutime"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds a player has to solve the captcha. Current setting is %i", prefixcolor, prefix, textcolor, afk_menutime);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the amount of seconds a player has to solve the captcha, 0 to stop. Current setting is %i.", prefixcolor, prefix, textcolor, afk_menutime);
 			changeSetting[client] = "MenuNum";
 		}
 	}
@@ -159,21 +181,21 @@ public int MenuHandlerPubMode(Menu menu, MenuAction action, int client, int choi
 		{
 			publicmode = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
-			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to admins only", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to admins only.", prefixcolor, prefix, textcolor);
 			OpenMenuPubMode(client);
 		}
 		else if (StrEqual(menuItem, "pub_com"))
 		{
 			publicmode = 1;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
-			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public !cap and !match", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public !cap and !match.", prefixcolor, prefix, textcolor);
 			OpenMenuPubMode(client);
 		}
 		else if (StrEqual(menuItem, "pub_menu"))
 		{
 			publicmode = 2;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
-			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public menu", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public menu.", prefixcolor, prefix, textcolor);
 			OpenMenuPubMode(client);
 		}
 	}
@@ -251,19 +273,19 @@ public int MenuHandlerChatStyle(Menu menu, MenuAction action, int client, int ch
 
 		if (StrEqual(menuItem, "ch_prefix"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type in your prefix without [] and \" around them, current prefix is %s", prefixcolor, prefix, textcolor, prefix);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in your prefix without [] and \" around them, !cancel to stop. Current prefix is: {%s}[%s].", prefixcolor, prefix, textcolor, prefixcolor, prefix);
 			changeSetting[client] = "CustomPrefix";
 		}
 		else if (StrEqual(menuItem, "prefix_col"))
 		{
 			OpenMenuColorlist(client);
-			CPrintToChat(client, "{%s}[%s] {%s}Type in your desired prefixcolor, current prefixcolor is %s", prefixcolor, prefix, textcolor, prefixcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in your desired prefixcolor, !cancel to stop. Current prefixcolor is: {%s}%s", prefixcolor, prefix, textcolor, prefixcolor, prefixcolor);
 			changeSetting[client] = "CustomPrefixCol";
 		}
 		else if (StrEqual(menuItem, "text_col"))
 		{
 			OpenMenuColorlist(client);
-			CPrintToChat(client, "{%s}[%s] {%s}Type in your desired textcolor, current textcolor is %s", prefixcolor, prefix, textcolor, textcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}Type in your desired textcolor, !cancel to stop. Current textcolor is: {%s}%s", prefixcolor, prefix, textcolor, textcolor, textcolor);
 			changeSetting[client] = "TextCol";
 		}
 	}
@@ -297,14 +319,14 @@ public int MenuHandlerMVPSet(Menu menu, MenuAction action, int client, int choic
 		{
 			MVPEnabled = 1;
 			UpdateConfigInt("Chat Settings", "soccer_mod_mvp", MVPEnabled);
-			CPrintToChatAll("{%s}[%s] {%s}MVP messages and stars enabled", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}MVP messages and stars enabled.", prefixcolor, prefix, textcolor);
 			OpenMenuMVPSet(client);
 		}
 		else if (StrEqual(menuItem, "disable"))
 		{
 			MVPEnabled = 0;
 			UpdateConfigInt("Chat Settings", "soccer_mod_mvp", MVPEnabled);
-			CPrintToChatAll("{%s}[%s] {%s}MVP messages and stars disabled", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}MVP messages and stars disabled.", prefixcolor, prefix, textcolor);
 			OpenMenuMVPSet(client);
 		}
 	}
@@ -354,21 +376,21 @@ public int MenuHandlerDeadChatSet(Menu menu, MenuAction action, int client, int 
 		{
 			DeadChatMode = 1;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_mode", DeadChatMode);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat enabled", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat enabled.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSet(client);
 		}
 		else if (StrEqual(menuItem, "disable"))
 		{
 			DeadChatMode = 0;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_mode", DeadChatMode);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat disabled", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat disabled.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSet(client);
 		}
 		else if (StrEqual(menuItem, "alltalk"))
 		{
 			DeadChatMode = 2;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_mode", DeadChatMode);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat enabled if sv_alltalk = 1", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat enabled if sv_alltalk = 1.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSet(client);
 		}
 		else if (StrEqual(menuItem, "visibility"))
@@ -407,21 +429,21 @@ public int MenuHandlerDeadChatSetVis(Menu menu, MenuAction action, int client, i
 		{
 			DeadChatVis = 0;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_visibility", DeadChatVis);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to default", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to default.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSetVis(client);
 		}
 		else if (StrEqual(menuItem, "teammates"))
 		{
 			DeadChatVis = 1;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_visibility", DeadChatVis);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to teammates", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to teammates.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSetVis(client);
 		}
 		else if (StrEqual(menuItem, "everyone"))
 		{
 			DeadChatVis = 2;
 			UpdateConfigInt("Chat Settings", "soccer_mod_deadchat_visibility", DeadChatVis);
-			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to everyone", prefixcolor, prefix, textcolor);
+			CPrintToChatAll("{%s}[%s] {%s}Deadchat visibility set to everyone.", prefixcolor, prefix, textcolor);
 			OpenMenuDeadChatSetVis(client);
 		}
 	}
@@ -555,13 +577,13 @@ public int MenuHandlerMapsAdd(Menu menu, MenuAction action, int client, int choi
 		char map[128];
 		menu.GetItem(choice, map, sizeof(map));
 
-		if (FindStringInArray(allowedMaps, map) > -1) CPrintToChat(client, "{%s}[%s] {%s}%s is already added to the allowed maps list", prefixcolor, prefix, textcolor, map);
+		if (FindStringInArray(allowedMaps, map) > -1) CPrintToChat(client, "{%s}[%s] {%s}%s is already added to the allowed maps list.", prefixcolor, prefix, textcolor, map);
 		else
 		{
 			PushArrayString(allowedMaps, map);
 			SaveAllowedMaps();
 
-			CPrintToChat(client, "{%s}[%s] {%s}%s added to the allowed maps list", prefixcolor, prefix, textcolor, map);
+			CPrintToChat(client, "{%s}[%s] {%s}%s added to the allowed maps list.", prefixcolor, prefix, textcolor, map);
 		}
 
 		OpenMenuMaps(client);
@@ -600,7 +622,7 @@ public void OpenMenuMapsRemove(int client)
 	}
 	else
 	{
-		CPrintToChat(client, "{%s}[%s] {%s}Allowed maps list is empty", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}Allowed maps list is empty.", prefixcolor, prefix, textcolor);
 		OpenMenuMaps(client);
 	}
 }
@@ -619,9 +641,9 @@ public int MenuHandlerMapsRemove(Menu menu, MenuAction action, int client, int c
 			SaveAllowedMaps();
 			LoadAllowedMaps();
 
-			CPrintToChat(client, "{%s}[%s] {%s}%s removed from the allowed maps list", prefixcolor, prefix, textcolor, map);
+			CPrintToChat(client, "{%s}[%s] {%s}%s removed from the allowed maps list.", prefixcolor, prefix, textcolor, map);
 		}
-		else CPrintToChat(client, "{%s}[%s] {%s}%s is already removed from the allowed maps list", prefixcolor, prefix, textcolor, map);
+		else CPrintToChat(client, "{%s}[%s] {%s}%s is already removed from the allowed maps list.", prefixcolor, prefix, textcolor, map);
 
 		OpenMenuMaps(client);
 	}
@@ -643,45 +665,69 @@ public void ChatSet(int client, char type[32], char custom_tag[32])
 
 		if (StrEqual(type, "CustomPrefix"))
 		{
-			prefix = custom_tag;
-			UpdateConfig("Chat Settings", "soccer_mod_prefix", prefix);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(!StrEqual(custom_tag, "!cancel"))
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the prefix to [%s]", prefixcolor, prefix, textcolor, client, custom_tag);
-			}
+				prefix = custom_tag;
+				UpdateConfig("Chat Settings", "soccer_mod_prefix", prefix);
 
-			LogMessage("%N <%s> has set prefix to %s", client, steamid, custom_tag);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the prefix to {%s}[%s].", prefixcolor, prefix, textcolor, client, prefixcolor, custom_tag);
+				}
+
+				LogMessage("%N <%s> has set prefix to %s", client, steamid, custom_tag);
+			}
+			else 
+			{
+				OpenMenuChatStyle(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "CustomPrefixCol"))
 		{
-			prefixcolor = custom_tag;
-			UpdateConfig("Chat Settings", "soccer_mod_prefixcolor", prefixcolor);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(!StrEqual(custom_tag, "!cancel"))
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the prefixcolor to %s", prefixcolor, prefix, textcolor, client, custom_tag);
-			}
+				prefixcolor = custom_tag;
+				UpdateConfig("Chat Settings", "soccer_mod_prefixcolor", prefixcolor);
 
-			LogMessage("%N <%s> has set prefixcolor to %s", client, steamid, custom_tag);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the prefixcolor to {%s}%s.", prefixcolor, prefix, textcolor, client, custom_tag, custom_tag);
+				}
+
+				LogMessage("%N <%s> has set prefixcolor to %s", client, steamid, custom_tag);
+			}
+			else 
+			{
+				OpenMenuChatStyle(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "TextCol"))
 		{
-			textcolor = custom_tag;
-			UpdateConfig("Chat Settings", "soccer_mod_textcolor", textcolor);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(!StrEqual(custom_tag, "!cancel"))
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the textcolor to %s", prefixcolor, prefix, textcolor, client, custom_tag);
-			}
+				textcolor = custom_tag;
+				UpdateConfig("Chat Settings", "soccer_mod_textcolor", textcolor);
 
-			LogMessage("%N <%s> has set textcolor to %s", client, steamid, custom_tag);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the textcolor to {%s}%s.", prefixcolor, prefix, textcolor, client, custom_tag, custom_tag);
+				}
+
+				LogMessage("%N <%s> has set textcolor to %s", client, steamid, custom_tag);
+			}
+			else
+			{
+				OpenMenuChatStyle(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		
 		changeSetting[client] = "";
 		OpenMenuChatStyle(client);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Prefix is too long. Please use a prefix with %i to %i characters", prefixcolor, prefix, textcolor, min, max);
+	else CPrintToChat(client, "{%s}[%s] {%s}Prefix is too long. Please use a prefix with %i to %i characters.", prefixcolor, prefix, textcolor, min, max);
 }
 
 
@@ -689,47 +735,70 @@ public void LockSet(int client, char type[32], int intnumber, int min, int max)
 {
 	//int min = 0;
 	//int max = 20, max2 = 600, max3 = 120;
-	if (intnumber >= min && intnumber <= max)
+	if (intnumber >= min && intnumber <= max || intnumber == 0)
 	{
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 
 		if (StrEqual(type, "LockServerNum"))
 		{
-			PWMAXPLAYERS = (intnumber-1);
-			UpdateConfigInt("Admin Settings", "soccer_mod_passwordlock_max", PWMAXPLAYERS+1);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(intnumber != 0)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the number of allowed players in a cap to %i", prefixcolor, prefix, textcolor, client, intnumber);
-			}
+				PWMAXPLAYERS = (intnumber-1);
+				UpdateConfigInt("Admin Settings", "soccer_mod_passwordlock_max", PWMAXPLAYERS+1);
 
-			LogMessage("%N <%s> has set the max allowed players in the cap to %i", client, steamid, intnumber);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the number of allowed players in a cap to %i.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
+
+				LogMessage("%N <%s> has set the max allowed players in the cap to %i", client, steamid, intnumber);
+			}
+			else 
+			{
+				OpenMenuLockSet(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		if (StrEqual(type, "CaptchaNum"))
 		{
-			afk_kicktime = float(intnumber);
-			UpdateConfigFloat("Admin Settings", "soccer_mod_afk_time", afk_kicktime);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(intnumber != 0)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the allowed AFK time to %i seconds", prefixcolor, prefix, textcolor, client, intnumber);
-			}
+				afk_kicktime = float(intnumber);
+				UpdateConfigFloat("Admin Settings", "soccer_mod_afk_time", afk_kicktime);
 
-			LogMessage("%N <%s> has set the allowed AFK time to %i seconds", client, steamid, intnumber);
-		}
-		
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the allowed AFK time to %i seconds.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
+
+				LogMessage("%N <%s> has set the allowed AFK time to %i seconds.", client, steamid, intnumber);
+			}
+			else 
+			{
+				OpenMenuLockSet(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
+		}		
 		if (StrEqual(type, "MenuNum"))
 		{
-			afk_menutime = intnumber;
-			UpdateConfigInt("Admin Settings", "soccer_mod_afk_menu", afk_menutime);
-
-			for (int player = 1; player <= MaxClients; player++)
+			if(intnumber != 0)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the captcha solve time to %i seconds", prefixcolor, prefix, textcolor, client, intnumber);
-			}
+				afk_menutime = intnumber;
+				UpdateConfigInt("Admin Settings", "soccer_mod_afk_menu", afk_menutime);
 
-			LogMessage("%N <%s> has set the captcha solve time to %i seconds", client, steamid, intnumber);
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has set the captcha solve time to %i seconds.", prefixcolor, prefix, textcolor, client, intnumber);
+				}
+
+				LogMessage("%N <%s> has set the captcha solve time to %i seconds.", client, steamid, intnumber);
+			}
+			else 
+			{
+				OpenMenuLockSet(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
 		}
 		
 		changeSetting[client] = "";

@@ -19,9 +19,11 @@ public Action Timer_SprintEnd(Handle timer, int client)
         SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime",
         GetGameTime());
     
-        SetEntProp(client, Prop_Send, "m_iProgressBarDuration",
+        SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 
         RoundFloat(fSPRINT_COOLDOWN));
       }
+
+      h_SPRINT_REFILL[client] = CreateTimer((fSPRINT_COOLDOWN/20), Sprint_Refill, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
       //----
 
       h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_COOLDOWN,
@@ -31,6 +33,26 @@ public Action Timer_SprintEnd(Handle timer, int client)
 
   return;
 }
+
+public Action Sprint_Refill(Handle timer, int client)
+{
+	int armor_val = GetClientArmor(client);
+
+	if (armor_val < 100 && !capFightStarted) SetEntProp(client, Prop_Send, "m_ArmorValue", (armor_val+(100/RoundFloat(fSPRINT_COOLDOWN*(20/fSPRINT_COOLDOWN)))));
+	else if (armor_val < 100 && capFightStarted) KillTimer(h_SPRINT_REFILL[client]); //Killtimer Sprint_Refill
+	else if (armor_val >= 100)
+	{
+		if(h_SPRINT_REFILL[client] != null)
+		{
+			KillTimer(h_SPRINT_REFILL[client]); //Killtimer Sprint_Refill
+			h_SPRINT_REFILL[client] = null;
+		}
+		SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
+	}
+	
+	return;
+}
+
 
 public Action Timer_SprintCooldown(Handle timer, int client)
 {

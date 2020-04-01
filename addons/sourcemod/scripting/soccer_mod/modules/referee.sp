@@ -1,4 +1,4 @@
-char keygroupRefereeCards[PLATFORM_MAX_PATH];
+//char keygroupRefereeCards[PLATFORM_MAX_PATH];
 char cardReceiver[MAX_NAME_LENGTH];
 char cardString[32];
 
@@ -7,7 +7,7 @@ char cardString[32];
 // ************************************************************************************************************
 public void RefereeOnPluginStart()
 {
-	BuildPath(Path_SM, keygroupRefereeCards, sizeof(keygroupRefereeCards), "data/soccer_mod_referee_cards.txt");
+	//BuildPath(Path_SM, keygroupRefereeCards, sizeof(keygroupRefereeCards), pathRefCardsFile);
 }
 
 public void RefereeEventPlayerSpawn(Event event)
@@ -37,6 +37,8 @@ public void OpenRefereeMenu(int client)
 	menu.AddItem("yellow", "Yellow Card");
 
 	menu.AddItem("red", "Red Card");
+	
+	menu.AddItem("remove_yellow", "Remove yellow card");
 
 	menu.AddItem("remove_red", "Remove red card");
 
@@ -60,6 +62,7 @@ public int RefereeMenuHandler(Menu menu, MenuAction action, int client, int choi
 
 		if (StrEqual(menuItem, "yellow"))				   OpenRefereeYellowCardMenu(client);
 		else if (StrEqual(menuItem, "red"))				 OpenRefereeRedCardMenu(client);
+		else if (StrEqual(menuItem, "remove_yellow"))	 OpenRemoveYellowCardMenu(client);
 		else if (StrEqual(menuItem, "remove_red"))		  OpenRemoveRedCardMenu(client);
 		else if (StrEqual(menuItem, "remove_all"))		  RemoveAllCards(client);
 		else if (StrEqual(menuItem, "score"))
@@ -279,7 +282,7 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 			GetClientAuthId(target, AuthId_Engine, targetSteamid, sizeof(targetSteamid));
 
 			KeyValues keygroup = new KeyValues("refereeCards");
-			keygroup.ImportFromFile(keygroupRefereeCards);
+			keygroup.ImportFromFile(pathRefCardsFile);
 			keygroup.JumpToKey(targetSteamid, true);
 
 			char targetName[MAX_NAME_LENGTH];
@@ -292,6 +295,9 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 				keygroup.SetNum("red", 1);
 
 				ChangeClientTeam(target, 1);
+
+				PlaySound("soccermod/whistle.wav");
+
 
 				for (int player = 1; player <= MaxClients; player++)
 				{
@@ -312,6 +318,8 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 				keygroup.SetNum("yellow", 1);
 				keygroup.SetNum("red", 0);
 
+				PlaySound("soccermod/whistle.wav");
+
 				for (int player = 1; player <= MaxClients; player++)
 				{
 					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has given a yellow card to %N", prefixcolor, prefix, textcolor, client, target);
@@ -328,7 +336,7 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 			}
 
 			keygroup.Rewind();
-			keygroup.ExportToFile(keygroupRefereeCards);
+			keygroup.ExportToFile(pathRefCardsFile);
 			keygroup.Close();
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
@@ -401,7 +409,7 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 			GetClientAuthId(target, AuthId_Engine, targetSteamid, sizeof(targetSteamid));
 
 			KeyValues keygroup = new KeyValues("refereeCards");
-			keygroup.ImportFromFile(keygroupRefereeCards);
+			keygroup.ImportFromFile(pathRefCardsFile);
 			keygroup.JumpToKey(targetSteamid, true);
 
 			if (!keygroup.GetNum("red", 0))
@@ -417,6 +425,8 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 
 				char clientSteamid[32];
 				GetClientAuthId(client, AuthId_Engine, clientSteamid, sizeof(clientSteamid));
+
+				PlaySound("soccermod/whistle.wav");
 
 				for (int player = 1; player <= MaxClients; player++)
 				{
@@ -435,8 +445,10 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 			else CPrintToChat(client, "{%s}[%s] {%s}Player already has a red card", prefixcolor, prefix, textcolor);
 
 			keygroup.Rewind();
-			keygroup.ExportToFile(keygroupRefereeCards);
+			keygroup.ExportToFile(pathRefCardsFile);
 			keygroup.Close();
+
+			OpenRefereeRedCardMenu(client);
 		}
 		else 
 		{
@@ -448,6 +460,96 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
+// ***********************************************************************************************************************
+// ************************************************ REMOVE YELLOW MENU ***************************************************
+// ***********************************************************************************************************************
+
+public void OpenRemoveYellowCardMenu(int client)
+{
+	Menu menu = new Menu(RemoveYellowCardMenuHandler);
+
+	menu.SetTitle("Soccer Mod - Remove yellow card");
+
+	int count = 0;
+	char playerName[MAX_NAME_LENGTH];
+	char playerSteamid[32];
+
+	KeyValues keygroup = new KeyValues("refereeCards");
+	keygroup.ImportFromFile(pathRefCardsFile);
+	keygroup.GotoFirstSubKey();
+
+	do
+	{
+		if (keygroup.GetNum("yellow", 0))
+		{
+			count++;
+
+			keygroup.GetSectionName(playerSteamid, sizeof(playerSteamid));
+			keygroup.GetString("name", playerName, sizeof(playerName));
+			menu.AddItem(playerSteamid, playerName);
+		}
+	}
+	while (keygroup.GotoNextKey());
+	keygroup.Close();
+
+	if (count)
+	{
+		menu.ExitBackButton = true;
+		menu.Display(client, MENU_TIME_FOREVER);
+	}
+	else
+	{
+		CPrintToChat(client, "{%s}[%s] {%s}There are no players with a yellow card", prefixcolor, prefix, textcolor);
+		OpenRefereeMenu(client);
+	}
+}
+
+public int RemoveYellowCardMenuHandler(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char targetSteamid[32];
+		menu.GetItem(choice, targetSteamid, sizeof(targetSteamid));
+
+		KeyValues keygroup = new KeyValues("refereeCards");
+		keygroup.ImportFromFile(pathRefCardsFile);
+		keygroup.JumpToKey(targetSteamid, true);
+
+		if (keygroup.GetNum("yellow", 0))
+		{
+			char clientSteamid[32];
+			GetClientAuthId(client, AuthId_Engine, clientSteamid, sizeof(clientSteamid));
+
+			char playerName[MAX_NAME_LENGTH];
+			keygroup.GetString("name", playerName, sizeof(playerName));
+
+			char playerSteamid[32];
+			keygroup.GetSectionName(playerSteamid, sizeof(playerSteamid));
+
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has removed the yellow card from %s", prefixcolor, prefix, textcolor, client, playerName);
+			}
+
+			LogMessage("%N <%s> has removed the yellow card from %s <%s>", client, clientSteamid, playerName, playerSteamid);
+
+			keygroup.SetNum("yellow", 0);
+
+			keygroup.Rewind();
+			keygroup.ExportToFile(pathRefCardsFile);
+			keygroup.Close();
+			
+			OpenRemoveYellowCardMenu(client);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Yellow card already removed", prefixcolor, prefix, textcolor);
+
+		keygroup.Close();
+
+		OpenRefereeMenu(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6) OpenRefereeMenu(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
 
 // ***********************************************************************************************************************
 // ************************************************** REMOVE RED MENU ****************************************************
@@ -464,7 +566,7 @@ public void OpenRemoveRedCardMenu(int client)
 	char playerSteamid[32];
 
 	KeyValues keygroup = new KeyValues("refereeCards");
-	keygroup.ImportFromFile(keygroupRefereeCards);
+	keygroup.ImportFromFile(pathRefCardsFile);
 	keygroup.GotoFirstSubKey();
 
 	do
@@ -501,7 +603,7 @@ public int RemoveRedCardMenuHandler(Menu menu, MenuAction action, int client, in
 		menu.GetItem(choice, targetSteamid, sizeof(targetSteamid));
 
 		KeyValues keygroup = new KeyValues("refereeCards");
-		keygroup.ImportFromFile(keygroupRefereeCards);
+		keygroup.ImportFromFile(pathRefCardsFile);
 		keygroup.JumpToKey(targetSteamid, true);
 
 		if (keygroup.GetNum("red", 0))
@@ -517,7 +619,7 @@ public int RemoveRedCardMenuHandler(Menu menu, MenuAction action, int client, in
 
 			for (int player = 1; player <= MaxClients; player++)
 			{
-				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has removed the red card from %N", prefixcolor, prefix, textcolor, client, playerName);
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has removed the red card from %s", prefixcolor, prefix, textcolor, client, playerName);
 			}
 
 			LogMessage("%N <%s> has removed the red card from %s <%s>", client, clientSteamid, playerName, playerSteamid);
@@ -526,7 +628,10 @@ public int RemoveRedCardMenuHandler(Menu menu, MenuAction action, int client, in
 			keygroup.SetNum("red", 0);
 
 			keygroup.Rewind();
-			keygroup.ExportToFile(keygroupRefereeCards);
+			keygroup.ExportToFile(pathRefCardsFile);
+			keygroup.Close();
+			
+			OpenRemoveRedCardMenu(client);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Red card already removed", prefixcolor, prefix, textcolor);
 
@@ -545,7 +650,7 @@ public int RemoveRedCardMenuHandler(Menu menu, MenuAction action, int client, in
 public bool PlayerHasCard(char[] steamid, char[] card)
 {
 	KeyValues keygroup = new KeyValues("refereeCards");
-	keygroup.ImportFromFile(keygroupRefereeCards);
+	keygroup.ImportFromFile(pathRefCardsFile);
 
 	keygroup.JumpToKey(steamid, true);
 
@@ -555,7 +660,7 @@ public bool PlayerHasCard(char[] steamid, char[] card)
 
 public void RemoveAllCards(int client)
 {
-	DeleteFile(keygroupRefereeCards);
+	DeleteFile(pathRefCardsFile);
 
 	for (int player = 1; player <= MaxClients; player++)
 	{
