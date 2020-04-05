@@ -6,6 +6,7 @@
 
 !/addons/sourcemod
 /addons/sourcemod/*
+!/addons/sourcemod/updatefile.txt
 
 !/addons/sourcemod/plugins
 /addons/sourcemod/plugins/*
