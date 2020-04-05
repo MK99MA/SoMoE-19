@@ -203,6 +203,11 @@ public Action MaprrCommand(int client, int args)
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}You can't reload the map during a match", prefixcolor, prefix, textcolor);
 	
+	for (int player = 1; player <= MaxClients; player++)
+	{
+		if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,true);
+	}
+	
 	return Plugin_Handled;
 }
 

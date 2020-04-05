@@ -20,22 +20,5 @@
 !/addons/sourcemod/scripting/soccer_mod
 !/addons/sourcemod/scripting/soccer_mod/*
 
-!/maps
-/maps/*
-
-!/materials
-/materials/*
-
-!/materials/models
-/materials/models/*
-
-!/materials/models/soccer_mod
-!/materials/models/soccer_mod/*
-
-!/models
-/models/*
-
-!/models/soccer_mod
-!/models/soccer_mod/*
-
-!/maps/ka_soccer_stadium_2019_b1.bsp
+/skins
+/skins/*

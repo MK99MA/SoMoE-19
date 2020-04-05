@@ -1,4 +1,3 @@
-//Chat Colours
 #define CLIENT_SPRINTUSING   (1<<0)
 #define CLIENT_SPRINTUNABLE  (1<<1)
 #define CLIENT_MESSAGEUSING  (1<<2)

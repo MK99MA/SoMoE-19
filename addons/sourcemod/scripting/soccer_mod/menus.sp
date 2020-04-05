@@ -288,6 +288,7 @@ public int MenuHandlerMapsChange(Menu menu, MenuAction action, int client, int c
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has changed the map to %s", prefixcolor, prefix, textcolor, client, map);
+			if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,true);
 		}
 
 		char steamid[32];
@@ -353,6 +354,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("pause", "!pause, !p");
 	menu.AddItem("unpause", "!unpause, !unp");
 	menu.AddItem("stop", "!stop");
+	menu.AddItem("rdy", "!rdy");
 	menu.AddItem("maprr", "!maprr");
 	menu.AddItem("training", "!training");
 	menu.AddItem("pick", "!pick");
@@ -394,6 +396,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "pause"))		CPrintToChat(client, "{%s}[%s] {%s}Pause a Match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "unpause"))		CPrintToChat(client, "{%s}[%s] {%s}Unpause a Match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "stop"))		CPrintToChat(client, "{%s}[%s] {%s}Stop a Match", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "rdy"))			CPrintToChat(client, "{%s}[%s] {%s}Bring back the ready menu if you closed it by accident", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "adminlist"))	
 		{
 			if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode is set to everyone. Try using !menu yourself", prefixcolor, prefix, textcolor);
@@ -418,9 +421,9 @@ public void OpenMenuCommandsAdmin(int client)
 	menu.AddItem("admin", "!madmin");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "!addadmin <SteamID>");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "!rr");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("dpasswordcmd", "!dpass");		
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("passwordcmd", "!pass <PW>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON)) menu.AddItem("rpasswordcmd", "!rpass");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "!dpass");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "!pass <PW>");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "!rpass");	
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -456,7 +459,7 @@ public void OpenMenuCredits(int client)
 
 	menu.AddItem("marco", "Marco Boogers (Script)");
 	
-	menu.AddItem("arturo", "Arturo (Script edits)", ITEMDRAW_DISABLED);
+	menu.AddItem("arturo", "Arturo (Script edits)");
 
 	menu.AddItem("termi", "Termiii (Player models)");
 
@@ -478,7 +481,8 @@ public int MenuHandlerCredits(Menu menu, MenuAction action, int client, int choi
 		char menuItem[32];
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "marco"))		CPrintToChat(client, "{%s}%s {%s}http://steamcommunity.com/id/fcd_marco/", prefixcolor, prefix, textcolor);
+		if (StrEqual(menuItem, "marco"))		CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/id/fcd_marco/", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "arturo"))	CPrintToChat(client, "{%s}[%s] {%s}https://github.com/MK99MA?tab=repositories", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "termi"))   CPrintToChat(client, "{%s}[%s] {%s}https://steamcommunity.com/id/Termiii/", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "walmar"))  CPrintToChat(client, "{%s}[%s] {%s}(c) 2009-2013 walmar - walmar.postbox@gmail.com - http://github.com/walmar", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "group"))   CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/groups/soccer_mod", prefixcolor, prefix, textcolor);

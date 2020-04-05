@@ -450,7 +450,7 @@ public void OnMapStart()
 		ReadFromConfig();
 	}
 	if (FileExists(tempReadyFileKV)) DeleteTempFile();
-	
+		
 	//Get the server password from server.cfg
 	GetDefaultPassword(defaultpw, sizeof(defaultpw));
 	
