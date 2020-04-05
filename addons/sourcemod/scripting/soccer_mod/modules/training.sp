@@ -126,8 +126,16 @@ public int TrainingMenuHandler(Menu menu, MenuAction action, int client, int cho
 			}
 			else if (StrEqual(menuItem, "spawn"))
 			{
-				TrainingSpawnBall(client);
-				OpenTrainingMenu(client);
+				if(GetClientTeam(client) > 1 && IsPlayerAlive(client))
+				{
+					TrainingSpawnBall(client);
+					OpenTrainingMenu(client);
+				}
+				else 
+				{
+					CPrintToChat(client,"{%s}[%s] {%s}Only alive players can spawn a ball.", prefixcolor, prefix, textcolor);
+					OpenTrainingMenu(client);
+				}
 			}
 			else if (StrEqual(menuItem, "cannon")) OpenTrainingCannonMenu(client);
 		}

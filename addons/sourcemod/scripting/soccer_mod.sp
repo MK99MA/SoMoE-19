@@ -165,6 +165,7 @@ public void OnPluginStart()
 	//GetGameFolderName(gamevar, sizeof(gamevar));
 
 	AddCommandListener(SayCommandListener, "say");
+	AddCommandListener(SayCommandListener, "say2");
 	AddCommandListener(SayCommandListener, "say_team");
 	AddAmbientSoundHook(AmbientSHook);
 
@@ -524,6 +525,38 @@ public void OnClientPutInServer(int client)
 		CPrintToChatAll("{%s}[%s] Threshold hit. Locking server again");
 		RandPass();
 	}
+}
+
+public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
+{
+	char cString[512]
+	strcopy(cString, sizeof(cString), sArgs);
+	StripQuotes (cString);
+		
+	if((cString[0] == '!') || (cString[0] == '/'))
+	{
+		/*if(IsCharUpper(cString[1]))
+		{
+			for(int i = 0; i <= strlen(cString); i++)
+			{
+				cString[i] = CharToLower(cString[i])
+			}
+			FakeClientCommand(client, "say %s", cString);
+		}
+		return Plugin_Handled;*/
+		
+		for(int i = 1; i <= strlen(cString); i++)
+		{
+			if(IsCharUpper(cString[i])) 
+			{
+				cString[i] = CharToLower(cString[i]);
+				FakeClientCommand(client, "say %s", cString);
+				return Plugin_Handled;
+			}
+		}
+	}
+	
+	return Plugin_Continue;
 }
 
 public Action OnTakeDamageArmor(int victim, int& attacker, int& inflictor, float& damage, int& damagetype)
