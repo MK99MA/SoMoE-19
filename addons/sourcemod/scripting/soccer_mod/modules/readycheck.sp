@@ -35,7 +35,8 @@ public void OpenReadyPanel(int client)
 	
 	// Create Panel
 	Panel panel = new Panel();
-	panel.SetTitle("Unpause Ready Check");
+	if(matchReadyCheck == 1)	panel.SetTitle("Unpause Ready Check: AUTO");
+	else if(matchReadyCheck == 2)	panel.SetTitle("Unpause Ready Check: MANUAL");
 	panel.DrawText("_______________________");
 	if (matchReadyCheck == 1) Format(bLine, sizeof(bLine), "Players: (%i / %i) required", readydisplay , startplayers);
 	else if (matchReadyCheck == 2) Format(bLine, sizeof(bLine), "Players: (%i / %i) required", readydisplay , playernum);
