@@ -896,9 +896,9 @@ public void OpenMenuOnlineAdminAll(int client)
 				onlinecount++;
 				//if(!onserver) onserver = true;
 			}
-			else if(onlinecount == 0) menu.AddItem("", "No Admins on the server", ITEMDRAW_DISABLED);
 		}
 	}
+	if(onlinecount == 0) menu.AddItem("", "No Admins on the server", ITEMDRAW_DISABLED);
 	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 	
 	menu.ExitBackButton = true;
@@ -939,9 +939,9 @@ public void OpenMenuOnlineAdminSourcemod(int client)
 				onlinecount++;
 				//if(!onserver) onserver = true;
 			}
-			else if(onlinecount == 0) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 		}
 	}
+	if(onlinecount == 0) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
 	
 	menu.ExitBackButton = true;
@@ -980,9 +980,9 @@ public void OpenMenuOnlineSoccerAdmin(int client)
 				onlinecount++;
 				//if(!onserver) onserver = true;
 			}
-			else if(onlinecount == 0) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
 		}
 	}
+	if(onlinecount == 0) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
 	//if(!onserver) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
 	
 	menu.ExitBackButton = true;
