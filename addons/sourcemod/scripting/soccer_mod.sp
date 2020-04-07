@@ -86,6 +86,7 @@ KeyValues kvAdmins;
 KeyValues kvSMAdmins;
 //KeyValues kvAdminGroups;
 KeyValues LeagueMatchKV;
+KeyValues kvTemp;
 
 // **************************************************************************************************************
 // ************************************************** INCLUDES **************************************************

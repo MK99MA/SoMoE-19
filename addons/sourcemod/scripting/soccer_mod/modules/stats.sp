@@ -661,7 +661,7 @@ public void StatsEventRoundEnd(Event event)
 				}
 			}
 
-			if (matchlog == 1 && matchStarted)	KVSaveEvent(statsScorerSteamid, statsAssisterSteamid);
+			if (matchlog == 1 && matchStarted)	KVSaveEvent(statsScorerSteamid, statsScorerName, statsAssisterSteamid, statsAssisterName, statsScorerClientid, statsAssisterClientid);
 			
 			if(MVPEnabled == 1) ShowMVP();
 
