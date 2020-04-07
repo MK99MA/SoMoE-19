@@ -7,20 +7,22 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], ReadyState[32];
-	if(matchReadyCheck == 0)			ReadyState = "OFF";
-	else if (matchReadyCheck == 1)		ReadyState = "AUTO";
-	else if (matchReadyCheck == 2)		ReadyState = "ON USE";
-	Format(ReadyString, sizeof(ReadyString), "Ready Check: %s", ReadyState);
+	char ReadyString[32], DamageString[32];
+	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
+	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
+	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
+	
+	if(damageSounds == 0)				DamageString = "Damage Sound: OFF";
+	else if(damageSounds == 1)			DamageString = "Damage Sound: ON";
 
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("chatset", "Chat Settings");
 	menu.AddItem("maps", "Allowed Maps");
-	menu.AddItem("ready", ReadyString);
 	menu.AddItem("pubmode", "Public Mode");
-	menu.AddItem("lockenabled", "Lock Server");
-
+	menu.AddItem("ready", ReadyString);
+	menu.AddItem("damagesound", DamageString);
 	menu.AddItem("skinsmenu", "Skins");
+	menu.AddItem("lockenabled", "Lock Server");
 
 	if (debuggingEnabled) menu.AddItem("gk_areas", "Set gk area's");
 
@@ -54,7 +56,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 				OpenMenuSettings(client);
 			}
 		}
-		else if (StrEqual(menuItem, "lockenabled"))
+		else if(StrEqual(menuItem, "lockenabled"))
 		{
 			if(!pwchange) OpenMenuLockSet(client);
 			else 
@@ -63,10 +65,25 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 				OpenMenuSettings(client);
 			}
 		}
-		else if (StrEqual(menuItem, "adminset")) if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))		OpenMenuAdminSet(client);
-		else if (currentMapAllowed)
+		else if(StrEqual(menuItem, "damagesound")) 
 		{
-			if (StrEqual(menuItem, "gk_areas"))		OpenMenuGKAreas(client);
+			if(damageSounds == 0)
+			{
+				damageSounds = 1;
+				UpdateConfigInt("", "", damageSounds);
+				OpenMenuSettings(client);
+			}
+			else if(damageSounds >0)
+			{
+				damageSounds = 0;
+				UpdateConfigInt("", "", damageSounds);
+				OpenMenuSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "adminset")) if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))		OpenMenuAdminSet(client);
+		else if(currentMapAllowed)
+		{
+			if(StrEqual(menuItem, "gk_areas"))		OpenMenuGKAreas(client);
 		}
 		else
 		{

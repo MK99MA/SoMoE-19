@@ -70,6 +70,7 @@ int ForfeitPublic		= 0;
 int ForfeitAutoSpec 	= 0;
 int ForfeitCapMode		= 0;
 int startplayers		= 0;
+int damageSounds		= 0;
 
 //Handle
 Handle allowedMaps	  	= INVALID_HANDLE;
@@ -168,6 +169,7 @@ public void OnPluginStart()
 	AddCommandListener(SayCommandListener, "say2");
 	AddCommandListener(SayCommandListener, "say_team");
 	AddAmbientSoundHook(AmbientSHook);
+	AddNormalSoundHook(sound_hook);
 
 	HookEntityOutput("func_physbox",	"OnAwakened",	   OnAwakened);
 	HookEntityOutput("prop_physics",	"OnAwakened",	   OnAwakened);

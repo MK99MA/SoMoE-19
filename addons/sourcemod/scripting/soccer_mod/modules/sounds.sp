@@ -39,3 +39,12 @@ public Action AmbientSHook(char sample[PLATFORM_MAX_PATH], int& entity, float& v
 	}
 	else return Plugin_Continue;
 }
+
+public Action sound_hook(int clients[64], int& numClients, char sample[PLATFORM_MAX_PATH], int& entity, int& channel, float& volume, int& level, int& pitch, int& flags)
+{
+	if(damageSounds == 0)
+	{
+		if(StrContains(sample, "player/damage", false) >= 0) 	return Plugin_Handled;
+	}
+	return Plugin_Continue;
+}
