@@ -49,6 +49,7 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "Set the sv password");
 	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "Set a random server password");
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "Prints your current clantag - Test");
+	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
 
 }
 
@@ -237,18 +238,22 @@ public Action StartCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
+		if(!matchStarted)
 		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			if(publicmode == 0)
+			{
+				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+				{
+					MatchStart(client);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+			}
+			else if(publicmode == 1 || publicmode == 2)
 			{
 				MatchStart(client);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
-		else if(publicmode == 1 || publicmode == 2)
-		{
-			MatchStart(client);
-		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Match already started!", prefixcolor, prefix, textcolor); 
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	
@@ -259,18 +264,22 @@ public Action PauseCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
+		if(!matchPaused)
 		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			if(publicmode == 0)
+			{
+				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+				{
+					MatchPause(client);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+			}
+			else if(publicmode == 1 || publicmode == 2)
 			{
 				MatchPause(client);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
-		else if(publicmode == 1 || publicmode == 2)
-		{
-			MatchPause(client);
-		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Match already paused!", prefixcolor, prefix, textcolor); 
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
@@ -280,18 +289,22 @@ public Action StopCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
+		if(matchStarted)
 		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			if(publicmode == 0)
+			{
+				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+				{
+					MatchStop(client);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+			}
+			else if(publicmode == 1 || publicmode == 2)
 			{
 				MatchStop(client);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
-		else if(publicmode == 1 || publicmode == 2)
-		{
-			MatchStop(client);
-		}
+		else CPrintToChat(client, "{%s}[%s] {%s}No match started!", prefixcolor, prefix, textcolor); 
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	
@@ -317,18 +330,26 @@ public Action UnpauseCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
+		if(matchStarted)
 		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			if(matchPaused)
 			{
-				UnpauseCheck(client);
+				if(publicmode == 0)
+				{
+					if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+					{
+						UnpauseCheck(client);
+					}
+					else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+				}
+				else if(publicmode == 1 || publicmode == 2)
+				{
+					UnpauseCheck(client);
+				}
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+			else CPrintToChat(client, "{%s}[%s] {%s}Match is not paused!", prefixcolor, prefix, textcolor); 
 		}
-		else if(publicmode == 1 || publicmode == 2)
-		{
-			UnpauseCheck(client);
-		}
+		else CPrintToChat(client, "{%s}[%s] {%s}No match started!", prefixcolor, prefix, textcolor); 
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor); 
 	return Plugin_Handled;
@@ -492,6 +513,48 @@ public Action CreditsCommand(int client, int args)
 // *******************************************************************************************************************
 // ************************************************ ADMIN COMMANDS ***************************************************
 // *******************************************************************************************************************
+public Action Command_ForceRdy(int client, int args)
+{
+	if (matchPaused)
+	{
+		if(matchReadyCheck > 0)
+		{
+			kvTemp = new KeyValues("Ready Check");
+			kvTemp.ImportFromFile(tempReadyFileKV);
+			
+			kvTemp.GotoFirstSubKey()
+			do
+			{
+				char buffer[32];
+				kvTemp.GetString("Status", buffer, sizeof(buffer), "Not Ready");
+				if(StrEqual(buffer, "Not Ready"))
+				{
+					kvTemp.SetString("Status", "Ready");
+				}
+			}
+			while (kvTemp.GotoNextKey());
+			
+			kvTemp.Rewind();
+			kvTemp.ExportToFile(tempReadyFileKV);
+			kvTemp.Close();
+			
+			RefreshPanel();
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+				{
+					CPrintToChat(i,"{%s}[%s] {%s}State forced to Ready.", prefixcolor, prefix, textcolor);
+				}
+			}
+			
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}ReadyCheck not running!", prefixcolor, prefix, textcolor); 
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Match not Paused!", prefixcolor, prefix, textcolor); 
+	
+	return Plugin_Handled;
+}
+
 public Action Command_DefPass(int client, int args)
 {
 	if (bRandPass)

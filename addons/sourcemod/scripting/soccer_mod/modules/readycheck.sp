@@ -5,8 +5,6 @@ int readydisplay = 0;
 
 bool tempUnpause = false;
 
-KeyValues kvTemp;
-
 public void OpenReadyPanel(int client)
 {
 	// Create temp File if it doesn't exist (default)
@@ -157,7 +155,7 @@ public void RefreshPanel()
 			{
 				if (AreAllReady())
 				{
-					OpenReadyPanel(i);
+					//OpenReadyPanel(i);
 					CancelClientMenu(i,true);
 					//readycheck = false;//
 					CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor, prefix, textcolor);
@@ -248,7 +246,6 @@ public void UnpauseCheck(int client)
 					{
 						CancelClientMenu(i,true);
 						//readycheck = false;
-						CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor,  prefix, textcolor);
 						DeleteTempFile();
 						if (tempUnpause)
 						{
@@ -259,6 +256,7 @@ public void UnpauseCheck(int client)
 				}
 			}
 			
+			CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor,  prefix, textcolor);
 			MatchUnpause(client);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Not everyone is ready!", prefixcolor, prefix, textcolor);
