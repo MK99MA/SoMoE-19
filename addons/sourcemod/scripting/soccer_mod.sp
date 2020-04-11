@@ -3,7 +3,7 @@
 // **************************************************************************************************************
 #define PLUGIN_VERSION "1.0.3"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
-
+#define MAX_NAMES 10
 // **************************************************************************************************************
 // ************************************************** VARIABLES *************************************************
 // **************************************************************************************************************
@@ -50,9 +50,6 @@ char pathRefCardsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_referee_
 char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
 char tempReadyFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/temp_readycheck.txt";
 
-//Convars
-
-
 //Floats
 float afk_kicktime		= 100.0;
 
@@ -77,6 +74,10 @@ Handle allowedMaps	  	= INVALID_HANDLE;
 Handle db			   	= INVALID_HANDLE;
 Handle pauseRdyTimer	= null;
 
+//Array
+Handle logmenuArray;
+char PlayerNames[MAXPLAYERS+1][MAX_NAMES][MAX_NAME_LENGTH+1];
+int iPlayerNames[MAXPLAYERS+1];
 
 //KeyValues
 KeyValues kvConfig;
@@ -1106,4 +1107,13 @@ public Action DelayedServerCommand(Handle timer, DataPack pack)
 	char command[64];
 	pack.ReadString(command, sizeof(command));
 	ServerCommand(command);
+}
+
+public void ClearTimer(Handle timer)
+{
+	if (timer != INVALID_HANDLE)
+	{
+		KillTimer(timer);
+	}
+	timer = INVALID_HANDLE;
 }

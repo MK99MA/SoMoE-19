@@ -1120,7 +1120,7 @@ public void AddAdminFunc(char SteamIDbuffer[20])
 	kvSMAdmins = new KeyValues("Admins")
 	kvSMAdmins.ImportFromFile(adminSMFileKV);
 	
-	adminFlags = "Not Set";
+	adminFlags = "b";
 	adminGroup = "Not Set";
 	adminImmunity = "0";
 	kvSMAdmins.JumpToKey(clientName, true);

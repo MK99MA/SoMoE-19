@@ -17,9 +17,11 @@ int forfeitHelper;
 bool matchGoldenGoalActive		= false;
 bool matchKickOffTaken			= false;
 bool matchStoppageTimeStarted	= false;
+bool showcards					= false;
 
 //Handle
 Handle matchTimer				= null;
+Handle matchLogRefresh			= null;
 
 //Strings
 char tagName[32];
@@ -252,21 +254,98 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 // ***********************************************************************************************************************
 public void OpenMatchLogMenu(int client)
 {
+	logmenuArray		= CreateArray(128);
+	ClearArray(logmenuArray);
 	Menu menu = new Menu(MatchLogMenuHandler);
 
-	menu.SetTitle("Match Log");
+	menu.SetTitle("Match Log (Refreshes every 5 seconds)");
 	KVGetEvent(menu);
+	char menubuffer[128];
+	
+	for(int i = GetArraySize(logmenuArray)-1; i >= 0; i--)
+	{
+		GetArrayString(logmenuArray, i, menubuffer, sizeof(menubuffer));
+		
+		char buffer[32];
+		IntToString(i, buffer, sizeof(buffer)); 
+		
+		menu.AddItem(buffer, menubuffer, ITEMDRAW_DISABLED);
+	}
+	
+	if(showcards)	menu.AddItem("cardlog", "Card Log");
+	if(GetMenuItemCount(menu) == 0) 
+	{
+		menu.AddItem("emptylog", "Nothing to display", ITEMDRAW_DISABLED);
+	}
+	if(matchStarted) matchLogRefresh = CreateTimer(5.0, RefreshMatchLog, client);
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
 public int MatchLogMenuHandler(Menu menu, MenuAction action, int client, int choice)
-{
-	if (action == MenuAction_Cancel && choice == -6)   OpenMatchMenu(client);
-	else if (action == MenuAction_End)					  menu.Close();
+{	
+	if (action == MenuAction_Select)
+	{
+		ClearTimer(matchLogRefresh);
+		OpenMatchLogCards(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   
+	{
+		ClearTimer(matchLogRefresh);
+		OpenMatchMenu(client);
+	}	
+	else if (action == MenuAction_End)					  
+	{
+		ClearTimer(matchLogRefresh);
+		menu.Close();
+	}
 }
 
+public void OpenMatchLogCards(int client)
+{
+	Menu menu = new Menu(MatchLogCardsHandler);
+
+	menu.SetTitle("Match Card Log");
+	menu.AddItem("refresh", "Refresh");
+	KVGetCards(menu);
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MatchLogCardsHandler(Menu menu, MenuAction action, int client, int choice)
+{	
+	if (action == MenuAction_Select)
+	{
+		OpenMatchLogCards(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   
+	{
+		OpenMatchLogMenu(client);
+	}	
+	else if (action == MenuAction_End)					  
+	{
+		menu.Close();
+	}
+}
+
+public Action RefreshMatchLog(Handle timer, int client)
+{
+	OpenMatchLogMenu(client);
+	matchLogRefresh = CreateTimer(5.0, RefreshMatchLog, client);
+	
+	return;
+}
+
+public void SaveLogsOnMatchStart() //Set everything to default
+{
+    for(int i = 1; i <= MaxClients; i++)
+    {
+        iPlayerNames[i] = 0;
+        for(int k = 0; k < MAX_NAMES; k++) PlayerNames[i][k] = "\0"; //Empty the string;
+    }
+}
 
 // ***************************************************************************************************************
 // ****************************************** MATCH SETTINGS MENU ************************************************
@@ -776,7 +855,7 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 				{
 					for (tagindex = 1; tagindex <= MaxClients; tagindex++)
 					{	
-						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
+						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_CT) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
 						{
 							CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
 							if(!(strlen(tagName) > 0))
@@ -1537,7 +1616,11 @@ public void MatchStart(int client)
 		}
 		
 		RenameMatchLog();		
-		if(matchlog == 1) CreateMatchLog(custom_name_ct, custom_name_t);
+		if(matchlog == 1) 
+		{
+			SaveLogsOnMatchStart();
+			CreateMatchLog(custom_name_ct, custom_name_t);
+		}
 
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -1597,7 +1680,7 @@ public void MatchUnpause(int client)
 	{
 		if (matchPaused)
 		{
-			KillPauseReadyTimer();
+			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
 			CPrintToChatAll("{%s}[%s] {%s}Match was paused for %s minutes", prefixcolor, prefix, textcolor, totalpausetime);
 			matchPaused = false;
 			
@@ -1625,7 +1708,7 @@ public void MatchStop(int client)
 {
 	if (matchStarted)
 	{
-		KillPauseReadyTimer();
+		ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
 		MatchReset();
 		UnfreezeAll();
 

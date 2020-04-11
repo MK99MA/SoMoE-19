@@ -14,34 +14,67 @@ char kvOwngoals[32] = "Owngoals:";
 
 public void KVGetEvent(Menu menu)
 {
-	char timeString[16];
-	char scoreString[32], scorerString[32], assisterString[32], cardString2[32], menuString[128];
+	char  timeString[16], scoreString[32], scorerString[128], assisterString[128], menuString[128];
 	getTimeString(timeString, matchTime);
 	Format(scoreString, sizeof(scoreString), "%i:%i", matchScoreCT, matchScoreT);		
+	showcards = false;
 	
 	LeagueMatchKV = new KeyValues("Match Log")
 	LeagueMatchKV.ImportFromFile(matchlogKV);
-	//LeagueMatchKV.GotoFirstSubKey();
-	//LeagueMatchKV.GotoNextKey();
+	
+	char buffer[sizeof(scorerString)];
+	char pattern[] =  "([(U:\\d:[\\d]+])";
+	Regex regex = CompileRegex(pattern);
 	
 	LeagueMatchKV.JumpToKey("Scoresheet", false);
-	LeagueMatchKV.GotoFirstSubKey();
-	
-	do
-	{
-		LeagueMatchKV.GetSectionName(scoreString, sizeof(scoreString));
-		LeagueMatchKV.GetString(kvTime, timeString, sizeof(timeString));
-		LeagueMatchKV.GetString(kvScorer, scorerString, sizeof(scorerString));
-		LeagueMatchKV.GetString(kvAssister, assisterString, sizeof(assisterString), "No Assist");
+	if(LeagueMatchKV.GotoFirstSubKey())
+	{	
 		
-		Format(menuString, sizeof(menuString), "[%s] %s G: %s A: %s", timeString, scoreString, scorerString, assisterString);
-		menu.AddItem(timeString, menuString, ITEMDRAW_DISABLED);
+		do
+		{
+			LeagueMatchKV.GetSectionName(scoreString, sizeof(scoreString));
+			LeagueMatchKV.GetString(kvTime, timeString, sizeof(timeString));
+			LeagueMatchKV.GetString(kvScorer, scorerString, sizeof(scorerString));
+			if (MatchRegex(regex, scorerString) > 0)
+			{
+				GetRegexSubString(regex, 0, buffer, sizeof(buffer));
+				ReplaceString(scorerString, sizeof(scorerString), buffer, "",false);
+			}
+			LeagueMatchKV.GetString(kvAssister, assisterString, sizeof(assisterString), "No Assist");
+			if (MatchRegex(regex, assisterString) > 0)
+			{
+				GetRegexSubString(regex, 0, buffer, sizeof(buffer));
+				ReplaceString(assisterString, sizeof(assisterString), buffer, "",false);
+			}
+			
+			Format(menuString, sizeof(menuString), "[%s] %s G: %s A: %s", timeString, scoreString, scorerString, assisterString);
+			
+			PushArrayString(logmenuArray, menuString);
+			//menu.AddItem(timeString, menuString, ITEMDRAW_DISABLED);
+		}
+		while (LeagueMatchKV.GotoNextKey());
 	}
-	while (LeagueMatchKV.GotoNextKey());
 	LeagueMatchKV.Rewind();
 	
-	// IF card is given
-	menu.AddItem("", "###################", ITEMDRAW_DISABLED);
+	// IF card is given add menu "Card log"
+	// add stuff to menuCards (new menu)
+	if(LeagueMatchKV.JumpToKey("Cards", false))
+	{
+		if(LeagueMatchKV.GotoFirstSubKey()) 	showcards = true;
+		else showcards = false;
+	}
+	
+	LeagueMatchKV.Rewind();
+	LeagueMatchKV.Close();
+}
+
+public void KVGetCards(Menu menu)
+{
+	char  timeString[16], cardString2[32], scorerString[128], menuString[128];
+	getTimeString(timeString, matchTime);	
+	
+	LeagueMatchKV = new KeyValues("Match Log")
+	LeagueMatchKV.ImportFromFile(matchlogKV);
 	
 	if(LeagueMatchKV.JumpToKey("Cards", false))
 	{
@@ -59,7 +92,6 @@ public void KVGetEvent(Menu menu)
 		while (LeagueMatchKV.GotoNextKey() );
 		LeagueMatchKV.GoBack();
 	}
-	
 	LeagueMatchKV.Rewind();
 	LeagueMatchKV.Close();
 }
@@ -123,6 +155,7 @@ public void KVSaveEvent(char scoreid[32], char scorerName[MAX_NAME_LENGTH], char
 {
 	char timeString[16];
 	char scoreString[32];
+	char scorerString[128], assisterString[128];
 	getTimeString(timeString, matchTime);
 	Format(scoreString, sizeof(scoreString), "%i:%i", matchScoreCT, matchScoreT);
 
@@ -132,8 +165,37 @@ public void KVSaveEvent(char scoreid[32], char scorerName[MAX_NAME_LENGTH], char
 	LeagueMatchKV.JumpToKey("Scoresheet", true);
 	LeagueMatchKV.JumpToKey(scoreString, true);
 	LeagueMatchKV.SetString(kvTime,	timeString);
-	LeagueMatchKV.SetString(kvScorer, scorerName); //statsScorerName);
-	if(GetClientTeam(scorerclient) == GetClientTeam(assisterclient)) LeagueMatchKV.SetString(kvAssister, assisterName); //statsAssisterName);
+	Format(scorerString, sizeof(scorerString), "%s %s", scorerName, scoreid);
+	LeagueMatchKV.SetString(kvScorer, scorerString);
+	if(assisterclient != 0)
+	{
+		if(GetClientTeam(scorerclient) == GetClientTeam(assisterclient)) 
+		{
+			if(!StrEqual(assisterName, "Owngoal")) 
+			{
+				Format(assisterString, sizeof(assisterString), "%s %s", assisterName, assistid); 
+				LeagueMatchKV.SetString(kvAssister, assisterString);
+			}
+			else LeagueMatchKV.SetString(kvAssister, assisterName);
+		}
+		else 
+		{
+			if(StrEqual(assisterName, "Owngoal")) 
+			{
+				assisterclient = 0;
+				assistid = "";
+				LeagueMatchKV.SetString(kvAssister, assisterName);
+			}
+			else
+			{
+				assisterName = "";
+				assisterclient = 0;
+				assistid = "";
+			}
+		}
+	}
+	else if(StrEqual(assisterName, "Owngoal")) LeagueMatchKV.SetString(kvAssister, assisterName);
+	
 	LeagueMatchKV.GoBack();
 	LeagueMatchKV.GoBack();
 	
@@ -142,7 +204,7 @@ public void KVSaveEvent(char scoreid[32], char scorerName[MAX_NAME_LENGTH], char
 	LeagueMatchKV.Close();
 	
 	//save overview stuff
-	KVSaveOverview(scorerName, assisterName, scoreid, assistid);
+	KVSaveOverview(scorerName, assisterName, scoreid, assistid, scorerclient, assisterclient);
 }
 
 public void KVSaveCard()
@@ -165,89 +227,114 @@ public void KVSaveCard()
 	LeagueMatchKV.Close();
 }
 
-public void KVSaveOverview(char scorerName[MAX_NAME_LENGTH], char assisterName[MAX_NAME_LENGTH], char scoreid[32], char assistid[32])
+public void KVSaveOverview(char scorerName[MAX_NAME_LENGTH], char assisterName[MAX_NAME_LENGTH], char scoreid[32], char assistid[32], int scorerclient, int assisterclient)
 {
 	int goals = 0;
 	int assists = 0;
 	int owngoals = 0;
-	char secBuffer[64], nameBuffer[256], nameBuffer2[512];
 	
 	LeagueMatchKV = new KeyValues("Match Log");
-	//SetEscapeSequences(true) Sets whether or not the KeyValues parser will read escape sequences. For example, \n would be read as a literal newline. This defaults to false for new KeyValues structures.
+	//SetEscapeSequences(true) 
+	//Sets whether or not the KeyValues parser will read escape sequences. For example, \n would be read as a literal newline. This defaults to false for new KeyValues structures.
 	LeagueMatchKV.ImportFromFile(matchlogKV);
 	
 	LeagueMatchKV.JumpToKey("Playerstats", true);
 	
 	//Create Key if it doesnt exist
-	if(!(StrEqual(assisterName, "Owngoal")))
+	if(!LeagueMatchKV.JumpToKey(scoreid, false))
 	{
-		if(LeagueMatchKV.JumpToKey(scoreid, true))
-		{
-			LeagueMatchKV.SetString(kvName, scorerName);
-			LeagueMatchKV.SetNum(kvGoals, 0);
-			LeagueMatchKV.GoBack();
-		}
-		if(!StrEqual(assisterName, ""))
-		{
-			if(LeagueMatchKV.JumpToKey(assistid, true))
-			{
-				LeagueMatchKV.SetString(kvName, assisterName);
-				LeagueMatchKV.SetNum(kvAssists, 0)
-				LeagueMatchKV.GoBack();
-			}
-		}
+		LeagueMatchKV.JumpToKey(scoreid, true);
+		LeagueMatchKV.SetString(kvName, scorerName);
+		LeagueMatchKV.SetNum(kvGoals, 0);
+		LeagueMatchKV.SetNum(kvAssists, 0);
+		LeagueMatchKV.SetNum(kvOwngoals, 0);
 	}
-	else if(StrEqual(assisterName, "Owngoal"))
+	LeagueMatchKV.GoBack();
+	if(!StrEqual(assisterName, "") && !LeagueMatchKV.JumpToKey(assistid, false))
 	{
-		if(LeagueMatchKV.JumpToKey(scoreid, true))
-		{
-			LeagueMatchKV.SetString(kvName, assisterName);
-			LeagueMatchKV.SetNum(kvAssists, 0)
-			LeagueMatchKV.GoBack();
-		}
+		LeagueMatchKV.JumpToKey(assistid, true);
+		LeagueMatchKV.SetString(kvName, assisterName);
+		LeagueMatchKV.SetNum(kvGoals, 0);
+		LeagueMatchKV.SetNum(kvAssists, 0);
+		LeagueMatchKV.SetNum(kvOwngoals, 0);
 	}
+	
 	LeagueMatchKV.GoBack();
 	LeagueMatchKV.Rewind();
 	
 	LeagueMatchKV.JumpToKey("Playerstats", true);
-	LeagueMatchKV.GotoFirstSubKey();	
-	do
-	{
-		LeagueMatchKV.GetSectionName(secBuffer, sizeof(secBuffer));
-		
-		if(StrEqual(secBuffer, scoreid) && !(StrEqual(assisterName, "Owngoal")))
-		{
-			goals = LeagueMatchKV.GetNum(kvGoals);
-			goals++;
-			LeagueMatchKV.SetNum(kvGoals, goals);
-			LeagueMatchKV.GetString(kvName, nameBuffer, sizeof(nameBuffer));
-			Format (nameBuffer2, sizeof(nameBuffer2), "%s -> %s", nameBuffer, scorerName);
-			if (!(StrEqual(nameBuffer, scorerName)))	LeagueMatchKV.SetString(kvName, nameBuffer2);
-		}
-		else if (StrEqual(secBuffer, assistid) && !(StrEqual(assistid, "")))
-		{
-			assists = LeagueMatchKV.GetNum(kvAssists);
-			assists++;
-			LeagueMatchKV.SetNum(kvAssists, assists);
-			LeagueMatchKV.GetString(kvName, nameBuffer, sizeof(nameBuffer));
-			Format (nameBuffer2, sizeof(nameBuffer2), "%s -> %s", nameBuffer, assisterName);
-			if (!(StrEqual(nameBuffer, assisterName)))	LeagueMatchKV.SetString(kvName, nameBuffer2);
-		}
-		else if (StrEqual(secBuffer, scoreid) && StrEqual(assisterName, "Owngoal"))
-		{
-			owngoals = LeagueMatchKV.GetNum(kvOwngoals);
-			owngoals++
-			LeagueMatchKV.SetNum(kvOwngoals, owngoals);
-			LeagueMatchKV.GetString(kvName, nameBuffer, sizeof(nameBuffer));
-			Format (nameBuffer2, sizeof(nameBuffer2), "%s -> %s", nameBuffer, scorerName);
-			if (!(StrEqual(nameBuffer, scorerName)))	LeagueMatchKV.SetString(kvName, nameBuffer2);
-		}
-	}
-	while (LeagueMatchKV.GotoNextKey() );
 	
+	LeagueMatchKV.JumpToKey(scoreid, true);
+	if(!StrEqual(assisterName, "Owngoal"))
+	{
+		goals = LeagueMatchKV.GetNum(kvGoals);
+		goals++;
+		LeagueMatchKV.SetNum(kvGoals, goals);
+
+		if(!CheckPlayerNames(scorerclient, scorerName)) //if there is no match in the array
+		{
+			iPlayerNames[scorerclient]++;
+			Format(PlayerNames[scorerclient][iPlayerNames[scorerclient]], sizeof(PlayerNames[][]), scorerName); //add the new name to the array
+		}
+		LeagueMatchKV.SetString("Other Names:", GetNames(scorerclient));
+	}
+	else
+	{
+		owngoals = LeagueMatchKV.GetNum(kvOwngoals);
+		owngoals++
+		LeagueMatchKV.SetNum(kvOwngoals, owngoals);
+			
+		if(!CheckPlayerNames(scorerclient, scorerName)) //if there is no match in the array
+		{
+			iPlayerNames[scorerclient]++;
+			Format(PlayerNames[scorerclient][iPlayerNames[scorerclient]], sizeof(PlayerNames[][]), scorerName); //add the new name to the array
+		}
+		LeagueMatchKV.SetString("Other Names:", GetNames(scorerclient));
+	}
+	LeagueMatchKV.GoBack();
+	
+	if(!StrEqual(assistid, "") && !StrEqual(assisterName, "Owngoal") && (GetClientTeam(scorerclient) == GetClientTeam(assisterclient)))
+	{
+		LeagueMatchKV.JumpToKey(assistid,true);
+
+		assists = LeagueMatchKV.GetNum(kvAssists);
+		assists++;
+		LeagueMatchKV.SetNum(kvAssists, assists);
+			
+		if(!CheckPlayerNames(assisterclient, assisterName)) //if there is no match in the array
+		{
+			iPlayerNames[assisterclient]++;
+			Format(PlayerNames[assisterclient][iPlayerNames[assisterclient]], sizeof(PlayerNames[][]), assisterName); //add the new name to the array
+		}
+		LeagueMatchKV.SetString("Other Names:", GetNames(assisterclient));
+	}
+	LeagueMatchKV.GoBack();
+		
 	LeagueMatchKV.Rewind();
 	LeagueMatchKV.ExportToFile(matchlogKV);
 	LeagueMatchKV.Close();
+}
+
+static stock bool CheckPlayerNames(int client, const char[] name)
+{
+    for(int i = 0; i < MAX_NAMES; i++)
+    {
+        if(StrEqual(name, PlayerNames[client][i])) return true;
+    }
+
+    return false;
+}
+
+static stock char GetNames(int client)
+{
+    char output[(MAX_NAME_LENGTH*MAX_NAMES)+1]; //just to make sure the size will be enough
+    for(int i = 0; i <= iPlayerNames[client]; i++)
+    {
+        if(i == 1) Format(output, sizeof(output), "%s", PlayerNames[client][i]);
+        else Format(output, sizeof(output), "%s | %s", output, PlayerNames[client][i]);
+    }
+
+    return output;
 }
 
 // *******************************************************************************************************************
@@ -305,63 +392,3 @@ public void RenameMatchLog()
 	
 	DeleteFile(matchlogKV, false);
 }
-
-
-// *******************************************************************************************************************
-// *************************************************** UNUSED ********************************************************
-// *******************************************************************************************************************
-
-/*
-public void KVSaveOverview()
-{
-	char scorerName[MAX_NAME_LENGTH], assisterName[MAX_NAME_LENGTH];
-	char secBuffer[64];
-	
-	LeagueMatchKV = new KeyValues("Match Log");
-	LeagueMatchKV.ImportFromFile(matchlogKV);
-	
-	LeagueMatchKV.JumpToKey("Playerstats", true);
-	LeagueMatchKV.GotoFirstSubKey();
-	
-	do
-	{
-		int goals = 0;
-		int assists = 0;
-		int owngoals = 0;
-		LeagueMatchKV.GetSectionName(secBuffer, sizeof(secBuffer));
-		LeagueMatchKV.GetString(kvScorer, scorerName, sizeof(scorerName))
-		LeagueMatchKV.GetString(kvAssister, assisterName, sizeof(assisterName))
-		LeagueMatchKV.Rewind();
-		LeagueMatchKV.JumpToKey("Playerstats", true);
-		if (LeagueMatchKV.JumpToKey(scorerName, true))
-		{
-			LeagueMatchKV.JumpToKey(scorerName, true);
-			goals = LeagueMatchKV.GetNum("Goals", 0);
-			goals++;
-			LeagueMatchKV.SetNum("Goals", goals);		
-		}
-		else if (LeagueMatchKV.JumpToKey(assisterName, true))
-		{
-			LeagueMatchKV.JumpToKey(assisterName, true);
-			assists = LeagueMatchKV.GetNum("Assists", 0);
-			assists++;
-			LeagueMatchKV.SetNum("Assists", assists);
-		}
-		else if (LeagueMatchKV.JumpToKey(scorerName, true) && StrEqual(assisterName, "Owngoal"))
-		{
-			LeagueMatchKV.JumpToKey(scorerName, true);
-			owngoals = LeagueMatchKV.GetNum("Owngoals", 0);
-			owngoals++;
-			LeagueMatchKV.SetNum("Owngoals", owngoals);
-		}
-		LeagueMatchKV.Rewind();
-		LeagueMatchKV.JumpToKey("Playerstats", true);
-		LeagueMatchKV.JumpToKey(secBuffer, true);
-	}
-	while (LeagueMatchKV.GotoNextKey() );
-	
-	LeagueMatchKV.Rewind();
-	LeagueMatchKV.ExportToFile(matchlogKV);
-	LeagueMatchKV.Close();
-}
-*/
