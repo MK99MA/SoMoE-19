@@ -1,4 +1,4 @@
-# Soccer Mod - 2019 Edit
+# Soccer Mod - 2019 Edit (Current Version: 1.0.4)  
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
@@ -99,45 +99,57 @@ Not included in soccer_mod.smx but relied on:
 
 #### Example MatchLog file:  
 ```
-"Match Log"  
-{  
-	"CT_vs_Phoenix"  
-	{  
-		"CT"		"CT"  
-		"T"		"Phoenix"  
-	}  
-	"Scoresheet"  
-	{  
-		"0:1"  
-		{  
-			"Time:"		"00:04"  
-			"Scorer:"		"🎀 Kurisu 🌸"  
-		}  
-		"0:2"  
-		{  
-			"Time:"		"00:05"  
-			"Scorer:"		"🎀 QRisu 🌸"  
-		}  
-		"0:3"  
-		{  
-			"Time:"		"00:06"  
-			"Scorer:"		"🎀 Ayaya 🌸"  
-		}  
-		"0:4"  
-		{  
-			"Time:"		"00:07"  
-			"Scorer:"		"🎀 Kurisu 🌸"  
-		}  
-	}  
-	"Playerstats"  
-	{  
-		"[U:1:xxxxxxxx]"  //SteamID  
-		{  
-			"Name:"		"🎀 Kurisu 🌸 -> 🎀 QRisu 🌸 -> 🎀 Ayaya 🌸 -> 🎀 Kurisu 🌸"  
-			"Goals:"		"4"  
-		}  
-	}  
-}  
+"Match Log"
+{
+	"CT_vs_» Phoenix |"
+	{
+		"CT"		"CT"
+		"T"		"» Phoenix |"
+	}
+	"Scoresheet"
+	{
+		"0:1"
+		{
+			"Time:"		"00:01"
+			"Scorer:"		"🎀 Kurisu 🌸 [U:X:XXXXXXXX]"
+		}
+		"0:2"
+		{
+			"Time:"		"00:04"
+			"Scorer:"		"🎀 Kurisuu 🌸 [U:X:XXXXXXXX]"
+		}
+		"0:3"
+		{
+			"Time:"		"00:19"
+			"Scorer:"		"🎀 Kurisuu 🌸 [U:X:XXXXXXXX]"
+		}
+		"0:4"
+		{
+			"Time:"		"00:51"
+			"Scorer:"		"🎀 Kurisu 🌸 [U:X:XXXXXXXX]"
+		}
+	}
+	"Playerstats"
+	{
+		"[U:X:XXXXXXXX]"
+		{
+			"Name:"		"🎀 Kurisu 🌸"
+			"Goals:"		"4"
+			"Assists:"		"0"
+			"Owngoals:"		"0"
+			"Other Names:"		"🎀 Kurisu 🌸 | 🎀 Kurisuu 🌸"
+		}
+	}
+	"Cards"
+	{
+		"00:14"
+		{
+			"Card:"		"Yellow Card"
+			"Player:"		"🎀 Kurisuu 🌸"
+		}
+	}
+}
+
 ```  
   
 ## Installation
