@@ -382,13 +382,31 @@ public void RenameMatchLog()
 	LeagueMatchKV.GetSectionName(teamsString, sizeof(teamsString));
 	LeagueMatchKV.GoBack();
 	
-	FormatTime(stampString, sizeof(stampString), "%d%m%y_%H%M", GetFileTime(matchlogKV, FileTime_LastChange));
-	Format(logpath, sizeof(logpath), "cfg/sm_soccermod/logs/match_%s_%s.txt", teamsString, stampString); 
-	if(FileExists(matchlogKV) && (matchlog == 1)) RenameFile(logpath, matchlogKV, false);
-	
 	LeagueMatchKV.Rewind();
-	LeagueMatchKV.ExportToFile(matchlogKV);
-	LeagueMatchKV.Close();
+	LeagueMatchKV.Close();	
 	
+	FormatTime(stampString, sizeof(stampString), "%d%m%y_%H%M", GetFileTime(matchlogKV, FileTime_LastChange));
+	
+	int ErrorPos = FindCharInString(teamsString, '|');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '\\');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '/');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, ':');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '\"');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '?');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '<');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	ErrorPos = FindCharInString(teamsString, '>');
+	if(ErrorPos != -1) strcopy(teamsString[ErrorPos], sizeof(teamsString) - ErrorPos, teamsString[ErrorPos+1]);
+	
+	Format(logpath, sizeof(logpath), "cfg/sm_soccermod/logs/match_%s_%s.txt", teamsString, stampString); 
+	
+	if(FileExists(matchlogKV) && (matchlog == 1)) RenameFile(logpath, matchlogKV, false);
+
 	DeleteFile(matchlogKV, false);
 }
