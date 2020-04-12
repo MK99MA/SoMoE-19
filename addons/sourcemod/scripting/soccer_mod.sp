@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.3"
+#define PLUGIN_VERSION "1.0.4"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 // **************************************************************************************************************
@@ -432,8 +432,9 @@ public void OnTakeDamage(char[] output, int caller, int activator, float delay)
 // ************************************************************************************************************
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-  bLATE_LOAD = late;
-  return(APLRes_Success);
+	bLATE_LOAD = late;
+	
+	return APLRes_Success;
 }
 
 public void OnConfigsExecuted()

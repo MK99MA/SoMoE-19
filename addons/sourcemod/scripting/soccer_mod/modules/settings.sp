@@ -14,6 +14,8 @@ public void OpenMenuSettings(int client)
 	
 	if(damageSounds == 0)				DamageString = "Damage Sound: OFF";
 	else if(damageSounds == 1)			DamageString = "Damage Sound: ON";
+	
+	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("chatset", "Chat Settings");
@@ -22,6 +24,10 @@ public void OpenMenuSettings(int client)
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
 	menu.AddItem("skinsmenu", "Skins");
+	if (shoutplugin != INVALID_HANDLE)
+	{
+		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, true)) menu.AddItem("shoutplug", "Shout Plugin");
+	}
 	menu.AddItem("lockenabled", "Lock Server");
 
 	if (debuggingEnabled) menu.AddItem("gk_areas", "Set gk area's");
@@ -41,6 +47,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "chatset"))			OpenMenuChat(client);
 		else if (StrEqual(menuItem, "pubmode"))			OpenMenuPubMode(client);
 		else if (StrEqual(menuItem, "skinsmenu"))		OpenSkinsMenu(client);
+		else if (StrEqual(menuItem, "shoutplug"))		FakeClientCommandEx(client, "sm_shoutset");
 		else if (StrEqual(menuItem, "ready"))
 		{
 			if(matchReadyCheck < 2) 
@@ -94,8 +101,6 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
-
-
 
 // *******************************************************************************************************************
 // ************************************************** LOCKSET MENU ***************************************************
@@ -167,8 +172,6 @@ public int MenuHandlerLockSet(Menu menu, MenuAction action, int client, int choi
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
-
-
 
 // *******************************************************************************************************************
 // ************************************************** PUBMODE MENU ***************************************************
