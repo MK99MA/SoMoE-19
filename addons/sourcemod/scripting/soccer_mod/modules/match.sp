@@ -172,7 +172,7 @@ public void OpenMatchMenu(int client)
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 	{
-		if(matchlog == 1)	menu.AddItem("log", "Match Log");
+		if(matchlog > 0)	menu.AddItem("log", "Match Log");
 	}
 	
 	menu.AddItem("locknumber", currentMatchSet, ITEMDRAW_DISABLED);
@@ -250,7 +250,7 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 
 
 // ***********************************************************************************************************************
-// ************************************************** MATCH LOG MENU *****************************************************
+// ************************************************** MATCHLOG MENU *****************************************************
 // ***********************************************************************************************************************
 public void OpenMatchLogMenu(int client)
 {
@@ -352,7 +352,6 @@ public void SaveLogsOnMatchStart() //Set everything to default
 // ***************************************************************************************************************
 public void OpenMenuMatchSettings(int client)
 {
-	char TLMstring[32]
 	Menu menu = new Menu(MenuHandlerMatchSettings);
 
 	menu.SetTitle("Soccer Mod - Match Settings");
@@ -363,10 +362,7 @@ public void OpenMenuMatchSettings(int client)
 	
 	menu.AddItem("golden", "Golden Goal");
 	
-	if(matchlog == 0)		TLMstring = "Match Log: OFF"
-	else if(matchlog == 1)	TLMstring = "Match Log: ON"
-	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("LeagueMatch", TLMstring);
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("logset", "Match Log settings");
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("forfeitset", "Forfeit Vote settings");
 	
@@ -392,23 +388,7 @@ public int MenuHandlerMatchSettings(Menu menu, MenuAction action, int client, in
 			else if (StrEqual(menuItem, "golden"))				  	OpenMenuMatchGolden(client);
 			else if (StrEqual(menuItem, "nameset"))					OpenMenuNameSettings(client);
 			else if (StrEqual(menuItem, "forfeitset"))				OpenMenuForfeitSettings(client);
-			else if (StrEqual(menuItem, "LeagueMatch"))
-			{
-				if(matchlog == 0)		
-				{
-					matchlog = 1;
-					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-					CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
-					OpenMenuMatchSettings(client);
-				}
-				else if (matchlog == 1)
-				{
-					matchlog = 0;
-					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-					CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
-					OpenMenuMatchSettings(client);
-				}
-			}
+			else if (StrEqual(menuItem, "logset"))					OpenMenuMatchlogSettings(client);
 			else if (StrEqual(menuItem, "matchinfoset"))			OpenMenuMatchInfoSet(client);
 		}
 
@@ -416,6 +396,231 @@ public int MenuHandlerMatchSettings(Menu menu, MenuAction action, int client, in
 		else if (action == MenuAction_End)						  menu.Close();
 	}
 	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
+// ************************************** MATCHLOG SETTINGS ************************************************
+public void OpenMenuMatchlogSettings(int client)
+{
+	char matchlogstring[32], starthourstring[32], startminstring[32], stophourstring[32], stopminstring[32];
+	if(matchlog == 0)		matchlogstring = "Match Log: OFF"
+	else if(matchlog == 1)	matchlogstring = "Match Log: ON"
+	else if(matchlog == 2) 	matchlogstring = "Match Log: TIME-BASED"
+	
+	ReadMatchlogSettings();
+	
+	Format(starthourstring, sizeof(starthourstring), "Starthour: %i", iStarthour);
+	Format(startminstring, sizeof(startminstring), "Startminute: %i", iStartmin);
+	Format(stophourstring, sizeof(stophourstring), "Stophour: %i", iStophour);
+	Format(stopminstring, sizeof(stopminstring), "Stopminute: %i", iStopmin); 
+		
+	Menu menu = new Menu(MenuHandlerMatchlogSettings);
+
+	menu.SetTitle("Soccer Mod - Match Log Settings");
+
+	menu.AddItem("toggle", matchlogstring);
+	if(matchlog == 2)
+	{
+		menu.AddItem("setday", "Set days");
+		menu.AddItem("starthour", starthourstring);
+		menu.AddItem("stophour", stophourstring);
+		menu.AddItem("startminute", startminstring);
+		menu.AddItem("stopminute", stopminstring);
+		if(TimeStatus() == 0) menu.AddItem("status", "Status: OK", ITEMDRAW_DISABLED);
+		else if(TimeStatus() == 1) menu.AddItem("status", "Status: OK (Minutes disabled)", ITEMDRAW_DISABLED);
+		else if(TimeStatus() == 2) menu.AddItem("status", "Status: OK (Time disabled)", ITEMDRAW_DISABLED);	
+		else if(TimeStatus() == 3) menu.AddItem("status", "Status: OK (Constantly active)", ITEMDRAW_DISABLED);		
+		else if(TimeStatus() == 4) menu.AddItem("status", "Status: Start > Stop", ITEMDRAW_DISABLED);
+		else if(TimeStatus() == 5) menu.AddItem("status", "Status: No days selected", ITEMDRAW_DISABLED);
+	}
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerMatchlogSettings(Menu menu, MenuAction action, int client, int choice)
+{
+	if (!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+			if (StrEqual(menuItem, "toggle"))		
+			{
+				if(matchlog == 0)		
+				{
+					matchlog = 1;
+					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+					CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
+					OpenMenuMatchlogSettings(client);
+				}
+				else if (matchlog == 1)
+				{
+					if(!FileExists(matchlogSettingsKV))		CreateMatchlogSettings();
+					matchlog = 2;
+					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+					CPrintToChat(client, "{%s}[%s] Match Log set to time-based!", prefixcolor, prefix);
+					OpenMenuMatchlogSettings(client);
+				}
+				else if (matchlog == 2)
+				{
+					matchlog = 0;
+					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
+					CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
+					OpenMenuMatchlogSettings(client);
+				}
+			}
+			else if (StrEqual(menuItem, "setday"))				OpenMenuMatchlogDays(client);
+			else if (StrEqual(menuItem, "starthour"))				
+			{
+				if(iStarthour < 23 && iStarthour != -1)	iStarthour++;
+				else if(iStarthour == -1) iStarthour = 0;
+				else iStarthour = -1;
+
+				UpdateMatchlogSet("Starttime", "Hour", iStarthour);
+				OpenMenuMatchlogSettings(client);
+			}
+			else if (StrEqual(menuItem, "startminute"))				
+			{
+				if(iStartmin < 55 && iStartmin != -1) iStartmin = iStartmin+5;
+				else if(iStartmin == -1) iStartmin = 0;
+				else iStartmin = -1;
+
+				UpdateMatchlogSet("Starttime", "Minute", iStartmin);
+				OpenMenuMatchlogSettings(client);
+			}
+			else if (StrEqual(menuItem, "stophour"))				
+			{
+				if(iStophour < 23 && iStophour != -1) iStophour++;
+				else if(iStophour == -1) iStophour = 0;
+				else iStophour = -1;
+
+				UpdateMatchlogSet("Stoptime", "Hour", iStophour);
+				OpenMenuMatchlogSettings(client);
+			}
+			else if (StrEqual(menuItem, "stopminute"))				
+			{
+				if(iStopmin < 55 && iStopmin != -1) iStopmin = iStopmin+5;
+				else if(iStopmin == -1) iStopmin = 0;
+				else iStopmin = -1;		
+				UpdateMatchlogSet("Stoptime", "Minute", iStopmin);
+				OpenMenuMatchlogSettings(client);
+			}
+		}
+
+		else if (action == MenuAction_Cancel && choice == -6)	OpenMenuMatchSettings(client);
+		else if (action == MenuAction_End)						  menu.Close();
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
+public void OpenMenuMatchlogDays(int client)
+{
+	char activatestring[32];
+	char dayarray[7][16] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+	Menu menu = new Menu(MenuHandlerMatchlogDays);
+
+	menu.SetTitle("Soccer Mod - Match Log Day Settings");
+	
+	for(int i=0; i <= 6; i++)
+	{
+		char day[16];
+		Format(day, sizeof(day), "%s", dayarray[i]);
+	
+		if(ReadMatchlogSet("Days", day) == 0) Format(activatestring, sizeof(activatestring), "[  ] %s", day);
+		else Format(activatestring, sizeof(activatestring), "[X] %s", day);
+		menu.AddItem(day, activatestring);
+	}
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerMatchlogDays(Menu menu, MenuAction action, int client, int choice)
+{
+	if (!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			char menuItem[16];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+			int value;
+			if(ReadMatchlogSet("Days", menuItem) == 0)	value = 1;
+			else value = 0;
+			UpdateMatchlogSet("Days", menuItem,  value);
+			OpenMenuMatchlogDays(client)
+		}
+
+		else if (action == MenuAction_Cancel && choice == -6)	OpenMenuMatchlogSettings(client);
+		else if (action == MenuAction_End)						  menu.Close();
+	}
+	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+}
+
+public bool TimeEnabledMatchlog()
+{
+	char hourstring[16], minutestring[16], weekdaystring[16];
+	FormatTime(hourstring, sizeof(hourstring), "%H", GetTime());
+	FormatTime(minutestring, sizeof(minutestring), "%M", GetTime());
+	FormatTime(weekdaystring, sizeof(weekdaystring), "%A", GetTime());
+	int currHour = StringToInt(hourstring);
+	int currMin = StringToInt(minutestring);
+	
+	if(ReadMatchlogSet("Days", weekdaystring) == 1) 
+	{
+		if(iStarthour <= currHour <= iStophour && (iStarthour != -1 && iStophour != -1))
+		{
+			if(iStartmin != -1 && iStopmin != -1)
+			{
+				if(iStarthour == currHour)
+				{
+					if(iStartmin <= currMin)	return true;
+					else PrintToServer("%s is not in time-range", minutestring);
+				}
+				else if(iStophour == currHour)
+				{
+					if(currMin <= iStopmin) 	return true;
+					else PrintToServer("%s is not in time-range", minutestring);
+				}
+				else return true;
+			}
+			else return true;
+		}
+		else if(iStarthour == -1 || iStophour == -1)
+		{
+			return true;
+		}
+		else PrintToServer("%s is not in time-range", hourstring);
+	}
+	else PrintToServer("%s is not in time-range", weekdaystring);
+	
+	//PrintToChatAll("Hour: %s, Minute: %s, Day: %s", hourstring, minutestring, weekdaystring);
+	
+	return false;
+}
+
+public int TimeStatus()
+{
+	int statusvalue = 0;
+	int iArray[7];
+	char dayarray[7][16] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+	for(int i=0; i <= 6; i++)
+	{
+		char day[16];
+		Format(day, sizeof(day), "%s", dayarray[i]);
+	
+		iArray[i] = ReadMatchlogSet("Days", day);
+	}
+	if(iStopmin == -1 || iStartmin == -1) statusvalue = 1;
+	if(iStophour == -1 || iStarthour == -1) statusvalue = 2;
+	if((iArray[0]+iArray[1]+iArray[2]+iArray[3]+iArray[4]+iArray[5]+iArray[6] == 7) && (iStarthour == -1 || iStophour == -1)) statusvalue = 3;
+	if(((iStophour < iStarthour) && (iStophour != -1 && iStarthour != -1)) || ((iStopmin < iStartmin) && (iStopmin != -1 && iStartmin != -1)))	statusvalue = 4;
+	if(iArray[0]+iArray[1]+iArray[2]+iArray[3]+iArray[4]+iArray[5]+iArray[6] == 0) statusvalue = 5;
+
+	return statusvalue;
 }
 
 // ************************************** MATCHINFO SETTINGS ***********************************************
@@ -1620,6 +1825,14 @@ public void MatchStart(int client)
 		{
 			SaveLogsOnMatchStart();
 			CreateMatchLog(custom_name_ct, custom_name_t);
+		}
+		if(matchlog == 2)
+		{
+			if(TimeEnabledMatchlog())
+			{
+				SaveLogsOnMatchStart();
+				CreateMatchLog(custom_name_ct, custom_name_t);
+			}
 		}
 
 		char steamid[32];

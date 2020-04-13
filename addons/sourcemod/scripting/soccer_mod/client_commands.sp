@@ -50,6 +50,7 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "Set a random server password");
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "Prints your current clantag - Test");
 	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
+	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "Check if matchlog would be created if a match is started now");
 
 }
 
@@ -629,6 +630,12 @@ public Action Command_Pass(int client, int args)
 	}
 	
 	return Plugin_Handled;
+}
+
+public Action Command_TimeTest(int client, int args)
+{
+	if(TimeEnabledMatchlog()) PrintToChat(client, "Matchlog-Creation Test successful");
+	else PrintToChat(client, "Matchlog-Creation Test failed");
 }
 
 // *******************************************************************************************************************

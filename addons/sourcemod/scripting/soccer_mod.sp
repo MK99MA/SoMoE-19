@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.4"
+#define PLUGIN_VERSION "1.0.5"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 // **************************************************************************************************************
@@ -49,6 +49,7 @@ char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_
 char pathRefCardsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_referee_cards.txt";
 char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
 char tempReadyFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/temp_readycheck.txt";
+char matchlogSettingsKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_matchlogsettings.cfg";
 
 //Floats
 float afk_kicktime		= 100.0;
@@ -68,6 +69,11 @@ int ForfeitAutoSpec 	= 0;
 int ForfeitCapMode		= 0;
 int startplayers		= 0;
 int damageSounds		= 0;
+int iStarthour			= 0;
+int iStartmin			= 0;
+int iStophour			= 0;
+int iStopmin			= 0;
+
 
 //Handle
 Handle allowedMaps	  	= INVALID_HANDLE;
@@ -88,6 +94,7 @@ KeyValues kvSMAdmins;
 //KeyValues kvAdminGroups;
 KeyValues LeagueMatchKV;
 KeyValues kvTemp;
+KeyValues kvMLSettings;
 
 // **************************************************************************************************************
 // ************************************************** INCLUDES **************************************************
@@ -456,7 +463,8 @@ public void OnMapStart()
 		ReadFromConfig();
 	}
 	if (FileExists(tempReadyFileKV)) DeleteTempFile();
-		
+	ReadMatchlogSettings();
+	
 	//Get the server password from server.cfg
 	GetDefaultPassword(defaultpw, sizeof(defaultpw));
 	

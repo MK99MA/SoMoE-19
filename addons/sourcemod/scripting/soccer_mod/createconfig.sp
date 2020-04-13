@@ -363,6 +363,85 @@ public void CreateGKAreaConfig()
 	kvGKArea.Close();
 }
 
+public void CreateMatchlogSettings()
+{
+	File hFile = OpenFile(matchlogSettingsKV, "w");
+	hFile.Close();
+	kvMLSettings = new KeyValues("Matchlog Settings");
+	kvMLSettings.ImportFromFile(matchlogSettingsKV);
+	kvMLSettings.JumpToKey("Days", true);
+	kvMLSettings.SetNum("Monday",		0);
+	kvMLSettings.SetNum("Tuesday", 		0);
+	kvMLSettings.SetNum("Wednesday",	0);
+	kvMLSettings.SetNum("Thursday", 	0);
+	kvMLSettings.SetNum("Friday", 		0);
+	kvMLSettings.SetNum("Saturday", 	0);
+	kvMLSettings.SetNum("Sunday",	 	0);
+	kvMLSettings.GoBack();
+	
+	kvMLSettings.JumpToKey("Starttime", true);
+	kvMLSettings.SetNum("Hour",			iStarthour);
+	kvMLSettings.SetNum("Minute",		iStartmin);
+	kvMLSettings.GoBack();
+	
+	kvMLSettings.JumpToKey("Stoptime", true);
+	kvMLSettings.SetNum("Hour",			iStophour);
+	kvMLSettings.SetNum("Minute",		iStopmin);
+	kvMLSettings.GoBack();
+	
+	kvMLSettings.Rewind();
+	kvMLSettings.ExportToFile(matchlogSettingsKV);
+	kvMLSettings.Close();
+}
+
+public void UpdateMatchlogSet(char section[32], char type[16], int value)
+{
+	if(!FileExists(matchlogSettingsKV)) CreateMatchlogSettings();
+	kvMLSettings = new KeyValues("Matchlog Settings");
+	kvMLSettings.ImportFromFile(matchlogSettingsKV);
+	kvMLSettings.JumpToKey(section, true);
+	kvMLSettings.SetNum(type, value);
+	
+	kvMLSettings.Rewind();
+	kvMLSettings.ExportToFile(matchlogSettingsKV);
+	kvMLSettings.Close();
+}
+
+public int ReadMatchlogSet(char section[32], char type[16])
+{
+	int value;
+	if(!FileExists(matchlogSettingsKV)) CreateMatchlogSettings();
+	kvMLSettings = new KeyValues("Matchlog Settings");
+	kvMLSettings.ImportFromFile(matchlogSettingsKV);
+	kvMLSettings.JumpToKey(section, true);
+	value = kvMLSettings.GetNum(type, 0);
+	
+	kvMLSettings.Rewind();
+	kvMLSettings.ExportToFile(matchlogSettingsKV);
+	kvMLSettings.Close();
+	
+	return value;
+}
+
+public void ReadMatchlogSettings()
+{
+	kvMLSettings = new KeyValues("Matchlog Settings");
+	kvMLSettings.ImportFromFile(matchlogSettingsKV);
+	
+	kvMLSettings.JumpToKey("Starttime", true);
+	iStarthour	= kvMLSettings.GetNum("Hour", 0);
+	iStartmin	= kvMLSettings.GetNum("Minute", 0);
+	kvMLSettings.GoBack();
+	kvMLSettings.JumpToKey("Stoptime", true);
+	iStophour	= kvMLSettings.GetNum("Hour", 0);
+	iStopmin	= kvMLSettings.GetNum("Minute", 0);
+	kvMLSettings.GoBack();
+	
+	kvMLSettings.Rewind();
+	kvMLSettings.ExportToFile(matchlogSettingsKV);
+	kvMLSettings.Close();
+}
+
 public void SoundSetup()
 {
 	PrecacheSound("player/suit_sprint.wav");

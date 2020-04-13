@@ -9,9 +9,10 @@
 !/addons/sourcemod/updatefile.txt
 
 !/addons/sourcemod/plugins
-/addons/sourcemod/plugins/*
+/addons/sourcemod/plugins/updater.smx
 
 !/addons/sourcemod/plugins/soccer_mod.smx
+!/addons/sourcemod/plugins/old/*
 
 !/addons/sourcemod/scripting
 /addons/sourcemod/scripting/*
