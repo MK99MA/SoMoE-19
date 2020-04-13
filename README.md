@@ -1,4 +1,4 @@
-# Soccer Mod - 2019 Edit (Current Version: 1.0.4)  
+# Soccer Mod - 2019 Edit (Current Version: 1.0.5)  
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
@@ -69,14 +69,17 @@ Not included in soccer_mod.smx but relied on:
  ● !maprr - Simply reload the current map
   
 #### MatchLog aka "soccer_mod_last_match.txt":  
+ ● Toggleable (On, Off, Time-Based)
+ ● **1.0.5** Time-Based mode to enable the log only for certain days or a certain time window   
  ● Teamnames are listed at the top  
  ● Goals are saved to a textfile with a timestamp, the scorer & assister names (in case of an owngoal the assistername will be set to "Owngoal")  
  ● Goals added by a referee will say "Added by referee" for its scorername  
  ● Removed goals will be deleted IF they are removed immediately / before a new score is added  
  ● Given Cards will be listed separately with a timestamp, the target and the type of card  
  ● A per player match overview is also added, showing a players stats for that specific match (Goals, Assists, Owngoals)  
- ● Even though players should not change their name during an (official) match, the name will keep track of changes up to a certain point  
- ● [Example Output](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#example-matchlog-file)
+ ● Even though players should not change their name during an (official) match, the log will keep track of changes up to a certain point  
+ ● [Example Output](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#example-matchlog-file)  
+ 
 #### Map:  
  ● I added a recompiled version of ka_soccer_xsl_stadium_b1, so expect differences in the ball behaviour  
  
@@ -169,6 +172,7 @@ Adding this to your server will allow you to automatically update the plugin whe
  ● Soccer Mod (2019 Edit)  
 https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.0.0  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
+[>>Previous Version<< In case of any major issues](https://github.com/MK99MA/soccermod-2019edit/blob/master/addons/sourcemod/plugins/old/1.0.4/soccer_mod.smx)  
 ### New and Upcoming changes, as well as possible additions can be found (and requested) [here](https://github.com/MK99MA/soccermod-2019edit/issues/1)  
   
  ● (OPTIONAL) Download soccer skins  
