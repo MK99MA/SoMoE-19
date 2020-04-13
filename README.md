@@ -69,7 +69,7 @@ Not included in soccer_mod.smx but relied on:
  ● !maprr - Simply reload the current map
   
 #### MatchLog aka "soccer_mod_last_match.txt":  
- ● Toggleable (On, Off, Time-Based)
+ ● Toggleable (On, Off, Time-Based)  
  ● **1.0.5** Time-Based mode to enable the log only for certain days or a certain time window   
  ● Teamnames are listed at the top  
  ● Goals are saved to a textfile with a timestamp, the scorer & assister names (in case of an owngoal the assistername will be set to "Owngoal")  
