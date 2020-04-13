@@ -147,8 +147,8 @@ KeyValues kvMLSettings;
 // *****************************************************************************************************************
 public Plugin myinfo =
 {
-	name			= "Soccer Mod",
-	author		  = "Marco Boogers",
+	name			= "Soccer Mod Edit",
+	author		  = "Marco Boogers & Arturo",
 	description	 = "A plugin for soccer servers",
 	version		 = PLUGIN_VERSION,
 	url			 = "http://steamcommunity.com/groups/soccer_mod"

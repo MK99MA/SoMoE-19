@@ -4,14 +4,18 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.1"
+			"Latest"	"1.0.5"
 		}
 		
-		"Notes"	"Added Updater"
+		"Notes"	"Lots of additions"
 	}
 	
 	"Files"
 	{
 		"Plugin"	"Path_SM/plugins/soccer_mod.smx"
+		"Plugin"	"Path_Mod/sound/soccermod/endmatch.wav"
+		"Plugin"	"Path_Mod/sound/soccermod/halftime.wav"
+		"Plugin"	"Path_Mod/sound/soccermod/kickoff.wav"
+		"Plugin"	"Path_Mod/sound/soccermod/whistle.wav"
 	}
 }
