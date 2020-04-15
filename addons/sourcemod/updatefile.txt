@@ -4,11 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.8"
-			"Previous"	"1.0.7"
+			"Latest"	"1.0.7"
+			"Previous"	"1.0.6"
 		}
 		
-		"Notes"	"Hotfix"
+		"Notes"	"Readycheck fix & Additions"
 	}
 	
 	"Files"
