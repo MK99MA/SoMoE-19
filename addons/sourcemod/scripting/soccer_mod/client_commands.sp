@@ -547,7 +547,7 @@ public Action Command_ForceRdy(int client, int args)
 					CPrintToChat(i,"{%s}[%s] {%s}State forced to Ready.", prefixcolor, prefix, textcolor);
 				}
 			}
-			showPanel = false;
+			if(showPanel) showPanel = false;
 			RefreshPanel();	
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}ReadyCheck not running!", prefixcolor, prefix, textcolor); 
