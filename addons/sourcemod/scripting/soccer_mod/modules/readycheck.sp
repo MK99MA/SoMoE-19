@@ -2,7 +2,9 @@ char vState[32] = "Not Ready";
 char totalpausetime[32];
 
 int readydisplay = 0;
+int cooldownTime[MAXPLAYERS+1] = {-1, ...}
 
+bool cdMessage[MAXPLAYERS+1];
 bool tempUnpause = false;
 
 public void OpenReadyPanel(int client)
@@ -92,8 +94,8 @@ public void OpenReadyPanel(int client)
 	//Format(bLine, sizeof(bLine), "0. Back");
 	//panel.DrawText(bLine);
 
-	panel.SetKeys(panel_keys);
- 
+	if(showPanel) panel.SetKeys(panel_keys);
+	
 	panel.Send(client, ReadyCheckPanelHandler, MENU_TIME_FOREVER);
  
 	delete panel;
@@ -110,64 +112,94 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 	char bSteam[32];
 	GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam))
 	
-	if (action == MenuAction_Select && key == 1)
-	{		
-		vState = "Ready";
-	
-		// Save state to file
-		kvTemp.JumpToKey(bSteam, true)
-		kvTemp.SetString("Status", vState);
-		kvTemp.GoBack();
-	
-		kvTemp.Rewind();
-		kvTemp.ExportToFile(tempReadyFileKV);
-		kvTemp.Close();
-	
-		RefreshPanel();
-	}
-	else if (action == MenuAction_Select && key == 2)
+	int currentTime = GetTime();
+	if (cooldownTime[client] != -1 && cooldownTime[client] > currentTime)
 	{
-		vState = "Not Ready";
+		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam.", prefixcolor, prefix, textcolor);
+		cdMessage[client] = false;
+		OpenReadyPanel(client);
+	}
+	else
+	{
+		if (action == MenuAction_Select && key == 1)
+		{		
+			vState = "Ready";
 		
-		kvTemp.JumpToKey(bSteam, true);
-		kvTemp.SetString("status", vState);
-		kvTemp.GoBack();
+			// Save state to file
+			kvTemp.JumpToKey(bSteam, true)
+			kvTemp.SetString("Status", vState);
+			kvTemp.GoBack();
+		
+			kvTemp.Rewind();
+			kvTemp.ExportToFile(tempReadyFileKV);
+			kvTemp.Close();
+		
+			RefreshPanel();
+		}
+		else if (action == MenuAction_Select && key == 2)
+		{
+			vState = "Not Ready";
+			
+			kvTemp.JumpToKey(bSteam, true);
+			kvTemp.SetString("status", vState);
+			kvTemp.GoBack();
 
-		kvTemp.Rewind();
-		kvTemp.ExportToFile(tempReadyFileKV);
-		kvTemp.Close();
+			kvTemp.Rewind();
+			kvTemp.ExportToFile(tempReadyFileKV);
+			kvTemp.Close();
+			
+			RefreshPanel();
+		}
 		
-		RefreshPanel();
+		cdMessage[client] = true;
+		cooldownTime[client] = currentTime + 3;
 	}
 }
 
 public void RefreshPanel()
 {
-	//readycheck = AreAllReady();//
-	//if (readycheck) PrintToChatAll("readycheck true");//
-	//else PrintToChatAll("readycheck false");//
-	
-	for (int i = 1; i <= MaxClients; i++)
+	if(matchReadyCheck == 1)
 	{
-		if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+		if (AreAllReady())
 		{
-			if(matchReadyCheck == 1)
+			for (int i = 1; i <= MaxClients; i++)
 			{
-				if (AreAllReady())
+				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
 				{
-					//OpenReadyPanel(i);
-					CancelClientMenu(i,true);
-					//readycheck = false;//
-					CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor, prefix, textcolor);
-					DeleteTempFile();
-					MatchUnpause(0);
-				}				
-				else OpenReadyPanel(i);
+					if(showPanel) OpenReadyPanel(i);
+					if(GetClientMenu(i) != MenuSource_None)
+					{
+						CancelClientMenu(i,false);
+					}
+				}
 			}
-			else if(matchReadyCheck == 2) 
+			showPanel = false;
+			CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor, prefix, textcolor);
+			DeleteTempFile();
+			MatchUnpause(0);
+		}				
+		else if(showPanel) 
+		{
+			for (int i = 1; i <= MaxClients; i++)
 			{
-				AreAllReady();
-				OpenReadyPanel(i);
+				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+				{
+					OpenReadyPanel(i);
+				}
+			}
+		}
+	}
+	else if(matchReadyCheck == 2) 
+	{
+		AreAllReady();
+		if(showPanel) 
+		{
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+				{
+					OpenReadyPanel(i);
+				}
 			}
 		}
 	}
@@ -242,19 +274,20 @@ public void UnpauseCheck(int client)
 			{
 				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
 				{
-					if(GetClientMenu(i) != MenuSource_None )
+					if(GetClientMenu(i) != MenuSource_None)
 					{
-						CancelClientMenu(i,true);
-						//readycheck = false;
-						DeleteTempFile();
-						if (tempUnpause)
-						{
-							matchReadyCheck = 1;
-							tempUnpause = false;
-						}
+						CancelClientMenu(i,false);
 					} 
+					//CancelClientMenu(i,true);
 				}
 			}
+			showPanel = false;
+			DeleteTempFile();
+			if (tempUnpause)
+			{
+				matchReadyCheck = 1;
+				tempUnpause = false;
+			} 
 			
 			CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor,  prefix, textcolor);
 			MatchUnpause(client);

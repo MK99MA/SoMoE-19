@@ -4,14 +4,20 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.0.5"
+			"Latest"	"1.0.7"
+			"Previous"	"1.0.6"
 		}
 		
-		"Notes"	"Lots of additions"
+		"Notes"	"Added CD for Readycheck choice"
 	}
 	
 	"Files"
 	{
+		"Patch"
+		{
+			"Plugin"	"Path_SM/plugins/soccer_mod.smx"
+		}
+		
 		"Plugin"	"Path_SM/plugins/soccer_mod.smx"
 		"Plugin"	"Path_Mod/sound/soccermod/endmatch.wav"
 		"Plugin"	"Path_Mod/sound/soccermod/halftime.wav"

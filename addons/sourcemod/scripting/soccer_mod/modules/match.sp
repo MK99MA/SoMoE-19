@@ -1871,6 +1871,7 @@ public void MatchPause(int client)
 					{
 						if (IsValidClient(i) && GetClientTeam(i) != 1)		
 						{
+							showPanel = true;
 							OpenReadyPanel(i);
 							CPrintToChat(i, "{%s}[%s] {%s}Menu missing? Type !rdy to display the menu again.", prefixcolor, prefix, textcolor);
 						}
@@ -1896,6 +1897,7 @@ public void MatchUnpause(int client)
 			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
 			CPrintToChatAll("{%s}[%s] {%s}Match was paused for %s minutes", prefixcolor, prefix, textcolor, totalpausetime);
 			matchPaused = false;
+			showPanel = false;
 			
 			if (!matchPeriodBreak)
 			{
@@ -1921,7 +1923,11 @@ public void MatchStop(int client)
 {
 	if (matchStarted)
 	{
-		ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
+		if(matchPaused) 
+		{
+			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
+			showPanel = false;
+		}
 		MatchReset();
 		UnfreezeAll();
 

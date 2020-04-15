@@ -51,6 +51,7 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "Prints your current clantag - Test");
 	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "Check if matchlog would be created if a match is started now");
+	RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "Test command");
 
 }
 
@@ -207,7 +208,7 @@ public Action MaprrCommand(int client, int args)
 	
 	for (int player = 1; player <= MaxClients; player++)
 	{
-		if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,true);
+		if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,false);
 	}
 	
 	return Plugin_Handled;
@@ -317,7 +318,7 @@ public Action StopCommand(int client, int args)
 			{
 				if(GetClientMenu(i) != MenuSource_None )
 				{
-					CancelClientMenu(i,true);
+					CancelClientMenu(i,false);
 					DeleteTempFile();
 				} 
 			}
@@ -538,8 +539,7 @@ public Action Command_ForceRdy(int client, int args)
 			kvTemp.Rewind();
 			kvTemp.ExportToFile(tempReadyFileKV);
 			kvTemp.Close();
-			
-			RefreshPanel();
+
 			for (int i = 1; i <= MaxClients; i++)
 			{
 				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
@@ -547,7 +547,8 @@ public Action Command_ForceRdy(int client, int args)
 					CPrintToChat(i,"{%s}[%s] {%s}State forced to Ready.", prefixcolor, prefix, textcolor);
 				}
 			}
-			
+			showPanel = false;
+			RefreshPanel();	
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}ReadyCheck not running!", prefixcolor, prefix, textcolor); 
 	}
@@ -636,6 +637,21 @@ public Action Command_TimeTest(int client, int args)
 {
 	if(TimeEnabledMatchlog()) PrintToChat(client, "Matchlog-Creation Test successful");
 	else PrintToChat(client, "Matchlog-Creation Test failed");
+}
+
+public Action Command_Test(int client, int args)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+		{
+			if(GetClientMenu(client) != MenuSource_None)
+			{
+				PrintToChat(client, "Closed Menus");
+				CancelClientMenu(i, false);
+			} 
+		}
+	}
 }
 
 // *******************************************************************************************************************

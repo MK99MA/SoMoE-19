@@ -288,7 +288,7 @@ public int MenuHandlerMapsChange(Menu menu, MenuAction action, int client, int c
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has changed the map to %s", prefixcolor, prefix, textcolor, client, map);
-			if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,true);
+			if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,false);
 		}
 
 		char steamid[32];

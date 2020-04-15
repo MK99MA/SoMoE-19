@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.5"
+#define PLUGIN_VERSION "1.0.7"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 // **************************************************************************************************************
@@ -18,6 +18,7 @@ bool goalScored			= false;
 bool menuaccessed;
 bool roundEnded			= false;
 bool pwchange			= false;
+bool showPanel			= false;
 //bool readycheck			= false;
 //MatchBool
 bool matchStarted		= false;
@@ -1120,9 +1121,9 @@ public Action DelayedServerCommand(Handle timer, DataPack pack)
 
 public void ClearTimer(Handle timer)
 {
-	if (timer != INVALID_HANDLE)
+	if (timer != null)
 	{
 		KillTimer(timer);
+		timer = null;
 	}
-	timer = INVALID_HANDLE;
 }
