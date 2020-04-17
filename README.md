@@ -1,4 +1,4 @@
-# Soccer Mod - 2019 Edit (Current Version: 1.0.7)  
+# Soccer Mod - 2019 Edit (Current Version: 1.0.8)  
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
