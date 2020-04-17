@@ -6,6 +6,7 @@ public void OpenMenuSoccer(int client)
 	Menu menu = new Menu(MenuHandlerSoccer);
 	menu.SetTitle("Soccer Mod");
 	SetMenuPagination(menu, MENU_NO_PAGINATION);
+	SetMenuExitButton(menu, true);
 
 	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
@@ -37,7 +38,6 @@ public void OpenMenuSoccer(int client)
 	}
 
 	menu.AddItem("credits", "Credits");
-	menu.ExitBackButton = true;
 
 	menu.Display(client, MENU_TIME_FOREVER);
 }
