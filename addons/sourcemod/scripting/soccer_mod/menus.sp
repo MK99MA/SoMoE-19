@@ -37,6 +37,7 @@ public void OpenMenuSoccer(int client)
 	}
 
 	menu.AddItem("credits", "Credits");
+	menu.ExitBackButton = true;
 
 	menu.Display(client, MENU_TIME_FOREVER);
 }
