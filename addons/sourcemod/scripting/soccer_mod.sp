@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.7"
+#define PLUGIN_VERSION "1.0.8"
 #define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 // **************************************************************************************************************
@@ -178,6 +178,8 @@ public void OnPluginStart()
 	AddCommandListener(SayCommandListener, "say");
 	AddCommandListener(SayCommandListener, "say2");
 	AddCommandListener(SayCommandListener, "say_team");
+	AddCommandListener(cmd_jointeam, "jointeam");
+	AddCommandListener(cmd_jointeam2, "spectate");
 	AddAmbientSoundHook(AmbientSHook);
 	AddNormalSoundHook(sound_hook);
 

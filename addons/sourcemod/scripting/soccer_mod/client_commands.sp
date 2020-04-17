@@ -24,6 +24,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_cap", CapCommand, "Opens the Soccer Mod cap menu");
 	RegConsoleCmd("sm_commands", CommandsCommand, "Opens the Soccer Mod commands list");
 	RegConsoleCmd("sm_credits", CreditsCommand, "Opens the Soccer Mod credits menu");
+	RegConsoleCmd("sm_forfeit", Command_Forfeit, "Starts a forfeit vote");
 	RegConsoleCmd("sm_gk", GkCommand, "Toggle the GK skin");	
 	RegConsoleCmd("sm_help", HelpCommand, "Opens the Soccer Mod help menu");
 	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");	
@@ -42,15 +43,17 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_training", TrainingCommand, "Opens the Soccer Mod training menu");
 	RegConsoleCmd("sm_unp", UnpauseCommand, "Unpauses a match");
 	RegConsoleCmd("sm_unpause", UnpauseCommand, "Unpauses a match");
-	RegConsoleCmd("sm_forfeit", Command_Forfeit, "Starts a forfeit vote");
 
 	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "Adds an admin to admins_simple.ini");
 	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "Reset the sv password");
+	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
 	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "Set the sv password");
 	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "Set a random server password");
+	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "Shortcut to the Settings menu");
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "Prints your current clantag - Test");
-	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "Check if matchlog would be created if a match is started now");
+	
+	
 	RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "Test command");
 
 }
@@ -65,6 +68,7 @@ public Action rdyCommand(int client, int args)
 	{
 		OpenReadyPanel(client);
 	}
+	else CPrintToChat(client, "{%s}[%s] {%s}No Readycheck running.", prefixcolor, prefix, textcolor);
 	
 	return Plugin_Handled;
 }
@@ -319,6 +323,7 @@ public Action StopCommand(int client, int args)
 				if(GetClientMenu(i) != MenuSource_None )
 				{
 					CancelClientMenu(i,false);
+					InternalShowMenu(i, "\10", 1); 
 					DeleteTempFile();
 				} 
 			}
@@ -515,6 +520,12 @@ public Action CreditsCommand(int client, int args)
 // *******************************************************************************************************************
 // ************************************************ ADMIN COMMANDS ***************************************************
 // *******************************************************************************************************************
+public Action Command_SoccerSet(int client, int args)
+{
+	OpenMenuSettings(client)
+	return Plugin_Handled;
+}
+
 public Action Command_ForceRdy(int client, int args)
 {
 	if (matchPaused)
@@ -547,7 +558,6 @@ public Action Command_ForceRdy(int client, int args)
 					CPrintToChat(i,"{%s}[%s] {%s}State forced to Ready.", prefixcolor, prefix, textcolor);
 				}
 			}
-			if(showPanel) showPanel = false;
 			RefreshPanel();	
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}ReadyCheck not running!", prefixcolor, prefix, textcolor); 

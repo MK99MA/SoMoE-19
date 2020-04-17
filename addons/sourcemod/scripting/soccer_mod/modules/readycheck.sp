@@ -3,6 +3,7 @@ char totalpausetime[32];
 
 int readydisplay = 0;
 int cooldownTime[MAXPLAYERS+1] = {-1, ...}
+int pauseplayernum	= 0;
 
 bool cdMessage[MAXPLAYERS+1];
 bool tempUnpause = false;
@@ -121,38 +122,43 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 	}
 	else
 	{
-		if (action == MenuAction_Select && key == 1)
-		{		
-			vState = "Ready";
+		if(cooldownTime[client] < currentTime) 		cdMessage[client] = false;
 		
-			// Save state to file
-			kvTemp.JumpToKey(bSteam, true)
-			kvTemp.SetString("Status", vState);
-			kvTemp.GoBack();
-		
-			kvTemp.Rewind();
-			kvTemp.ExportToFile(tempReadyFileKV);
-			kvTemp.Close();
-		
-			RefreshPanel();
-		}
-		else if (action == MenuAction_Select && key == 2)
+		if(showPanel)
 		{
-			vState = "Not Ready";
+			if (action == MenuAction_Select && key == 1)
+			{		
+				vState = "Ready";
 			
-			kvTemp.JumpToKey(bSteam, true);
-			kvTemp.SetString("status", vState);
-			kvTemp.GoBack();
+				// Save state to file
+				kvTemp.JumpToKey(bSteam, true)
+				kvTemp.SetString("Status", vState);
+				kvTemp.GoBack();
+			
+				kvTemp.Rewind();
+				kvTemp.ExportToFile(tempReadyFileKV);
+				kvTemp.Close();
+			
+				RefreshPanel();
+			}
+			else if (action == MenuAction_Select && key == 2)
+			{
+				vState = "Not Ready";
+				
+				kvTemp.JumpToKey(bSteam, true);
+				kvTemp.SetString("status", vState);
+				kvTemp.GoBack();
 
-			kvTemp.Rewind();
-			kvTemp.ExportToFile(tempReadyFileKV);
-			kvTemp.Close();
+				kvTemp.Rewind();
+				kvTemp.ExportToFile(tempReadyFileKV);
+				kvTemp.Close();
+				
+				RefreshPanel();
+			}
 			
-			RefreshPanel();
+			cdMessage[client] = true;
+			cooldownTime[client] = currentTime + 3;
 		}
-		
-		cdMessage[client] = true;
-		cooldownTime[client] = currentTime + 3;
 	}
 }
 
@@ -166,10 +172,11 @@ public void RefreshPanel()
 			{
 				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
 				{
-					if(showPanel) OpenReadyPanel(i);
+					OpenReadyPanel(i);
 					if(GetClientMenu(i) != MenuSource_None)
 					{
-						CancelClientMenu(i,false);
+						CancelClientMenu(i, false);
+						InternalShowMenu(i, "\10", 1); 
 					}
 				}
 			}
@@ -277,6 +284,7 @@ public void UnpauseCheck(int client)
 					if(GetClientMenu(i) != MenuSource_None)
 					{
 						CancelClientMenu(i,false);
+						InternalShowMenu(i, "\10", 1); 
 					} 
 					//CancelClientMenu(i,true);
 				}
@@ -309,12 +317,72 @@ public void ReadyCheckOnClientDisconnect(int client)
 		kvTemp.ImportFromFile(tempReadyFileKV);
 		
 		kvTemp.JumpToKey(bSteam, false);
-		kvSMAdmins.DeleteThis();
+		kvTemp.DeleteThis();
 		
 		kvTemp.Rewind();
 		kvTemp.ExportToFile(tempReadyFileKV);
 		kvTemp.Close();
 	}
+}
+
+public Action cmd_jointeam(int client, const char[] command, int iArgs)
+{
+	char arg[3];
+	GetCmdArg(1, arg, sizeof(arg));
+	int team = StringToInt(arg);
+	
+	if(FileExists(tempReadyFileKV))
+	{
+		if(team == 1)
+		{
+			char bSteam[32];
+			GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
+				
+			kvTemp = new KeyValues("Ready Check");
+			kvTemp.ImportFromFile(tempReadyFileKV);
+			
+			kvTemp.JumpToKey(bSteam, false);
+			kvTemp.DeleteThis();
+			
+			kvTemp.Rewind();
+			kvTemp.ExportToFile(tempReadyFileKV);
+			kvTemp.Close();
+			
+			if(GetClientMenu(client) != MenuSource_None)
+			{
+				CancelClientMenu(client,false);
+				InternalShowMenu(client, "\10", 1); 
+			} 
+		}
+		
+	}
+	return Plugin_Continue;
+}
+
+public Action cmd_jointeam2(int client, const char[] command, int iArgs)
+{
+	if(FileExists(tempReadyFileKV))
+	{
+		char bSteam[32];
+		GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
+				
+		kvTemp = new KeyValues("Ready Check");
+		kvTemp.ImportFromFile(tempReadyFileKV);
+			
+		kvTemp.JumpToKey(bSteam, false);
+		kvTemp.DeleteThis();
+			
+		kvTemp.Rewind();
+		kvTemp.ExportToFile(tempReadyFileKV);
+		kvTemp.Close();
+		
+		if(GetClientMenu(client) != MenuSource_None)
+		{
+			CancelClientMenu(client,false);
+			InternalShowMenu(client, "\10", 1); 
+		} 
+	}
+	return Plugin_Continue;
 }
 
 public Action pauseReadyTimer(Handle timer, any time)
@@ -323,6 +391,18 @@ public Action pauseReadyTimer(Handle timer, any time)
 	FormatTime(timestamp, sizeof(timestamp), "%M:%S", time);
 	
 	totalpausetime = timestamp;
+	
+	int newplayernum;
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && GetClientTeam(i) > 1)		newplayernum++;
+	}	
+	
+	if(newplayernum != pauseplayernum)
+	{
+		RefreshPanel();
+		pauseplayernum = newplayernum;
+	}
 	
 	PrintCenterTextAll("Pause Time: %s", timestamp);
 	if(time == 300)

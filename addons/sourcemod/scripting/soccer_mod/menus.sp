@@ -5,6 +5,9 @@ public void OpenMenuSoccer(int client)
 {
 	Menu menu = new Menu(MenuHandlerSoccer);
 	menu.SetTitle("Soccer Mod");
+	SetMenuPagination(menu, MENU_NO_PAGINATION);
+
+	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
 	if(publicmode == 0)
 	{
@@ -27,6 +30,11 @@ public void OpenMenuSoccer(int client)
 	menu.AddItem("help", "Help");
 	
 	menu.AddItem("sprintinfo", "Sprintinfo");
+	
+	if (shoutplugin != INVALID_HANDLE)
+	{
+		menu.AddItem("shout", "Shouts");
+	}
 
 	menu.AddItem("credits", "Credits");
 
@@ -58,6 +66,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		else if (StrEqual(menuItem, "help"))		OpenMenuHelp(client);
 		else if (StrEqual(menuItem, "credits"))	 OpenMenuCredits(client);
 		else if (StrEqual(menuItem, "sprintinfo"))  FakeClientCommandEx(client, "sm_sprintinfo");
+		else if (StrEqual(menuItem, "shout"))		FakeClientCommandEx(client, "sm_shout");
 		else if (currentMapAllowed)
 		{
 			if (StrEqual(menuItem, "positions"))	OpenCapPositionMenu(client);
@@ -288,7 +297,11 @@ public int MenuHandlerMapsChange(Menu menu, MenuAction action, int client, int c
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has changed the map to %s", prefixcolor, prefix, textcolor, client, map);
-			if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,false);
+			if(GetClientMenu(player) != MenuSource_None )	
+			{
+				CancelClientMenu(player,false);
+				InternalShowMenu(player, "\10", 1); 
+			}
 		}
 
 		char steamid[32];

@@ -7,7 +7,7 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], DamageString[32];
+	char ReadyString[32], DamageString[32], PubString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -15,12 +15,16 @@ public void OpenMenuSettings(int client)
 	if(damageSounds == 0)				DamageString = "Damage Sound: OFF";
 	else if(damageSounds == 1)			DamageString = "Damage Sound: ON";
 	
+	if(publicmode == 0)					PubString = "Public Mode: Admins";
+	else if(publicmode == 1)			PubString = "Public Mode: !Cap / !Match";
+	else if(publicmode == 2)			PubString = "Public Mode: Free for All";
+		
 	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("chatset", "Chat Settings");
 	menu.AddItem("maps", "Allowed Maps");
-	menu.AddItem("pubmode", "Public Mode");
+	menu.AddItem("pubmode", PubString);
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
 	menu.AddItem("skinsmenu", "Skins");

@@ -1867,11 +1867,13 @@ public void MatchPause(int client)
 				
 				if(matchReadyCheck == 2 || matchReadyCheck == 1)
 				{
+					showPanel = true;
+					
 					for (int i = 1; i <= MaxClients; i++)
 					{
-						if (IsValidClient(i) && GetClientTeam(i) != 1)		
+						if (IsValidClient(i) && GetClientTeam(i) > 1)		
 						{
-							showPanel = true;
+							pauseplayernum++;
 							OpenReadyPanel(i);
 							CPrintToChat(i, "{%s}[%s] {%s}Menu missing? Type !rdy to display the menu again.", prefixcolor, prefix, textcolor);
 						}
@@ -1897,7 +1899,8 @@ public void MatchUnpause(int client)
 			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
 			CPrintToChatAll("{%s}[%s] {%s}Match was paused for %s minutes", prefixcolor, prefix, textcolor, totalpausetime);
 			matchPaused = false;
-			showPanel = false;
+			showPanel = false;	
+			pauseplayernum = 0;
 			
 			if (!matchPeriodBreak)
 			{
@@ -1909,7 +1912,9 @@ public void MatchUnpause(int client)
 			{
 				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has unpaused the match", prefixcolor, prefix, textcolor, client);
 			}
-
+			
+			if(FileExists(tempReadyFileKV)) DeleteTempFile();
+			
 			char steamid[32];
 			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 			LogMessage("%N <%s> has unpaused the match", client, steamid);
