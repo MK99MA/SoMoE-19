@@ -36,6 +36,22 @@ public void SprintOnPluginStart()
 	return;
 }
 
+public void NewRoundSprint(int client)
+{
+	SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
+
+	if(h_SPRINT_REFILL[client] != null)
+	{
+		KillTimer(h_SPRINT_REFILL[client]); //Killtimer Sprint_Refill
+		h_SPRINT_REFILL[client] = null;
+	}
+	if(h_SPRINT_DURATION[client] != null)
+	{
+		KillTimer(h_SPRINT_DURATION[client]);
+		h_SPRINT_DURATION[client] = null;
+	}
+}
+
 public void floodcheck()
 {
 	char afpath_old[PLATFORM_MAX_PATH], afpath_new[PLATFORM_MAX_PATH];

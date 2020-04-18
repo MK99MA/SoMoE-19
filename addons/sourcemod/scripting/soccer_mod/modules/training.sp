@@ -516,6 +516,9 @@ public void TrainingCannonOff(int client)
 	if (trainingCannonTimer != null)
 	{
 		KillTrainingCannonTimer();
+		//Clear Arrays
+		//trainingCannonPosition[3] = -1;
+		//trainingCannonAim[3] = -1;
 
 		for (int player = 1; player <= MaxClients; player++)
 		{

@@ -698,6 +698,10 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 					if(publicmode == 0) CPrintToChat(player,"{%s}[%s] {%s}Type {%s}!menu {%s}for more information", prefixcolor, prefix, textcolor, prefixcolor, textcolor);
 					else if(publicmode == 1) CPrintToChat(player,"{%s}[%s] {%s}Public access of {%s}!cap / !match; !menu {%s}for more information",prefixcolor, prefix, textcolor, prefixcolor, textcolor);
 					else if(publicmode == 2) CPrintToChat(player,"{%s}[%s] {%s}Public access of {%s}!menu {%s}enabled, feel free to use all of its features", prefixcolor, prefix, textcolor, prefixcolor, textcolor);
+					if (iP_SETTINGS[player] & PLAYER_ARMOR)
+					{
+						NewRoundSprint(player);
+					}
 				}
 			}
 		}
