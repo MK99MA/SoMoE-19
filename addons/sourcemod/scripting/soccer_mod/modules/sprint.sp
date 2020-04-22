@@ -33,6 +33,9 @@ public void NewRoundSprint(int client)
 {
 	SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
 
+	delete h_SPRINT_REFILL[client];
+	delete h_SPRINT_DURATION[client];
+	/*
 	if(h_SPRINT_REFILL[client] != null)
 	{
 		KillTimer(h_SPRINT_REFILL[client]); //Killtimer Sprint_Refill
@@ -42,7 +45,7 @@ public void NewRoundSprint(int client)
 	{
 		KillTimer(h_SPRINT_DURATION[client]);
 		h_SPRINT_DURATION[client] = null;
-	}
+	}*/
 }
 
 public void floodcheck()
@@ -141,11 +144,12 @@ public Action Sprint_Dur(Handle timer, int client)
 	if (armor_val2 > 0) SetEntProp(client, Prop_Send, "m_ArmorValue", (armor_val2-(100/RoundFloat(fSPRINT_TIME*(20/fSPRINT_TIME)))));
 	else if (armor_val2 == 0)
 	{
-		if(h_SPRINT_DURATION[client] != null)
+		/*if(h_SPRINT_DURATION[client] != null)
 		{
 			KillTimer(h_SPRINT_DURATION[client]);
 			h_SPRINT_DURATION[client] = null;
-		}
+		}*/
+		delete h_SPRINT_DURATION[client];
 		SetEntProp(client, Prop_Send, "m_ArmorValue", 0);
 	}
 	
