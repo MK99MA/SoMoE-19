@@ -5,9 +5,6 @@
 #define PLAYER_ARMOR         (1<<4)
 #define DEF_SPRINT_COOKIE    PLAYER_MESSAGES|PLAYER_SOUND
 
-Handle h_SPRINT_COOKIE 		= INVALID_HANDLE;
-char iP_SETTINGS[MAXPLAYERS+1];
-
 public Action RegSprintCookie()
 {
 	h_SPRINT_COOKIE = RegClientCookie(

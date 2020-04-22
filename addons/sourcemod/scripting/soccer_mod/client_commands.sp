@@ -1,19 +1,3 @@
-bool bRandPass					= false;
-bool ffActive 					= false;
-bool ForfeitRRCheck				= false;
-
-int ffcounter 					= 0;
-int ffCTScore;
-int ffTScore;
-int iHelp						= 0;
-
-float cdTime					= 450.0;
-float abortTime					= 5.0;
-
-Handle forfeitTimer				= null;
-Handle ffDelayTimer				= null;
-Handle ffRRCheckTimer			= null;
-
 public void RegisterClientCommands()
 {
 	RegConsoleCmd("sm_madmin", AdminCommand, "Opens the Soccer Mod admin menu");
@@ -212,7 +196,11 @@ public Action MaprrCommand(int client, int args)
 	
 	for (int player = 1; player <= MaxClients; player++)
 	{
-		if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,false);
+		if(GetClientMenu(player) != MenuSource_None )	
+		{
+			CancelClientMenu(player,false);
+			InternalShowMenu(player, "\10", 1);
+		}
 	}
 	
 	return Plugin_Handled;
@@ -647,21 +635,14 @@ public Action Command_TimeTest(int client, int args)
 {
 	if(TimeEnabledMatchlog()) PrintToChat(client, "Matchlog-Creation Test successful");
 	else PrintToChat(client, "Matchlog-Creation Test failed");
+	
+	return Plugin_Handled;
 }
 
 public Action Command_Test(int client, int args)
 {
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
-		{
-			if(GetClientMenu(client) != MenuSource_None)
-			{
-				PrintToChat(client, "Closed Menus");
-				CancelClientMenu(i, false);
-			} 
-		}
-	}
+	
+	return Plugin_Handled;
 }
 
 // *******************************************************************************************************************

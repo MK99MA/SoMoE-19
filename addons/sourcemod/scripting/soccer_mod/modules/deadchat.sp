@@ -1,19 +1,6 @@
 // ********************************************************************************************************************
 // ************************************************** DEADCHAT MODULE *************************************************
 // ********************************************************************************************************************
-bool g_msgIsChat;
-bool g_msgIsTeammate;
-bool g_msgTarget[MAXPLAYERS + 1];
-
-char g_msgType[64];
-char g_msgName[64];
-char g_msgText[64];
-
-int g_msgAuthor;
-
-Handle g_hCvarAllTalk = INVALID_HANDLE;
-
-
 public void DeadChatOnPluginStart()
 {
 	UserMsg SayText2 = GetUserMessageId("SayText2");

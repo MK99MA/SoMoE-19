@@ -1,6 +1,3 @@
-int healthGodmode	= 1;
-int healthAmount	= 250;
-
 public void RegisterServerCommandsHealth()
 {
 	RegServerCmd

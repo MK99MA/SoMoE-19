@@ -6,19 +6,6 @@
 #define DEF_SPEED              "1.25"
 #define DEF_TIME               "3"
 
-Handle h_BUTTON 				= INVALID_HANDLE;
-Handle h_COOLDOWN 				= INVALID_HANDLE;
-Handle h_SPRINT_ENABLED			= INVALID_HANDLE;
-Handle h_SPEED 					= INVALID_HANDLE;
-Handle h_TIME 					= INVALID_HANDLE;
-
-int bSPRINT_BUTTON				= 1//= true;
-float fSPRINT_COOLDOWN 			= 0.0;
-int bSPRINT_ENABLED				= 1//= true;
-float fSPRINT_SPEED 			= 0.0;
-float fSPRINT_TIME				= 0.0;
-
-
 //Register Commands
 public void RegisterServerCommandsSprint()
 {

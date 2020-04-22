@@ -1,5 +1,3 @@
-char trainingModelBall[128] = "models/soccer_mod/ball_2014.mdl";
-
 public void RegisterServerCommandsTraining()
 {
 	RegServerCmd

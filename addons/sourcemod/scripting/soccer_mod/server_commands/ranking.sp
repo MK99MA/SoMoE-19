@@ -1,16 +1,3 @@
-int rankingPointsForGoal			= 12;
-int rankingPointsForAssist			= 12;
-int rankingPointsForOwnGoal			= -10;
-int rankingPointsForHit				= 1;
-int rankingPointsForPass			= 5;
-int rankingPointsForInterception	= 3;
-int rankingPointsForBallLoss		= -3;
-int rankingPointsForSave			= 10;
-int rankingPointsForRoundWon		= 10;
-int rankingPointsForRoundLost		= -10;
-int rankingPointsForMVP				= 15;
-int rankingPointsForMOTM			= 25;
-
 public void RegisterServerCommandsRanking()
 {
 	RegServerCmd

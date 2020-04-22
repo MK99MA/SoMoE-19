@@ -1,101 +1,10 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.0.8"
-#define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
+#define PLUGIN_VERSION "1.1"
+#define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
+//#define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
-// **************************************************************************************************************
-// ************************************************** VARIABLES *************************************************
-// **************************************************************************************************************
-//Array
-ArrayList groupArray;
-
-//Bool
-bool bLATE_LOAD 		= false;
-bool capFightStarted	= false;
-bool currentMapAllowed	= false;
-bool goalScored			= false;
-bool menuaccessed;
-bool roundEnded			= false;
-bool pwchange			= false;
-bool showPanel			= false;
-//bool readycheck			= false;
-//MatchBool
-bool matchStarted		= false;
-bool matchStart			= false;
-bool matchPaused		= false;
-bool matchPeriodBreak	= false;
-
-
-//Strings
-char changeSetting[MAXPLAYERS + 1][32];
-char custom_name_ct[32]	= "CT";
-char custom_name_t[32]	= "T";
-char defaultpw[256];
-char gamevar[8]			= "cstrike";
-char prefix[32]			= "Soccer Mod";
-char prefixcolor[32]	= "green";
-char textcolor[32]		= "lightgreen";
-
-//Paths
-char adminSMFileKV[PLATFORM_MAX_PATH];
-char adminGroupFileKV[PLATFORM_MAX_PATH];
-
-char configFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod.cfg";
-char skinsKeygroup[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_skins.cfg";
-char allowedMapsConfigFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_allowed_maps.cfg";
-char statsKeygroupGoalkeeperAreas[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_GKAreas.cfg";
-char adminFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_admins.cfg";
-char pathCapPositionsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_cap_positions.txt";
-char pathRefCardsFile[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_referee_cards.txt";
-char matchlogKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_last_match.txt";
-char tempReadyFileKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/temp_readycheck.txt";
-char matchlogSettingsKV[PLATFORM_MAX_PATH] = "cfg/sm_soccermod/soccer_mod_matchlogsettings.cfg";
-
-//Floats
-float afk_kicktime		= 100.0;
-
-//Integer
-int afk_menutime		= 20;
-int PWMAXPLAYERS		= 11 
-int publicmode		 	= 1;
-int passwordlock		= 1;
-int djbenabled			= 1;
-int matchlog			= 0;
-int matchReadyCheck		= 1;
-int ForfeitEnabled		= 0;
-int ForfeitScore		= 8;
-int ForfeitPublic		= 0;
-int ForfeitAutoSpec 	= 0;
-int ForfeitCapMode		= 0;
-int startplayers		= 0;
-int damageSounds		= 0;
-int iStarthour			= 0;
-int iStartmin			= 0;
-int iStophour			= 0;
-int iStopmin			= 0;
-
-
-//Handle
-Handle allowedMaps	  	= INVALID_HANDLE;
-Handle db			   	= INVALID_HANDLE;
-Handle pauseRdyTimer	= null;
-
-//Array
-Handle logmenuArray;
-char PlayerNames[MAXPLAYERS+1][MAX_NAMES][MAX_NAME_LENGTH+1];
-int iPlayerNames[MAXPLAYERS+1];
-
-//KeyValues
-KeyValues kvConfig;
-KeyValues kvSkins;
-KeyValues kvGKArea;
-KeyValues kvAdmins;
-KeyValues kvSMAdmins;
-//KeyValues kvAdminGroups;
-KeyValues LeagueMatchKV;
-KeyValues kvTemp;
-KeyValues kvMLSettings;
 
 // **************************************************************************************************************
 // ************************************************** INCLUDES **************************************************
@@ -113,6 +22,7 @@ KeyValues kvMLSettings;
 
 #pragma newdecls required
 
+#include "soccer_mod\globals.sp"
 #include "soccer_mod\server_commands.sp"
 #include "soccer_mod\client_commands.sp"
 #include "soccer_mod\colormenu.sp"
@@ -137,6 +47,7 @@ KeyValues kvMLSettings;
 #include "soccer_mod\modules\sounds.sp"
 #include "soccer_mod\modules\stats.sp"
 #include "soccer_mod\modules\training.sp"
+#include "soccer_mod\modules\training_personalcannon.sp"
 #include "soccer_mod\modules\savelogs.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
@@ -268,6 +179,21 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		else if (StrEqual(changeSetting[client], "power"))
 		{
 			TrainingCannonSet(client, "power", number, 0.001, 10000.0);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "pers_randomness"))
+		{
+			PersonalTrainingCannonSet(client, "randomness", number, 0.0, 500.0);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "pers_fire_rate"))
+		{
+			PersonalTrainingCannonSet(client, "fire_rate", number, 0.5, 10.0);
+			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "pers_power"))
+		{
+			PersonalTrainingCannonSet(client, "power", number, 0.001, 10000.0);
 			return Plugin_Handled;
 		}
 		else if (StrEqual(changeSetting[client], "CustomMaxPlayers"))
@@ -499,6 +425,7 @@ public void OnMapStart()
 	SkinsOnMapStart();
 	StatsOnMapStart();
 	TrainingOnMapStart();
+	PersonalTrainingOnMapStart();
 	
 	// Kill possibly running ForfeitTimer
 	ForfeitReset();
@@ -535,6 +462,7 @@ public void OnClientPutInServer(int client)
 	//SprintOnClientPutInServer(client);
 	AFKKickOnClientPutInServer(client);
 
+	ReadPersonalCannonSettings(client);
 	RadioCommandsOnClientPutInServer(client);
 	if((pwchange == true) && (GetClientCount() == PWMAXPLAYERS+1) && (passwordlock == 1))
 	{
@@ -606,6 +534,7 @@ public void OnClientDisconnect(int client)
 	RespawnOnClientDisconnect(client);
 
 	RadioCommandsOnClientDisconnect(client);
+	SavePersonalCannonSettings(client);
 	ReadyCheckOnClientDisconnect(client);
 	WriteClientCookie(client);
 }
@@ -698,17 +627,25 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 					if(publicmode == 0) CPrintToChat(player,"{%s}[%s] {%s}Type {%s}!menu {%s}for more information", prefixcolor, prefix, textcolor, prefixcolor, textcolor);
 					else if(publicmode == 1) CPrintToChat(player,"{%s}[%s] {%s}Public access of {%s}!cap / !match; !menu {%s}for more information",prefixcolor, prefix, textcolor, prefixcolor, textcolor);
 					else if(publicmode == 2) CPrintToChat(player,"{%s}[%s] {%s}Public access of {%s}!menu {%s}enabled, feel free to use all of its features", prefixcolor, prefix, textcolor, prefixcolor, textcolor);
-					if (iP_SETTINGS[player] & PLAYER_ARMOR)
-					{
-						NewRoundSprint(player);
-					}
 				}
 			}
 		}
-
+		
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsClientInGame(i) && IsClientConnected(i)) 
+			{
+				if (iP_SETTINGS[i] & PLAYER_ARMOR)
+				{
+					if(!capFightStarted)	NewRoundSprint(i);
+				}
+			}
+		}
+		
 		MatchEventRoundStart(event);
 		StatsEventRoundStart(event);
 		TrainingEventRoundStart(event);
+		PersonalTrainingEventRoundStart(event);
 	}
 }
 

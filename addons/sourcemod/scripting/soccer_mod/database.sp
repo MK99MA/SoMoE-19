@@ -7,7 +7,7 @@ public void ConnectToDatabase()
     else CreateTables();
 }
 
-public void CreateTables()
+public void CreateTables() 
 {
     char query[1024] = "CREATE TABLE soccer_mod_players (\
         steamid         VARCHAR(32)     PRIMARY KEY     NOT NULL,\
@@ -62,7 +62,7 @@ public void CreateTables()
         points          INTEGER         DEFAULT '0'     NOT NULL\
     )";
     SQL_FastQuery(db, query);
-
+	
     ApplyPatches();
 }
 

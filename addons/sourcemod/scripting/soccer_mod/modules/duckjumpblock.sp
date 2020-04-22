@@ -1,6 +1,3 @@
-float playerMaxHeight[66];
-Handle cvar_BLOCKDJ_ENABLED = INVALID_HANDLE;
-
 public void RegisterServerCVarsBlockDJ()
 {
 	cvar_BLOCKDJ_ENABLED = CreateConVar(

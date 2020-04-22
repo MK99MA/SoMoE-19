@@ -1,9 +1,3 @@
-int capPicker	   = 0;
-int capCT		   = 0;
-int capT			= 0;
-int capPicksLeft	= 0;
-
-
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
 // ************************************************************************************************************
@@ -179,6 +173,11 @@ public int CapPickMenuHandler(Menu menu, MenuAction action, int client, int choi
 			{
 				int team = GetClientTeam(capCT);
 				ChangeClientTeam(target, team);
+				if(GetClientMenu(target) != MenuSource_None)
+				{
+					CancelClientMenu(target, false);
+					InternalShowMenu(target, "\10", 1); 
+				}
 
 				for (int player = 1; player <= MaxClients; player++)
 				{
@@ -194,6 +193,11 @@ public int CapPickMenuHandler(Menu menu, MenuAction action, int client, int choi
 			{
 				int team = GetClientTeam(capT);
 				ChangeClientTeam(target, team);
+				if(GetClientMenu(target) != MenuSource_None)
+				{
+					CancelClientMenu(target, false);
+					InternalShowMenu(target, "\10", 1); 
+				}
 
 				for (int player = 1; player <= MaxClients; player++)
 				{

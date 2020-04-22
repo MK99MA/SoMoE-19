@@ -1,13 +1,3 @@
-char vState[32] = "Not Ready";
-char totalpausetime[32];
-
-int readydisplay = 0;
-int cooldownTime[MAXPLAYERS+1] = {-1, ...}
-int pauseplayernum	= 0;
-
-bool cdMessage[MAXPLAYERS+1];
-bool tempUnpause = false;
-
 public void OpenReadyPanel(int client)
 {
 	// Create temp File if it doesn't exist (default)
@@ -116,48 +106,47 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 	int currentTime = GetTime();
 	if (cooldownTime[client] != -1 && cooldownTime[client] > currentTime)
 	{
-		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam.", prefixcolor, prefix, textcolor);
+		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam. ClientID %i cooldowntime %i", prefixcolor, prefix, textcolor, client, cooldownTime[client]);
 		cdMessage[client] = false;
 		OpenReadyPanel(client);
 	}
 	else
 	{
 		if(cooldownTime[client] < currentTime) 		cdMessage[client] = false;
-		
 		if(showPanel)
 		{
-			if (action == MenuAction_Select && key == 1)
+			if (action == MenuAction_Select)
 			{		
-				vState = "Ready";
-			
-				// Save state to file
-				kvTemp.JumpToKey(bSteam, true)
-				kvTemp.SetString("Status", vState);
-				kvTemp.GoBack();
-			
-				kvTemp.Rewind();
-				kvTemp.ExportToFile(tempReadyFileKV);
-				kvTemp.Close();
-			
-				RefreshPanel();
-			}
-			else if (action == MenuAction_Select && key == 2)
-			{
-				vState = "Not Ready";
+				if(key == 1)
+				{
+					vState = "Ready";
 				
-				kvTemp.JumpToKey(bSteam, true);
-				kvTemp.SetString("status", vState);
-				kvTemp.GoBack();
+					// Save state to file
+					kvTemp.JumpToKey(bSteam, true)
+					kvTemp.SetString("Status", vState);
+					kvTemp.GoBack();
+				
+					kvTemp.Rewind();
+					kvTemp.ExportToFile(tempReadyFileKV);
+					kvTemp.Close();
+				}
+				else if(key == 2)
+				{
+					vState = "Not Ready";
+				
+					kvTemp.JumpToKey(bSteam, true);
+					kvTemp.SetString("status", vState);
+					kvTemp.GoBack();
 
-				kvTemp.Rewind();
-				kvTemp.ExportToFile(tempReadyFileKV);
-				kvTemp.Close();
+					kvTemp.Rewind();
+					kvTemp.ExportToFile(tempReadyFileKV);
+					kvTemp.Close();
+				}
 				
+				cdMessage[client] = true;
+				cooldownTime[client] = currentTime + 3;
 				RefreshPanel();
 			}
-			
-			cdMessage[client] = true;
-			cooldownTime[client] = currentTime + 3;
 		}
 	}
 }

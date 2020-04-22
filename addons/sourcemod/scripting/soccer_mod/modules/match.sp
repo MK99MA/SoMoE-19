@@ -1,35 +1,3 @@
-// ************************************************** VARIABLES **************************************************
-//Integer
-int matchLastScored				= 0;
-int matchPeriod					= 1;
-int matchScoreCT				= 0;
-int matchScoreT					= 0;
-int matchStoppageTime			= 0;
-int matchTime					= 0;
-int matchToss					= 2;
-
-int tagindex					= 1;
-int teamIndicator;
-
-int forfeitHelper;
-
-//Bool
-bool matchGoldenGoalActive		= false;
-bool matchKickOffTaken			= false;
-bool matchStoppageTimeStarted	= false;
-bool showcards					= false;
-
-//Handle
-Handle matchTimer				= null;
-Handle matchLogRefresh			= null;
-
-//Strings
-char tagName[32];
-char infostring1[512];
-char infostring2[512];
-
-//Float
-float matchBallStartPosition[3];
 
 // ********************************************************************************************************************
 // ************************************************** ENTITY OUTPUTS **************************************************

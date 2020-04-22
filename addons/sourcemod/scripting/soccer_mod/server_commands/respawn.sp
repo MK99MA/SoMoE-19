@@ -1,5 +1,3 @@
-float respawnDelay = 10.0;
-
 public void RegisterServerCommandsRespawn()
 {
 	RegServerCmd

@@ -1,13 +1,3 @@
-int trainingCannonBallIndex	 = -1;
-bool trainingGoalsEnabled	   = true;
-float trainingCannonFireRate	= 2.5;
-float trainingCannonPower	   = 10000.0;
-float trainingCannonRandomness  = 0.0;
-Handle trainingCannonTimer	  = null;
-
-float trainingCannonAim[3];
-float trainingCannonPosition[3];
-
 // ***********************************************************************************************************************
 // ************************************************** COMMAND LISTENERS **************************************************
 // ***********************************************************************************************************************
@@ -64,6 +54,12 @@ public void TrainingCannonSet(int client, char type[32], float number, float min
 public void TrainingOnPluginStart()
 {
 	if (StrEqual(gamevar, "cstrike")) trainingModelBall = "models/soccer_mod/ball_2011.mdl";
+	
+	if(!FileExists(personalSettingsKV))
+	{
+		File hFile = OpenFile(personalSettingsKV, "w");
+		hFile.Close();
+	}
 }
 
 public void TrainingOnMapStart()
@@ -71,12 +67,13 @@ public void TrainingOnMapStart()
 	trainingCannonBallIndex	 = -1;
 	trainingGoalsEnabled		= true;
 
-	KillTrainingCannonTimer();
+	//KillTrainingCannonTimer();
+	delete trainingCannonTimer;
 }
 
 public void TrainingEventRoundStart(Event event)
 {
-	if (matchStarted) KillTrainingCannonTimer();
+	if (matchStarted) delete trainingCannonTimer;//KillTrainingCannonTimer();
 	else if (!trainingGoalsEnabled)
 	{
 		int index;
@@ -94,6 +91,8 @@ public void OpenTrainingMenu(int client)
 	menu.SetTitle("Soccer Mod - Admin - Training");
 
 	menu.AddItem("cannon", "Cannon");
+	
+	menu.AddItem("personal", "Personal Cannon");
 
 	menu.AddItem("disable_goals", "Disable goals");
 
@@ -138,6 +137,7 @@ public int TrainingMenuHandler(Menu menu, MenuAction action, int client, int cho
 				}
 			}
 			else if (StrEqual(menuItem, "cannon")) OpenTrainingCannonMenu(client);
+			else if (StrEqual(menuItem, "personal")) OpenPersonalTrainingCannonMenu(client);
 		}
 		else
 		{
@@ -242,7 +242,8 @@ public int TrainingChooseBallMenuHandler(Menu menu, MenuAction action, int clien
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 		trainingCannonBallIndex = StringToInt(menuItem);
 
-		KillTrainingCannonTimer();
+		//KillTrainingCannonTimer();
+		delete trainingCannonTimer;
 		trainingCannonTimer = CreateTimer(0.0, TrainingCannonShoot);
 
 		for (int player = 1; player <= MaxClients; player++)
@@ -329,7 +330,8 @@ public Action TrainingCannonShoot(Handle timer)
 	else
 	{
 		trainingCannonBallIndex = -1;
-		KillTrainingCannonTimer()
+		//KillTrainingCannonTimer()
+		delete trainingCannonTimer;
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
@@ -341,14 +343,14 @@ public Action TrainingCannonShoot(Handle timer)
 // ***************************************************************************************************************
 // ************************************************** FUNCTIONS **************************************************
 // ***************************************************************************************************************
-public void KillTrainingCannonTimer()
+/*public void KillTrainingCannonTimer()
 {
 	if (trainingCannonTimer != null)
 	{
 		KillTimer(trainingCannonTimer);
 		trainingCannonTimer = null;
 	}
-}
+}*/
 
 public void TrainingDisableGoals(int client)
 {
@@ -394,11 +396,30 @@ public void TrainingSpawnBall(int client)
 {
 	if (FileExists(trainingModelBall, true))
 	{
+		if(pers_trainingCannonTimer[client] != null)
+		{
+			char entityName[32];
+			Format(entityName, sizeof(entityName), "soccer_mod_training_ball_%i", client);
+			int index;
+			delete pers_trainingCannonTimer[client];
+			CPrintToChat(client, "{%s}[%s] {%s}Turned off your personal cannon", prefixcolor, prefix, textcolor);
+			while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
+			{
+				char entPropString[32];
+				GetEntPropString(index, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
+
+				if (StrEqual(entPropString, entityName))
+				{
+					AcceptEntityInput(index, "Kill");
+				}
+			}
+		}
+	
 		char entityName[32];
 		Format(entityName, sizeof(entityName), "soccer_mod_training_ball_%i", client);
 
 		int index;
-		bool ballSpawned = false;
+		bool ballSpawned = false;	
 
 		while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
 		{
@@ -478,7 +499,8 @@ public void TrainingCannonOn(int client)
 			else
 			{
 				trainingCannonBallIndex = numbers[0];
-				KillTrainingCannonTimer();
+				//KillTrainingCannonTimer();
+				delete trainingCannonTimer;
 				trainingCannonTimer = CreateTimer(0.0, TrainingCannonShoot);
 
 				for (int player = 1; player <= MaxClients; player++)
@@ -492,7 +514,8 @@ public void TrainingCannonOn(int client)
 		}
 		else
 		{
-			KillTrainingCannonTimer();
+			//KillTrainingCannonTimer();
+			delete trainingCannonTimer;
 			trainingCannonTimer = CreateTimer(0.0, TrainingCannonShoot);
 
 			for (int player = 1; player <= MaxClients; player++)
@@ -515,16 +538,17 @@ public void TrainingCannonOff(int client)
 {
 	if (trainingCannonTimer != null)
 	{
-		KillTrainingCannonTimer();
-		//Clear Arrays
-		//trainingCannonPosition[3] = -1;
-		//trainingCannonAim[3] = -1;
+		float vec[3] = {0.0, 0.0, 0.0};
+		
+		//KillTrainingCannonTimer();
+		delete trainingCannonTimer;
+		TeleportEntity(trainingCannonBallIndex, NULL_VECTOR, NULL_VECTOR, vec);
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has turned the cannon off", prefixcolor, prefix, textcolor, client);
 		}
-
+		
 		//trainingCannonBallIndex = -1;
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));

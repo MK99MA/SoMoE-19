@@ -1,14 +1,3 @@
-char skinsModelCT[128]				  = "models/player/soccer_mod/termi/2011/away/ct_urban.mdl";
-char skinsModelCTNumber[4]			  = "0";
-char skinsModelT[128]				   = "models/player/soccer_mod/termi/2011/home/ct_urban.mdl";
-char skinsModelTNumber[4]			   = "0";
-char skinsModelCTGoalkeeper[128]		= "models/player/soccer_mod/termi/2011/gkaway/ct_urban.mdl";
-char skinsModelCTGoalkeeperNumber[4]	= "0";
-char skinsModelTGoalkeeper[128]		 = "models/player/soccer_mod/termi/2011/gkhome/ct_urban.mdl";
-char skinsModelTGoalkeeperNumber[4]	 = "0";
-
-int skinsIsGoalkeeper[MAXPLAYERS + 1];
-
 public void RegisterServerCommandsSkins()
 {
 	RegServerCmd

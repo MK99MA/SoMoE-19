@@ -3,13 +3,6 @@
 #define CLIENT_MESSAGEUSING  (1<<2)
 #define CLIENT_ANNOUNCEMENT  (1<<3)
 
-char iCLIENT_STATUS[MAXPLAYERS+1];
-
-Handle h_SPRINT_TIMERS[MAXPLAYERS+1];
-Handle h_SPRINT_REFILL[MAXPLAYERS+1];
-Handle h_SPRINT_DURATION[MAXPLAYERS+1];
-Handle antiflood;
-
 //INCLUDES
 #include "soccer_mod\modules\sprint\clientsettings.sp"
 #include "soccer_mod\modules\sprint\infopanel.sp"

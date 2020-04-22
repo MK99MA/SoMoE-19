@@ -1,11 +1,3 @@
-int debuggingEnabled		= 0;
-char databaseConfig[64]		= "storage-local";
-float phys_timescale		= 1.0;
-int phys_pushscale			= 900;
-int MVPEnabled				= 1;
-int DeadChatMode			= 0;
-int DeadChatVis				= 0;
-
 public void RegisterServerCommands()
 {
 	RegServerCmd(

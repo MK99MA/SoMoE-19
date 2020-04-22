@@ -1,11 +1,8 @@
-//SOUND STUFF
-
 public void PlaySound(char sound[PLATFORM_MAX_PATH])
 {
 	EmitSoundToAll(sound);
 	//EmitSoundToAll(sound);
 }
-
 
 public Action AmbientSHook(char sample[PLATFORM_MAX_PATH], int& entity, float& volume, int& level, int& pitch, float pos[3], int& flags, float& delay)
 {

@@ -1,16 +1,3 @@
-int matchMaxPlayers		 = 6;
-int matchPeriodBreakLength  = 60;
-int matchPeriodLength	   = 900;
-int matchPeriods			= 2;
-int matchGoldenGoal			= 1;
-
-int infoPeriods					= 1;
-int infoBreak					= 1;
-int infoGolden					= 1;
-int infoForfeit					= 1;
-int infoForfeitSet				= 0;
-int infoMatchlog				= 0;
-
 public void RegisterServerCommandsMatch()
 {
 	RegServerCmd
@@ -30,12 +17,6 @@ public void RegisterServerCommandsMatch()
 		"soccer_mod_match_period_break_length",
 		ServerCommandsMatch,
 		"Sets the length of a period break (in seconds) - values: 5-3600, default: 60"
-	);
-	RegServerCmd
-	(
-		"soccer_mod_match_max_players",
-		ServerCommandsMatch,
-		"Sets the maximum number of players per team during a match - values: 1-32, default: 6"
 	);
 	RegServerCmd
 	(
@@ -92,16 +73,6 @@ public Action ServerCommandsMatch(int args)
 
 		PrintToServer("[%s] Match period break length set to %i", prefix, matchPeriodBreakLength);
 		CPrintToChatAll("{%s}[%s] {%s}Match period break length set to %i", prefixcolor, prefix, textcolor, matchPeriodBreakLength);
-	}
-	else if (StrEqual(serverCommand, "soccer_mod_match_max_players"))
-	{
-		if (1 <= number <= 32) matchMaxPlayers = number;
-		else if (number > 32) matchMaxPlayers = 32;
-		else matchMaxPlayers = 1;
-		UpdateConfigInt("Match Settings", "soccer_mod_match_max_players", matchMaxPlayers);
-
-		PrintToServer("[%s] Maximum number of players per team during a match set to %i", prefix, matchMaxPlayers);
-		CPrintToChatAll("{%s}[%s] {%s}Maximum number of players per team during a match set to %i", prefixcolor, prefix, textcolor, matchMaxPlayers);
 	}
 	else if (StrEqual(serverCommand, "soccer_mod_match_golden_goal"))
 	{
