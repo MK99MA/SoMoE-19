@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.1"
+#define PLUGIN_VERSION "1.2"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
 //#define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
@@ -90,7 +90,7 @@ public void OnPluginStart()
 	AddCommandListener(SayCommandListener, "say2");
 	AddCommandListener(SayCommandListener, "say_team");
 	AddCommandListener(cmd_jointeam, "jointeam");
-	AddCommandListener(cmd_jointeam2, "spectate");
+	AddCommandListener(cmd_jointeam, "spectate");
 	AddAmbientSoundHook(AmbientSHook);
 	AddNormalSoundHook(sound_hook);
 
@@ -575,7 +575,6 @@ public Action EventPlayerSpawn(Event event, const char[] name, bool dontBroadcas
 		//Sprint
 		char iClient = GetClientOfUserId(GetEventInt(event, "userid"));
 		ResetSprint(iClient);
-		SetEntProp(iClient, Prop_Send, "m_ArmorValue", 100);
 		PrintSprintCDMsgToClient(iClient);
 		iCLIENT_STATUS[iClient] &= ~ CLIENT_SPRINTUNABLE;
 	}
@@ -630,18 +629,7 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 				}
 			}
 		}
-		
-		for (int i = 1; i <= MaxClients; i++)
-		{
-			if (IsClientInGame(i) && IsClientConnected(i)) 
-			{
-				if (iP_SETTINGS[i] & PLAYER_ARMOR)
-				{
-					if(!capFightStarted)	NewRoundSprint(i);
-				}
-			}
-		}
-		
+				
 		MatchEventRoundStart(event);
 		StatsEventRoundStart(event);
 		TrainingEventRoundStart(event);

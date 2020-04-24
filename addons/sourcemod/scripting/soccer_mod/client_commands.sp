@@ -28,17 +28,18 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_unp", UnpauseCommand, "Unpauses a match");
 	RegConsoleCmd("sm_unpause", UnpauseCommand, "Unpauses a match");
 
-	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "Adds an admin to admins_simple.ini");
-	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "Reset the sv password");
-	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "Forces Ready state for every player");
-	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "Set the sv password");
-	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "Set a random server password");
-	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "Shortcut to the Settings menu");
-	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "Prints your current clantag - Test");
-	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "Check if matchlog would be created if a match is started now");
+	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "[RCONFLAG]Adds an admin to admins_simple.ini");
+	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "[RCONFLAG]Reset the sv password");
+	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "[RCONFLAG]Forces Ready state for every player");
+	RegAdminCmd("sm_forceunp", Command_ForceUnpause, ADMFLAG_RCON, "[RCONFLAG]Forces the match to unpause");
+	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "[RCONFLAG]Set the sv password");
+	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "[RCONFLAG]Set a random server password");
+	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "[GENERICFLAG]Shortcut to the Settings menu");
+	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG]Prints your current clantag - Test");
+	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
 	
 	
-	RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "Test command");
+	RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "[RCONFLAG]Test command");
 
 }
 
@@ -511,6 +512,41 @@ public Action CreditsCommand(int client, int args)
 public Action Command_SoccerSet(int client, int args)
 {
 	OpenMenuSettings(client)
+	return Plugin_Handled;
+}
+
+public Action Command_ForceUnpause(int client, int args)
+{
+	if (matchPaused)
+	{
+		if(matchReadyCheck > 0)
+		{
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsValidClient(i) && (GetClientTeam(i) == 2 || GetClientTeam(i) == 3))
+				{
+					if(GetClientMenu(i) != MenuSource_None)
+					{
+						CancelClientMenu(i,false);
+						InternalShowMenu(i, "\10", 1); 
+					} 
+				}
+			}
+			showPanel = false;
+			DeleteTempFile();
+			if (tempUnpause)
+			{
+				matchReadyCheck = 1;
+				tempUnpause = false;
+			} 
+			
+			CPrintToChatAll("{%s}[%s] {%s}Forced to unpause.", prefixcolor,  prefix, textcolor);
+			MatchUnpause(client);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}ReadyCheck not running!", prefixcolor, prefix, textcolor); 
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Match not Paused!", prefixcolor, prefix, textcolor); 
+	
 	return Plugin_Handled;
 }
 

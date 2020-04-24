@@ -106,7 +106,7 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 	int currentTime = GetTime();
 	if (cooldownTime[client] != -1 && cooldownTime[client] > currentTime)
 	{
-		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam. ClientID %i cooldowntime %i", prefixcolor, prefix, textcolor, client, cooldownTime[client]);
+		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam.", prefixcolor, prefix, textcolor);
 		cdMessage[client] = false;
 		OpenReadyPanel(client);
 	}
@@ -316,13 +316,17 @@ public void ReadyCheckOnClientDisconnect(int client)
 
 public Action cmd_jointeam(int client, const char[] command, int iArgs)
 {
-	char arg[3];
-	GetCmdArg(1, arg, sizeof(arg));
-	int team = StringToInt(arg);
-	
 	if(FileExists(tempReadyFileKV))
 	{
-		if(team == 1)
+		int team = 0;
+		if(StrEqual(command, "jointeam"))
+		{
+			char arg[3];
+			GetCmdArg(1, arg, sizeof(arg));
+			team = StringToInt(arg);
+		}
+		
+		if((StrEqual(command, "jointeam") && team == 1) || StrEqual(command, "spectate"))
 		{
 			char bSteam[32];
 			GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
@@ -343,12 +347,15 @@ public Action cmd_jointeam(int client, const char[] command, int iArgs)
 				InternalShowMenu(client, "\10", 1); 
 			} 
 		}
-		
+		else if(team > 1)
+		{
+			if(startplayers != 6 && startplayers != 12) startplayers++;
+		}
 	}
 	return Plugin_Continue;
 }
 
-public Action cmd_jointeam2(int client, const char[] command, int iArgs)
+/*public Action cmd_jointeam2(int client, const char[] command, int iArgs)
 {
 	if(FileExists(tempReadyFileKV))
 	{
@@ -372,7 +379,7 @@ public Action cmd_jointeam2(int client, const char[] command, int iArgs)
 		} 
 	}
 	return Plugin_Continue;
-}
+}*/
 
 public Action pauseReadyTimer(Handle timer, any time)
 {

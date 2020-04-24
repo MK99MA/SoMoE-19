@@ -284,7 +284,7 @@ int rankingPointsForMOTM			= 25;
 
 // BOOL
 bool showPanel					= false;
-bool cdMessage[MAXPLAYERS+1];
+bool cdMessage[MAXPLAYERS+1]	= false;
 bool tempUnpause 				= false;
 
 // FLOATS

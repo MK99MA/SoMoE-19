@@ -30,7 +30,7 @@ public void OpenMenuSoccer(int client)
 
 	menu.AddItem("help", "Help");
 	
-	menu.AddItem("sprintinfo", "Sprintinfo");
+	menu.AddItem("sprintinfo", "Sprintsettings");
 	
 	if (shoutplugin != INVALID_HANDLE)
 	{
@@ -65,7 +65,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 			}
 		}
 		else if (StrEqual(menuItem, "help"))		OpenMenuHelp(client);
-		else if (StrEqual(menuItem, "credits"))	 OpenMenuCredits(client);
+		else if (StrEqual(menuItem, "credits"))	 	OpenMenuCredits(client);
 		else if (StrEqual(menuItem, "sprintinfo"))  FakeClientCommandEx(client, "sm_sprintinfo");
 		else if (StrEqual(menuItem, "shout"))		FakeClientCommandEx(client, "sm_shout");
 		else if (currentMapAllowed)
@@ -433,11 +433,14 @@ public void OpenMenuCommandsAdmin(int client)
 	menu.SetTitle("Soccer Mod - Help - Admin Commands");
 
 	menu.AddItem("admin", "!madmin");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "!addadmin <SteamID>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "!rr");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "!dpass");		
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "!pass <PW>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "!rpass");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "[RCON] !addadmin <SteamID>");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "[GENERIC / SOCCER] !rr");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("settingscmd", "[GENERIC / SOCCER] !soccerset");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forcerdycmd", "[RCON] !forcerdy");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forceunpcmd", "[RCON] !forceunp");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "[RCON] !dpass");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "[RCON] !pass <PW>");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");	
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -455,6 +458,9 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "passwordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Print the current password to console or change it", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "rpasswordcmd")) CPrintToChat(client, "{%s}[%s] {%s}Manually set a random password", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "addadmin"))	CPrintToChat(client, "{%s}[%s] {%s}!addadmin <SteamId>: Add the Steamid to soccermod admins.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "forcerdycmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the state of everyone to ready during a readycheck.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "forceunpcmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the match to unpause in case of a readycheck.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "settingscmd"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the settings menu.", prefixcolor, prefix, textcolor);	
 
 		OpenMenuCommands(client);
 	}

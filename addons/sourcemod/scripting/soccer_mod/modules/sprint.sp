@@ -29,25 +29,6 @@ public void SprintOnPluginStart()
 	return;
 }
 
-public void NewRoundSprint(int client)
-{
-	SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
-
-	delete h_SPRINT_REFILL[client];
-	delete h_SPRINT_DURATION[client];
-	/*
-	if(h_SPRINT_REFILL[client] != null)
-	{
-		KillTimer(h_SPRINT_REFILL[client]); //Killtimer Sprint_Refill
-		h_SPRINT_REFILL[client] = null;
-	}
-	if(h_SPRINT_DURATION[client] != null)
-	{
-		KillTimer(h_SPRINT_DURATION[client]);
-		h_SPRINT_DURATION[client] = null;
-	}*/
-}
-
 public void floodcheck()
 {
 	char afpath_old[PLATFORM_MAX_PATH], afpath_new[PLATFORM_MAX_PATH];
@@ -200,12 +181,14 @@ public void SetEveryClientDefaultSettings()
 //Reset
 public void ResetSprint(int client)
 {
-	if(h_SPRINT_TIMERS[client] != INVALID_HANDLE)
+	/*if(h_SPRINT_TIMERS[client] != INVALID_HANDLE)
 	{
 		KillTimer(h_SPRINT_TIMERS[client]);
 		h_SPRINT_TIMERS[client] = INVALID_HANDLE;
-	}
+	}*/
 
+	delete h_SPRINT_REFILL[client];
+	delete h_SPRINT_DURATION[client];
 	//Reset sprint speed
 	if(GetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue") != 1)
 	{
@@ -216,6 +199,11 @@ public void ResetSprint(int client)
 	{
 		iCLIENT_STATUS[client] &= ~ CLIENT_SPRINTUSING;
 		PrintSprintEndMsgToClient(client);
+	}
+	
+	if (iP_SETTINGS[client] & PLAYER_ARMOR)
+	{
+		if(!capFightStarted)	SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
 	}
 
 	return;
