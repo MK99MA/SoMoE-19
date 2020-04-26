@@ -1,4 +1,4 @@
-# Soccer Mod - 2019 Edit (Current Version: 1.1)  
+# Soccer Mod - 2019 Edit (Current Version: 1.1.0)  
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
@@ -170,7 +170,7 @@ Adding this to your server will allow you to automatically update the plugin whe
 [Updater](https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx)  
   
  ● Soccer Mod (2019 Edit)  
-https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.0.0  
+https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.1.0  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
 [>>Previous Versions<< In case of any major issues](https://github.com/MK99MA/soccermod-2019edit/blob/master/addons/sourcemod/plugins/old/)  
 ### New and Upcoming changes, as well as possible additions can be found (and requested) [here](https://github.com/MK99MA/soccermod-2019edit/issues/1)  
