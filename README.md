@@ -161,7 +161,7 @@ To run Soccer Mod on your server you need the following plugins:
  ● Metamod:Source 1.10 or higher  
 http://www.sourcemm.net/downloads.php?branch=stable  
   
- ● SourceMod 1.7 or higher  
+ ● SourceMod 1.10 or higher  
 https://www.sourcemod.net/downloads.php?branch=stable  
   
  ● (OPTIONAL BUT RECOMMENDED) Updater.smx  
