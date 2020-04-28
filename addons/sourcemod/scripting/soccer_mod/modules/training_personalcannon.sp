@@ -101,38 +101,45 @@ public int PersonalTrainingCannonMenuHandler(Menu menu, MenuAction action, int c
 {
 	if (action == MenuAction_Select)
 	{
-		char menuItem[32];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		if(GetClientTeam(client) > 1 && IsPlayerAlive(client))
+		{
+			char menuItem[32];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "off"))
-		{
-			PersonalTrainingCannonOff(client);
-			OpenPersonalTrainingCannonMenu(client);
-		}
-		else
-		{
-			if (!matchStarted)
+			if (StrEqual(menuItem, "off"))
 			{
-				if (StrEqual(menuItem, "position"))
-				{
-					PersonalTrainingCannonPosition(client);
-					OpenPersonalTrainingCannonMenu(client);
-				}
-				else if (StrEqual(menuItem, "aim"))
-				{
-					PersonalTrainingCannonAimPosition(client);
-					OpenPersonalTrainingCannonMenu(client);
-				}
-				else if (StrEqual(menuItem, "on")) PersonalTrainingCannonOn(client);
-				else if (StrEqual(menuItem, "settings")) OpenPersonalTrainingCannonSettingsMenu(client);
+				PersonalTrainingCannonOff(client);
+				OpenPersonalTrainingCannonMenu(client);
 			}
 			else
 			{
-				CPrintToChat(client, "{%s}[%s] {%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
-				OpenPersonalTrainingCannonMenu(client);
+				if (!matchStarted)
+				{
+					if (StrEqual(menuItem, "position"))
+					{
+						PersonalTrainingCannonPosition(client);
+						OpenPersonalTrainingCannonMenu(client);
+					}
+					else if (StrEqual(menuItem, "aim"))
+					{
+						PersonalTrainingCannonAimPosition(client);
+						OpenPersonalTrainingCannonMenu(client);
+					}
+					else if (StrEqual(menuItem, "on")) PersonalTrainingCannonOn(client);
+					else if (StrEqual(menuItem, "settings")) OpenPersonalTrainingCannonSettingsMenu(client);
+				}
+				else
+				{
+					CPrintToChat(client, "{%s}[%s] {%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
+					OpenPersonalTrainingCannonMenu(client);
+				}
 			}
 		}
-
+		else
+		{
+			CPrintToChat(client, "{%s}[%s] {%s} You have to be in a team to use this option.", prefixcolor, prefix, textcolor);
+			OpenPersonalTrainingCannonMenu(client);
+		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenTrainingMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();

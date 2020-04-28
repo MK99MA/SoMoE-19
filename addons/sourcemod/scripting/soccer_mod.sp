@@ -1,9 +1,8 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.1.1"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
-//#define UPDATE_URL "https://drv.tw/~raroger1975@gmail.com/gd/Sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
 // **************************************************************************************************************
@@ -42,6 +41,7 @@
 #include "soccer_mod\modules\referee.sp"
 #include "soccer_mod\modules\respawn.sp"
 #include "soccer_mod\modules\settings.sp"
+#include "soccer_mod\modules\chatset.sp"
 #include "soccer_mod\modules\skins.sp"
 #include "soccer_mod\modules\sprint.sp"
 #include "soccer_mod\modules\sounds.sp"
@@ -276,16 +276,6 @@ public Action SayCommandListener(int client, char[] command, int argc)
 			AdminSetListener(client, "AdminImmunityValue", admin_value, 0, 2);
 			return Plugin_Handled;
 		}
-		/*else if (StrEqual(changeSetting[client], "AdminGroupValue"))
-		{
-			AdminSetListener(client, "AdminGroupValue", admin_value, 0, 64);
-			return Plugin_Handled;
-		}
-		else if (StrEqual(changeSetting[client], "AdminIdValue"))
-		{
-			AdminSetListener(client, "AdminIdValue", admin_value, 0, 20);
-			return Plugin_Handled;
-		}*/
 	}
 
 	return Plugin_Continue;
@@ -479,16 +469,6 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 		
 	if((cString[0] == '!') || (cString[0] == '/'))
 	{
-		/*if(IsCharUpper(cString[1]))
-		{
-			for(int i = 0; i <= strlen(cString); i++)
-			{
-				cString[i] = CharToLower(cString[i])
-			}
-			FakeClientCommand(client, "say %s", cString);
-		}
-		return Plugin_Handled;*/
-		
 		for(int i = 1; i <= strlen(cString); i++)
 		{
 			if(IsCharUpper(cString[i])) 

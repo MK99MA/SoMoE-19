@@ -677,6 +677,22 @@ public Action Command_TimeTest(int client, int args)
 
 public Action Command_Test(int client, int args)
 {
+	SetHudTextParams(x_val[client], y_val[client], 50.0, 255, 0, 0, 255);
+	//SetHudTextParams(-1.0, 0.1, 5.0, 255, 255, 255, 255, 0, 0.1, 0.1, 0.1); 
+	ShowHudText(client, 5, "TestText"); 
+	char sCookie_val[16];
+	char sTempArray[3][16];
+	char sTempArray2[2][16];
+	
+	GetClientCookie(client, h_TIMER_COL_COOKIE, sCookie_val, sizeof(sCookie_val));
+	ExplodeString(sCookie_val, ";", sTempArray, sizeof(sTempArray), sizeof(sTempArray[]));
+	
+	PrintToChatAll("%s %s %s", sTempArray[0], sTempArray[1], sTempArray[2]);
+	
+	GetClientCookie(client, h_TIMER_XY_COOKIE, sCookie_val, sizeof(sCookie_val));
+	ExplodeString(sCookie_val, ";", sTempArray2, sizeof(sTempArray2), sizeof(sTempArray2[]));
+	
+	PrintToChatAll("%s %s", sTempArray2[0], sTempArray2[1]);
 	
 	return Plugin_Handled;
 }

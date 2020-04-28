@@ -176,38 +176,45 @@ public int TrainingCannonMenuHandler(Menu menu, MenuAction action, int client, i
 {
 	if (action == MenuAction_Select)
 	{
-		char menuItem[32];
-		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		if(GetClientTeam(client) > 1  && IsPlayerAlive(client))
+		{
+			char menuItem[32];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "off"))
-		{
-			TrainingCannonOff(client);
-			OpenTrainingCannonMenu(client);
-		}
-		else
-		{
-			if (!matchStarted)
+			if (StrEqual(menuItem, "off"))
 			{
-				if (StrEqual(menuItem, "position"))
-				{
-					TrainingCannonPosition(client);
-					OpenTrainingCannonMenu(client);
-				}
-				else if (StrEqual(menuItem, "aim"))
-				{
-					TrainingCannonAimPosition(client);
-					OpenTrainingCannonMenu(client);
-				}
-				else if (StrEqual(menuItem, "on")) TrainingCannonOn(client);
-				else if (StrEqual(menuItem, "settings")) OpenTrainingCannonSettingsMenu(client);
+				TrainingCannonOff(client);
+				OpenTrainingCannonMenu(client);
 			}
 			else
 			{
-				CPrintToChat(client, "{%s}[%s] {%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
-				OpenTrainingCannonMenu(client);
+				if (!matchStarted)
+				{
+					if (StrEqual(menuItem, "position"))
+					{
+						TrainingCannonPosition(client);
+						OpenTrainingCannonMenu(client);
+					}
+					else if (StrEqual(menuItem, "aim"))
+					{
+						TrainingCannonAimPosition(client);
+						OpenTrainingCannonMenu(client);
+					}
+					else if (StrEqual(menuItem, "on")) TrainingCannonOn(client);
+					else if (StrEqual(menuItem, "settings")) OpenTrainingCannonSettingsMenu(client);
+				}
+				else
+				{
+					CPrintToChat(client, "{%s}[%s] {%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
+					OpenTrainingCannonMenu(client);
+				}
 			}
 		}
-
+		else
+		{
+			CPrintToChat(client, "{%s}[%s] {%s} You have to be in a team to use this option.", prefixcolor, prefix, textcolor);
+			OpenTrainingCannonMenu(client);
+		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenTrainingMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -394,15 +401,48 @@ public void TrainingEnableGoals(int client)
 
 public void TrainingSpawnBall(int client)
 {
-	if (FileExists(trainingModelBall, true))
+	int currentTime = GetTime();
+	if (trainingballCD[client] != -1 && trainingballCD[client] > currentTime)
 	{
-		if(pers_trainingCannonTimer[client] != null)
+		int cdinfo[MAXPLAYERS+1]
+		cdinfo[client] = trainingballCD[client] - currentTime;
+		if(cdinfo[client] != cdTemp[client])
 		{
+			CPrintToChat(client,"{%s}[%s] {%s}Spawning a ball is on cooldown, %i seconds left.", prefixcolor, prefix, textcolor, cdinfo[client]);
+			cdTemp[client] = cdinfo[client];
+		}
+	}
+	else
+	{
+		if (FileExists(trainingModelBall, true))
+		{
+			if(pers_trainingCannonTimer[client] != null)
+			{
+				char entityName[32];
+				Format(entityName, sizeof(entityName), "soccer_mod_training_ball_%i", client);
+				int index;
+				delete pers_trainingCannonTimer[client];
+				CPrintToChat(client, "{%s}[%s] {%s}Turned off your personal cannon", prefixcolor, prefix, textcolor);
+				while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
+				{
+					char entPropString[32];
+					GetEntPropString(index, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
+
+					if (StrEqual(entPropString, entityName))
+					{
+						AcceptEntityInput(index, "Kill");
+						
+						trainingballCD[client] = currentTime + 5;
+					}
+				}
+			}
+		
 			char entityName[32];
 			Format(entityName, sizeof(entityName), "soccer_mod_training_ball_%i", client);
+
 			int index;
-			delete pers_trainingCannonTimer[client];
-			CPrintToChat(client, "{%s}[%s] {%s}Turned off your personal cannon", prefixcolor, prefix, textcolor);
+			bool ballSpawned = false;	
+
 			while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
 			{
 				char entPropString[32];
@@ -410,48 +450,33 @@ public void TrainingSpawnBall(int client)
 
 				if (StrEqual(entPropString, entityName))
 				{
+					ballSpawned = true;
 					AcceptEntityInput(index, "Kill");
+					
+					trainingballCD[client] = currentTime + 5;
+				}
+			}
+
+			if (!ballSpawned)
+			{
+				index = CreateEntityByName("prop_physics");
+				if (index)
+				{
+					if (!IsModelPrecached(trainingModelBall)) PrecacheModel(trainingModelBall);
+
+					DispatchKeyValue(index, "targetname", entityName);
+					DispatchKeyValue(index, "model", trainingModelBall);
+
+					float aimPosition[3];
+					GetAimOrigin(client, aimPosition);
+					DispatchKeyValueVector(index, "origin", aimPosition);
+
+					DispatchSpawn(index);
 				}
 			}
 		}
-	
-		char entityName[32];
-		Format(entityName, sizeof(entityName), "soccer_mod_training_ball_%i", client);
-
-		int index;
-		bool ballSpawned = false;	
-
-		while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
-		{
-			char entPropString[32];
-			GetEntPropString(index, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
-
-			if (StrEqual(entPropString, entityName))
-			{
-				ballSpawned = true;
-				AcceptEntityInput(index, "Kill");
-			}
-		}
-
-		if (!ballSpawned)
-		{
-			index = CreateEntityByName("prop_physics");
-			if (index)
-			{
-				if (!IsModelPrecached(trainingModelBall)) PrecacheModel(trainingModelBall);
-
-				DispatchKeyValue(index, "targetname", entityName);
-				DispatchKeyValue(index, "model", trainingModelBall);
-
-				float aimPosition[3];
-				GetAimOrigin(client, aimPosition);
-				DispatchKeyValueVector(index, "origin", aimPosition);
-
-				DispatchSpawn(index);
-			}
-		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Cant spawn model %s", prefixcolor, prefix, textcolor, trainingModelBall);
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}Cant spawn model %s", prefixcolor, prefix, textcolor, trainingModelBall);
 }
 
 public void TrainingCannonOn(int client)

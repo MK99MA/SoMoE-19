@@ -21,7 +21,7 @@ public void SprintOnPluginStart()
 	//Commands
 	RegConsoleCmd("sm_sprint", Command_StartSprint, "Starts the sprint.");
 
-	RegConsoleCmd("sm_sprintinfo", Command_InfoPanel, "Opens the Sprint InfoPanel.");
+	//RegConsoleCmd("sm_sprintinfo", Command_InfoPanel, "Opens the Sprint InfoPanel.");
 	floodcheck();
 	//Clientprefs
 	RegSprintCookie();
@@ -84,54 +84,73 @@ public Action Command_StartSprint(int client, int args)
 	&& !(iCLIENT_STATUS[client] & CLIENT_SPRINTUSING)
 	&& !(iCLIENT_STATUS[client] & CLIENT_SPRINTUNABLE))
 	{
-		iCLIENT_STATUS[client] |= CLIENT_SPRINTUSING | CLIENT_SPRINTUNABLE;
+		if(!showHudPrev[client])
+		{
+			iCLIENT_STATUS[client] |= CLIENT_SPRINTUSING | CLIENT_SPRINTUNABLE;
 
-		//Set sprint speed
-		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", fSPRINT_SPEED);
-		//SetEntProp(client, Prop_Send, "m_ArmorValue", 0.0);
-		//h_SPRINT_DURATION[client] = CreateTimer((fSPRINT_TIME/20), Sprint_Dur, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+			//Set sprint speed
+			SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", fSPRINT_SPEED);
+			//SetEntProp(client, Prop_Send, "m_ArmorValue", 0.0);
+			
+			//----
 		
-		//----
-	
-		//Outputs
-		if(iP_SETTINGS[client] & PLAYER_SOUND)
-		{
-			EmitSoundToClient(client, "player/suit_sprint.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO,
-			SNDLEVEL_NORMAL, SND_NOFLAGS, 0.8);
-		}
+			//Outputs 
+			if(iP_SETTINGS[client] & PLAYER_SOUND)
+			{
+				EmitSoundToClient(client, "player/suit_sprint.wav", SOUND_FROM_PLAYER, SNDCHAN_AUTO,
+				SNDLEVEL_NORMAL, SND_NOFLAGS, 0.8);
+			}
 
-		if(iP_SETTINGS[client] & PLAYER_MESSAGES)
-		{
-			CPrintToChat(client, "{%s}[%s] You are using sprint!", prefixcolor, prefix);
+			if(iP_SETTINGS[client] & PLAYER_MESSAGES)
+			{
+				CPrintToChat(client, "{%s}[%s] You are using sprint!", prefixcolor, prefix);
 
-			iCLIENT_STATUS[client] |= CLIENT_MESSAGEUSING;
-		}
-		
-		if (iP_SETTINGS[client] & PLAYER_ARMOR)
-		{
-			h_SPRINT_DURATION[client] = CreateTimer((fSPRINT_TIME/20), Sprint_Dur, client, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
-		}
-		//----
+				iCLIENT_STATUS[client] |= CLIENT_MESSAGEUSING;
+			}
+			
+			if (iP_SETTINGS[client] & PLAYER_TIMER)
+			{
+				delete h_SPRINT_REFILL[client];	
+				
+				DataPack pack = new DataPack();
+				h_SPRINT_DURATION[client] = CreateDataTimer(0.1, SprintHud, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+				pack.WriteCell(client);
+				pack.WriteFloat(fSPRINT_TIME);
+			}
+			else delete h_SPRINT_DURATION[client];
+			//---- 
 
-		h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_TIME, Timer_SprintEnd, client);
+			h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_TIME, Timer_SprintEnd, client);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Can't sprint while editing your settings!", prefixcolor, prefix, textcolor);
 	}
 	return(Plugin_Handled);
 }
 
-public Action Sprint_Dur(Handle timer, int client)
+public Action SprintHud(Handle timer, DataPack pack)
 {
-	int armor_val2 = GetClientArmor(client);
+	pack.Reset();
+	int client = pack.ReadCell();
+	float time = pack.ReadFloat();
 	
-	if (armor_val2 > 0) SetEntProp(client, Prop_Send, "m_ArmorValue", (armor_val2-(100/RoundFloat(fSPRINT_TIME*(20/fSPRINT_TIME)))));
-	else if (armor_val2 == 0)
+	char cdBuffer[32];
+	SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
+	
+	if(time > 0.0)
 	{
-		/*if(h_SPRINT_DURATION[client] != null)
-		{
-			KillTimer(h_SPRINT_DURATION[client]);
-			h_SPRINT_DURATION[client] = null;
-		}*/
+		Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
+		ShowHudText(client, 5, cdBuffer); 
+		time = time - 0.1;
+		
+		pack.Reset();
+		pack.WriteCell(client);
+		pack.WriteFloat(time);
+	}
+	else if(time == 0.0)
+	{
 		delete h_SPRINT_DURATION[client];
-		SetEntProp(client, Prop_Send, "m_ArmorValue", 0);
+		CloseHandle(pack);
+		ShowHudText(client, 5, "");	
 	}
 	
 	return;
@@ -145,7 +164,7 @@ public void OnGameFrame()
 		{
 			if(IsClientInGame(i) && (GetClientButtons(i) & IN_USE))
 			{
-				Command_StartSprint(i, 0);
+				if(!showHudPrev[i])	Command_StartSprint(i, 0);
 			}
 		}
 	}
@@ -199,11 +218,6 @@ public void ResetSprint(int client)
 	{
 		iCLIENT_STATUS[client] &= ~ CLIENT_SPRINTUSING;
 		PrintSprintEndMsgToClient(client);
-	}
-	
-	if (iP_SETTINGS[client] & PLAYER_ARMOR)
-	{
-		if(!capFightStarted)	SetEntProp(client, Prop_Send, "m_ArmorValue", 100);
 	}
 
 	return;

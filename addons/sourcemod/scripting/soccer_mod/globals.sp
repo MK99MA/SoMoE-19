@@ -351,11 +351,15 @@ char skinsModelTGoalkeeperNumber[4]		= "0";
 // **************************************************** SPRINT ***************************************************
 
 // BOOL
+bool showHudPrev[MAXPLAYERS+1]	= {false, ...};
 
 // FLOATS
 float fSPRINT_COOLDOWN 			= 0.0;
 float fSPRINT_SPEED 			= 0.0;
 float fSPRINT_TIME				= 0.0;
+
+float x_val[MAXPLAYERS+1]		= {0.8, ...};
+float y_val[MAXPLAYERS+1]		= {0.8, ...};
 
 // HANDLES
 Handle h_BUTTON 				= INVALID_HANDLE;
@@ -364,20 +368,27 @@ Handle h_SPRINT_ENABLED			= INVALID_HANDLE;
 Handle h_SPEED 					= INVALID_HANDLE;
 Handle h_TIME 					= INVALID_HANDLE;
 Handle h_SPRINT_COOKIE 			= INVALID_HANDLE;
+Handle h_TIMER_XY_COOKIE		= INVALID_HANDLE;
+Handle h_TIMER_COL_COOKIE		= INVALID_HANDLE;
 Handle h_SPRINT_TIMERS[MAXPLAYERS+1];
 Handle h_SPRINT_REFILL[MAXPLAYERS+1];
 Handle h_SPRINT_DURATION[MAXPLAYERS+1];
+Handle h_TIMER_SET[MAXPLAYERS+1];
 Handle antiflood;
 
 // INTEGER
 int bSPRINT_BUTTON				= 1//= true;
 int bSPRINT_ENABLED				= 1//= true;
 
+int red_val[MAXPLAYERS+1]		= {255, ...};
+int green_val[MAXPLAYERS+1]		= {140, ...};
+int blue_val[MAXPLAYERS+1]		= {0, ...};
+
 // STRINGS
 char iCLIENT_STATUS[MAXPLAYERS+1];
 char iP_SETTINGS[MAXPLAYERS+1];
 
-// **************************************************** SPRINT ***************************************************
+// **************************************************** STATS ***************************************************
 
 // BOOL
 
@@ -460,6 +471,8 @@ Handle pers_trainingCannonTimer[MAXPLAYERS+1]	= {null, ...};
 // INTEGER
 int trainingCannonBallIndex	 					= -1;
 int pers_trainingCannonBallIndex[MAXPLAYERS+1]	= {-1, ...};
+int trainingballCD[MAXPLAYERS+1] 				= {-1, ...};
+int cdTemp[MAXPLAYERS+1];
 
 // STRINGS
 char trainingModelBall[128] = "models/soccer_mod/ball_2011.mdl";

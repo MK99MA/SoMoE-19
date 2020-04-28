@@ -66,7 +66,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		}
 		else if (StrEqual(menuItem, "help"))		OpenMenuHelp(client);
 		else if (StrEqual(menuItem, "credits"))	 	OpenMenuCredits(client);
-		else if (StrEqual(menuItem, "sprintinfo"))  FakeClientCommandEx(client, "sm_sprintinfo");
+		else if (StrEqual(menuItem, "sprintinfo"))  OpenInfoPanel(client); //FakeClientCommandEx(client, "sm_sprintinfo");
 		else if (StrEqual(menuItem, "shout"))		FakeClientCommandEx(client, "sm_shout");
 		else if (currentMapAllowed)
 		{

@@ -4,12 +4,12 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.1"
-			"Previous"	"1.0.9"
+			"Latest"	"1.1.1"
+			"Previous"	"1.1"
 		}
 		
-		"Notes"	"Personal Cannon"
-		"Notes" "Fixes"
+		"Notes"	"Fixes"
+		"Notes" "Replaced Armorbar Sprint with HudTimer Sprint"
 	}
 	
 	"Files"

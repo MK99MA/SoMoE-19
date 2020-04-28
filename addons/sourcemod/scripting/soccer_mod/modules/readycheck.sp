@@ -355,32 +355,6 @@ public Action cmd_jointeam(int client, const char[] command, int iArgs)
 	return Plugin_Continue;
 }
 
-/*public Action cmd_jointeam2(int client, const char[] command, int iArgs)
-{
-	if(FileExists(tempReadyFileKV))
-	{
-		char bSteam[32];
-		GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
-				
-		kvTemp = new KeyValues("Ready Check");
-		kvTemp.ImportFromFile(tempReadyFileKV);
-			
-		kvTemp.JumpToKey(bSteam, false);
-		kvTemp.DeleteThis();
-			
-		kvTemp.Rewind();
-		kvTemp.ExportToFile(tempReadyFileKV);
-		kvTemp.Close();
-		
-		if(GetClientMenu(client) != MenuSource_None)
-		{
-			CancelClientMenu(client,false);
-			InternalShowMenu(client, "\10", 1); 
-		} 
-	}
-	return Plugin_Continue;
-}*/
-
 public Action pauseReadyTimer(Handle timer, any time)
 {
 	char timestamp[32];
@@ -401,7 +375,7 @@ public Action pauseReadyTimer(Handle timer, any time)
 	}
 	
 	PrintCenterTextAll("Pause Time: %s", timestamp);
-	if(time == 300)
+	if(time == 300 && matchReadyCheck == 1)
 	{
 		matchReadyCheck = 2;
 		tempUnpause = true;
