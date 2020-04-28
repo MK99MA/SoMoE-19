@@ -178,7 +178,7 @@ https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.1.0
  ● (OPTIONAL) Download soccer skins  
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
  [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
-### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow [this example](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) for the default values for your desired skins!.  
+### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow [this](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) and [this](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/EXAMPLE_soccer_mod_downloads.cfg) for example files.  
   
 Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
   
