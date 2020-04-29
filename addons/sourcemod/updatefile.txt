@@ -9,7 +9,7 @@
 		}
 		
 		"Notes"	"Fixes"
-		"Notes" "Replaced Armorbar Sprint with HudTimer Sprint"
+		"Notes" "More Fixes"
 	}
 	
 	"Files"
