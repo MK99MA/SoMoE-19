@@ -25,15 +25,14 @@ public Action Timer_SprintEnd(Handle timer, int client)
 
 			if(iP_SETTINGS[client] & PLAYER_TIMER)
 			{
+				float time = fSPRINT_COOLDOWN
 				DataPack pack = new DataPack();
-				h_SPRINT_REFILL[client] = CreateTimer(0.1, SprintHudRefill, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+				h_SPRINT_REFILL[client] = CreateDataTimer(0.1, SprintHudRefill, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 				pack.WriteCell(client);
-				pack.WriteFloat(fSPRINT_COOLDOWN);
+				pack.WriteFloat(time);
 			}
-			else delete h_SPRINT_REFILL[client];
 			
 			//----
-
 			h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_COOLDOWN,
 			Timer_SprintCooldown, client);
 		}
@@ -63,7 +62,10 @@ public Action SprintHudRefill(Handle timer, DataPack pack)
 	}
 	else if(time == 0.0)
 	{
-		delete h_SPRINT_REFILL[client];
+		if(h_SPRINT_REFILL[client] != INVALID_HANDLE)
+		{
+			delete h_SPRINT_REFILL[client];
+		}
 		CloseHandle(pack);
 		ShowHudText(client, 5, "");	
 	}

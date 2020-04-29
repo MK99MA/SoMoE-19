@@ -93,7 +93,7 @@ public Action Command_StartSprint(int client, int args)
 			//SetEntProp(client, Prop_Send, "m_ArmorValue", 0.0);
 			
 			//----
-		
+
 			//Outputs 
 			if(iP_SETTINGS[client] & PLAYER_SOUND)
 			{
@@ -107,17 +107,18 @@ public Action Command_StartSprint(int client, int args)
 
 				iCLIENT_STATUS[client] |= CLIENT_MESSAGEUSING;
 			}
-			
+
 			if (iP_SETTINGS[client] & PLAYER_TIMER)
 			{
-				delete h_SPRINT_REFILL[client];	
+				if(h_SPRINT_REFILL[client] != INVALID_HANDLE) delete h_SPRINT_REFILL[client];	
+				
+				float time = fSPRINT_TIME;
 				
 				DataPack pack = new DataPack();
 				h_SPRINT_DURATION[client] = CreateDataTimer(0.1, SprintHud, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 				pack.WriteCell(client);
-				pack.WriteFloat(fSPRINT_TIME);
+				pack.WriteFloat(time);
 			}
-			else delete h_SPRINT_DURATION[client];
 			//---- 
 
 			h_SPRINT_TIMERS[client] = CreateTimer(fSPRINT_TIME, Timer_SprintEnd, client);
@@ -148,7 +149,10 @@ public Action SprintHud(Handle timer, DataPack pack)
 	}
 	else if(time == 0.0)
 	{
-		delete h_SPRINT_DURATION[client];
+		if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
+		{
+			delete h_SPRINT_DURATION[client];
+		}
 		CloseHandle(pack);
 		ShowHudText(client, 5, "");	
 	}
@@ -177,7 +181,10 @@ public void SetDefaultClientSettings(int client)
 {
 	iCLIENT_STATUS[client] = 0;
 
-	h_SPRINT_TIMERS[client] = INVALID_HANDLE;
+	//h_SPRINT_TIMERS[client] = INVALID_HANDLE;
+	delete h_SPRINT_TIMERS[client];
+	h_SPRINT_DURATION[client] = INVALID_HANDLE;
+	h_SPRINT_REFILL[client] = INVALID_HANDLE;
 
 	iP_SETTINGS[client] = DEF_SPRINT_COOKIE;
 
@@ -206,8 +213,10 @@ public void ResetSprint(int client)
 		h_SPRINT_TIMERS[client] = INVALID_HANDLE;
 	}*/
 
+	delete h_SPRINT_TIMERS[client];
 	delete h_SPRINT_REFILL[client];
 	delete h_SPRINT_DURATION[client];
+	
 	//Reset sprint speed
 	if(GetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue") != 1)
 	{
