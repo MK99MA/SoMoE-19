@@ -14,6 +14,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");	
 	RegConsoleCmd("sm_maprr", MaprrCommand, "Quickly rr the map");
 	RegConsoleCmd("sm_match", MatchCommand, "Opens the Soccer Mod match menu");
+	RegConsoleCmd("sm_matchrr", MatchRRCommand, "Restart the match");
 	RegConsoleCmd("sm_p", PauseCommand, "Pauses a match");
 	RegConsoleCmd("sm_pause", PauseCommand, "Pauses a match");	
 	RegConsoleCmd("sm_pick", PickCommand, "Opens the Soccer Mod pick menu");
@@ -229,24 +230,70 @@ public Action rrCommand(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action MatchRRCommand(int client, int args)
+{
+	if (currentMapAllowed)
+	{
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		{
+			if(matchStarted)
+			{
+				MatchStop(client);
+			}
+			else CPrintToChat(client, "{%s}[%s] {%s}No match started!", prefixcolor, prefix, textcolor); 
+			
+			if (!matchStarted)
+			{
+				ServerCommand("mp_restartgame 1");
+			
+				FreezeAll();
+				MatchReset();
+				LoadConfigMatch();
+				ResetMatchStats();
+
+				matchStarted = true;
+				matchStart = true;
+				matchKickOffTaken = true;
+				
+				for (int player = 1; player <= MaxClients; player++)
+				{
+					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has restarted the match", prefixcolor, prefix, textcolor, client);
+				}
+				
+				RenameMatchLog();		
+				if(matchlog == 1) 
+				{
+					SaveLogsOnMatchStart();
+					CreateMatchLog(custom_name_ct, custom_name_t);
+				}
+				if(matchlog == 2)
+				{
+					if(TimeEnabledMatchlog())
+					{
+						SaveLogsOnMatchStart();
+						CreateMatchLog(custom_name_ct, custom_name_t);
+					}
+				}
+			}
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	
+	return Plugin_Handled;
+}
+
 public Action StartCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
 		if(!matchStarted)
 		{
-			if(publicmode == 0)
-			{
-				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-				{
-					MatchStart(client);
-				}
-				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-			}
-			else if(publicmode == 1 || publicmode == 2)
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 			{
 				MatchStart(client);
 			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Match already started!", prefixcolor, prefix, textcolor); 
 	}
@@ -261,18 +308,11 @@ public Action PauseCommand(int client, int args)
 	{
 		if(!matchPaused)
 		{
-			if(publicmode == 0)
-			{
-				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-				{
-					MatchPause(client);
-				}
-				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-			}
-			else if(publicmode == 1 || publicmode == 2)
-			{
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+			{	
 				MatchPause(client);
 			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Match already paused!", prefixcolor, prefix, textcolor); 
 	}
@@ -286,18 +326,11 @@ public Action StopCommand(int client, int args)
 	{
 		if(matchStarted)
 		{
-			if(publicmode == 0)
-			{
-				if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-				{
-					MatchStop(client);
-				}
-				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-			}
-			else if(publicmode == 1 || publicmode == 2)
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 			{
 				MatchStop(client);
 			}
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}No match started!", prefixcolor, prefix, textcolor); 
 	}
@@ -330,18 +363,11 @@ public Action UnpauseCommand(int client, int args)
 		{
 			if(matchPaused)
 			{
-				if(publicmode == 0)
-				{
-					if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-					{
-						UnpauseCheck(client);
-					}
-					else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-				}
-				else if(publicmode == 1 || publicmode == 2)
+				if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 				{
 					UnpauseCheck(client);
 				}
+				else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 			}
 			else CPrintToChat(client, "{%s}[%s] {%s}Match is not paused!", prefixcolor, prefix, textcolor); 
 		}
@@ -360,15 +386,7 @@ public Action GkCommand(int client, int args)
 
 public Action AdminCommand(int client, int args)
 {
-	if(publicmode == 0 || publicmode == 1)
-	{
-		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-		{
-			OpenMenuAdmin(client);
-		}
-		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-	}
-	else if(publicmode == 2)
+	if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 	{
 		OpenMenuAdmin(client);
 	}
@@ -379,18 +397,11 @@ public Action CapCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
-		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				OpenCapMenu(client);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else if(publicmode == 2 || publicmode == 1)
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 		{
 			OpenCapMenu(client);
 		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
@@ -400,18 +411,11 @@ public Action MatchCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0)
-		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				OpenMatchMenu(client);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else if(publicmode == 2 || publicmode == 1)
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 		{
 			OpenMatchMenu(client);
 		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
@@ -421,18 +425,11 @@ public Action TrainingCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0 || publicmode == 1)
-		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				OpenTrainingMenu(client);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else if(publicmode == 2)
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 		{
 			OpenTrainingMenu(client);
 		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
@@ -442,18 +439,11 @@ public Action RefCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 0 || publicmode == 1)
-		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
-			{
-				OpenRefereeMenu(client);
-			}
-			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
-		}
-		else if(publicmode == 2)
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
 		{
 			OpenRefereeMenu(client);
 		}
+		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
@@ -677,23 +667,6 @@ public Action Command_TimeTest(int client, int args)
 
 public Action Command_Test(int client, int args)
 {
-	SetHudTextParams(x_val[client], y_val[client], 50.0, 255, 0, 0, 255);
-	//SetHudTextParams(-1.0, 0.1, 5.0, 255, 255, 255, 255, 0, 0.1, 0.1, 0.1); 
-	ShowHudText(client, 5, "TestText"); 
-	char sCookie_val[16];
-	char sTempArray[3][16];
-	char sTempArray2[2][16];
-	
-	GetClientCookie(client, h_TIMER_COL_COOKIE, sCookie_val, sizeof(sCookie_val));
-	ExplodeString(sCookie_val, ";", sTempArray, sizeof(sTempArray), sizeof(sTempArray[]));
-	
-	PrintToChatAll("%s %s %s", sTempArray[0], sTempArray[1], sTempArray[2]);
-	
-	GetClientCookie(client, h_TIMER_XY_COOKIE, sCookie_val, sizeof(sCookie_val));
-	ExplodeString(sCookie_val, ";", sTempArray2, sizeof(sTempArray2), sizeof(sTempArray2[]));
-	
-	PrintToChatAll("%s %s", sTempArray2[0], sTempArray2[1]);
-	
 	return Plugin_Handled;
 }
 
@@ -829,7 +802,7 @@ public void Handle_VoteResults(Menu menu, int num_votes, int num_clients, const 
 	{
 		if(!matchPaused || !matchPeriodBreak)		FreezeAll();
 		CPrintToChatAll("{%s}[%s] %.2f\% out of %i votes were Yes. Aborting the match in %.0f seconds.", prefixcolor, prefix, result, num_votes, abortTime);
-				
+		
 		// Create small delay prior abort
 		ffDelayTimer = CreateTimer(1.0, DelayedffAbort, _, TIMER_REPEAT);
 	}

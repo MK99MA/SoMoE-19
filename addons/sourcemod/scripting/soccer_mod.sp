@@ -1,8 +1,8 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.1.2"
-#define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
+#define PLUGIN_VERSION "1.1.3"
+#define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile_beta.txt"
 #define MAX_NAMES 10
 
 // **************************************************************************************************************
