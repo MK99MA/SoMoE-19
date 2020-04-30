@@ -581,7 +581,7 @@ public Action EventPlayerDeath(Event event, const char[] name, bool dontBroadcas
 	if (currentMapAllowed)
 	{
 		CapEventPlayerDeath(event);
-		RespawnEventPlayer(event);
+		RespawnEventPlayer(event); 
 		//Sprint
 		char iClient = GetClientOfUserId(GetEventInt(event, "userid"));
 		ResetSprint(iClient);

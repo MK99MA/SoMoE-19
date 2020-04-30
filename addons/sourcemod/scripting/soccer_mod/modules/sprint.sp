@@ -38,19 +38,6 @@ public void floodcheck()
 	if (antiflood != INVALID_HANDLE)
 	{
 		RenameFile(afpath_new, afpath_old, false);
-		
-		/*File hFile = OpenFile("cfg/server.cfg", "at");
-		char sLine[128];
-		while (!hFile.EndOfFile() && hFile.ReadLine(sLine, sizeof(sLine)))
-		{
-			if((StrContains(sLine, "sm_flood_time") == -1))
-			{
-				WriteFileLine(hFile, "");
-				WriteFileLine(hFile, "//Floodcheck: allowed time between messages");
-				WriteFileLine(hFile, "sm_flood_time 0");
-			}
-		}
-		hFile.Close();*/
 	}
 }
 
