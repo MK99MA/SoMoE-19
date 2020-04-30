@@ -27,9 +27,10 @@ public Action Timer_SprintEnd(Handle timer, int client)
 			{
 				float time = fSPRINT_COOLDOWN
 				DataPack pack = new DataPack();
-				h_SPRINT_REFILL[client] = CreateDataTimer(0.1, SprintHudRefill, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
+				h_SPRINT_DURATION[client] = CreateDataTimer(0.1, SprintHud, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 				pack.WriteCell(client);
 				pack.WriteFloat(time);
+				pack.WriteString("Cooldown");
 			}
 			
 			//----
@@ -38,38 +39,6 @@ public Action Timer_SprintEnd(Handle timer, int client)
 		}
 	}
 
-	return;
-}
-
-public Action SprintHudRefill(Handle timer, DataPack pack)
-{
-	pack.Reset();
-	int client = pack.ReadCell();
-	float time = pack.ReadFloat();
-	
-	char cdBuffer[32];
-	SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
-	
-	if(time > 0.0)
-	{
-		Format(cdBuffer, sizeof(cdBuffer), "Cooldown: %.1f ", time);
-		ShowHudText(client, 5, cdBuffer); 
-		time = time - 0.1;
-		
-		pack.Reset();
-		pack.WriteCell(client);
-		pack.WriteFloat(time);
-	}
-	else if(time == 0.0)
-	{
-		if(h_SPRINT_REFILL[client] != INVALID_HANDLE)
-		{
-			delete h_SPRINT_REFILL[client];
-		}
-		CloseHandle(pack);
-		ShowHudText(client, 5, "");	
-	}
-	
 	return;
 }
 

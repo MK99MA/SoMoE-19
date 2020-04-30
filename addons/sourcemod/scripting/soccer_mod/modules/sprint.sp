@@ -110,7 +110,7 @@ public Action Command_StartSprint(int client, int args)
 
 			if (iP_SETTINGS[client] & PLAYER_TIMER)
 			{
-				if(h_SPRINT_REFILL[client] != INVALID_HANDLE) delete h_SPRINT_REFILL[client];	
+				/*if(h_SPRINT_REFILL[client] != INVALID_HANDLE) delete h_SPRINT_REFILL[client];	*/
 				
 				float time = fSPRINT_TIME;
 				
@@ -118,6 +118,7 @@ public Action Command_StartSprint(int client, int args)
 				h_SPRINT_DURATION[client] = CreateDataTimer(0.1, SprintHud, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 				pack.WriteCell(client);
 				pack.WriteFloat(time);
+				pack.WriteString("Sprinting");
 			}
 			//---- 
 
@@ -130,22 +131,26 @@ public Action Command_StartSprint(int client, int args)
 
 public Action SprintHud(Handle timer, DataPack pack)
 {
+	char sBuf[32]
 	pack.Reset();
 	int client = pack.ReadCell();
 	float time = pack.ReadFloat();
+	pack.ReadString(sBuf, sizeof(sBuf));
 	
 	char cdBuffer[32];
 	SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
 	
 	if(time > 0.0)
 	{
-		Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
+		if(StrEqual(sBuf, "Sprinting"))Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
+		else if(StrEqual(sBuf, "Cooldown"))Format(cdBuffer, sizeof(cdBuffer), "Cooldown: %.1f ", time);
 		ShowHudText(client, 5, cdBuffer); 
 		time = time - 0.1;
 		
 		pack.Reset();
 		pack.WriteCell(client);
 		pack.WriteFloat(time);
+		pack.WriteString(sBuf);
 	}
 	else if(time == 0.0)
 	{
@@ -184,7 +189,6 @@ public void SetDefaultClientSettings(int client)
 	//h_SPRINT_TIMERS[client] = INVALID_HANDLE;
 	delete h_SPRINT_TIMERS[client];
 	h_SPRINT_DURATION[client] = INVALID_HANDLE;
-	h_SPRINT_REFILL[client] = INVALID_HANDLE;
 
 	iP_SETTINGS[client] = DEF_SPRINT_COOKIE;
 
@@ -214,7 +218,6 @@ public void ResetSprint(int client)
 	}*/
 
 	delete h_SPRINT_TIMERS[client];
-	delete h_SPRINT_REFILL[client];
 	delete h_SPRINT_DURATION[client];
 	
 	//Reset sprint speed

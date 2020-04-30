@@ -366,6 +366,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("match", "!match");
 	menu.AddItem("start", "!start");
 	menu.AddItem("pause", "!pause, !p");
+	menu.AddItem("matchrr", "!matchrr");
 	menu.AddItem("unpause", "!unpause, !unp");
 	menu.AddItem("stop", "!stop");
 	menu.AddItem("rdy", "!rdy");
@@ -402,6 +403,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "cap"))		 	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap match menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "maprr"))		CPrintToChat(client, "{%s}[%s] {%s}Reload the current map", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "match"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod match menu", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "matchrr"))		CPrintToChat(client, "{%s}[%s] {%s}Restart the match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "training"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod training menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "ref"))			CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod referee menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "commands"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod commands menu", prefixcolor, prefix, textcolor);
