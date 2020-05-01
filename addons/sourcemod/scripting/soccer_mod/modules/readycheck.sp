@@ -365,7 +365,11 @@ public Action pauseReadyTimer(Handle timer, any time)
 	int newplayernum;
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidClient(i) && GetClientTeam(i) > 1)		newplayernum++;
+		if (IsValidClient(i) && GetClientTeam(i) > 1)
+		{
+			//if(GetEntityMoveType(i) == MOVETYPE_WALK)	SetEntityMoveType(i, MOVETYPE_NONE);
+			newplayernum++;
+		}
 	}	
 	
 	if(newplayernum != pauseplayernum)

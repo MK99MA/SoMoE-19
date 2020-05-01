@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.1.3"
+#define PLUGIN_VERSION "1.1.4"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -59,8 +59,8 @@
 // *****************************************************************************************************************
 public Plugin myinfo =
 {
-	name			= "Soccer Mod Edit",
-	author		  = "Marco Boogers & Arturo",
+	name		 = "Soccer Mod Edit",
+	author		 = "Marco Boogers & Arturo",
 	description	 = "A plugin for soccer servers",
 	version		 = PLUGIN_VERSION,
 	url			 = "http://steamcommunity.com/groups/soccer_mod"
@@ -111,11 +111,8 @@ public void OnPluginStart()
 
 	//LoadTranslations("soccer_mod.phrases.txt");
 	
-	//pw = FindConVar("sv_password");
-
 	ConnectToDatabase();
 	LoadAllowedMaps();
-	if (StrEqual(gamevar, "cstrike")) trainingModelBall = "models/soccer_mod/ball_2011.mdl";
 	ConfigFunc();
 	LoadConfigSoccer();
 	LoadConfigPublic();
@@ -553,10 +550,14 @@ public Action EventPlayerSpawn(Event event, const char[] name, bool dontBroadcas
 		
 		RemoveKnivesEventPlayerSpawn(event);
 		//Sprint
-		char iClient = GetClientOfUserId(GetEventInt(event, "userid"));
-		ResetSprint(iClient);
-		PrintSprintCDMsgToClient(iClient);
-		iCLIENT_STATUS[iClient] &= ~ CLIENT_SPRINTUNABLE;
+		int client = GetClientOfUserId(GetEventInt(event, "userid"));
+		ResetSprint(client);
+		PrintSprintCDMsgToClient(client);
+		iCLIENT_STATUS[client] &= ~ CLIENT_SPRINTUNABLE;
+		if(matchStarted && matchPaused)
+		{	
+			delayedFreezeTimer[client] = CreateTimer(0.0, DelayFreezePlayer, client);
+		}
 	}
 }
 
@@ -583,8 +584,11 @@ public Action EventPlayerDeath(Event event, const char[] name, bool dontBroadcas
 		CapEventPlayerDeath(event);
 		RespawnEventPlayer(event); 
 		//Sprint
-		char iClient = GetClientOfUserId(GetEventInt(event, "userid"));
-		ResetSprint(iClient);
+		int client = GetClientOfUserId(GetEventInt(event, "userid"));
+		ResetSprint(client);
+		
+		if(dissolveSet == 2) CreateTimer(0.0, Dissolve, client);
+		else if(dissolveSet == 1) CreateTimer(5.0, Dissolve, client);
 	}
 }
 
@@ -895,7 +899,10 @@ public void FreezeAll()
 
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && IsClientConnected(client)) SetEntityMoveType(client, MOVETYPE_NONE); // && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_NONE);
+		if (IsClientInGame(client) && IsClientConnected(client)) 
+		{
+			if(GetEntityMoveType(client) != MOVETYPE_OBSERVER)	SetEntityMoveType(client, MOVETYPE_NONE); // && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_NONE);
+		}
 	}
 }
 
@@ -906,7 +913,10 @@ public void UnfreezeAll()
 
 	for (int client = 1; client <= MaxClients; client++)
 	{
-		if (IsClientInGame(client) && IsClientConnected(client)) SetEntityMoveType(client, MOVETYPE_WALK);// && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_WALK);
+		if (IsClientInGame(client) && IsClientConnected(client))
+		{
+			if(GetEntityMoveType(client) == MOVETYPE_NONE) SetEntityMoveType(client, MOVETYPE_WALK);// && IsPlayerAlive(client)) SetEntityMoveType(client, MOVETYPE_WALK);
+		}
 	}
 }
 

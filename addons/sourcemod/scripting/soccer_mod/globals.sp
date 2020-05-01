@@ -50,6 +50,7 @@ Handle allowedMaps	  			= INVALID_HANDLE;
 Handle db			   			= INVALID_HANDLE;
 Handle cvar_BLOCKDJ_ENABLED = INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
+Handle delayedFreezeTimer[MAXPLAYERS + 1];
 
 ArrayList groupArray;
 
@@ -61,6 +62,7 @@ int debuggingEnabled			= 0;
 int phys_pushscale				= 900;
 int healthGodmode				= 1;
 int healthAmount				= 250;
+int dissolveSet					= 2;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -320,7 +322,7 @@ Handle afk_Timer[MAXPLAYERS+1] 	= null;
 // INTEGER
 int afk_menutime				= 20;
 int PWMAXPLAYERS				= 11 
-int passwordlock				= 1;
+int passwordlock				= 0;
 int afk_Buttons[MAXPLAYERS+1];
 int afk_Matches[MAXPLAYERS+1];
 

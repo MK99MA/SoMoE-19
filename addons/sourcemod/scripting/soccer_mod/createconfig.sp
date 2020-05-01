@@ -148,6 +148,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetFloat("soccer_mod_respawn_delay",				respawnDelay);
 	kvConfig.SetNum("soccer_mod_blockdj_enable",				djbenabled);
 	kvConfig.SetNum("soccer_mod_damagesounds",					damageSounds);
+	kvConfig.SetNum("soccer_mod_dissolver",						dissolveSet);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -508,6 +509,7 @@ public void ReadFromConfig()
 	respawnDelay			= kvConfig.GetFloat("soccer_mod_respawn_delay", 10.0);
 	djbenabled				= kvConfig.GetNum("soccer_mod_blockdj_enable", 1);
 	damageSounds			= kvConfig.GetNum("soccer_mod_damagesounds", 0);
+	dissolveSet				= kvConfig.GetNum("soccer_mod_dissolver", 2);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);

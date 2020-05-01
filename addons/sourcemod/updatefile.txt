@@ -4,12 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.1.3"
-			"Previous"	"1.1.2"
+			"Latest"	"1.1.4"
+			"Previous"	"1.1.3"
 		}
 		
-		"Notes"	"Fixes"
-		"Notes" "matchrr command"
+		"Notes"	"Changes to soundhandling"
+		"Notes" "Changed default lockset value to 0"
+		"Notes" "Added Ragdoll-remove option"
 	}
 	
 	"Files"

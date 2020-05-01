@@ -1,20 +1,22 @@
 public void PlaySound(char sound[PLATFORM_MAX_PATH])
 {
-	for(int i = 1; i <= MaxClients; i++)
+	/*for(int i = 1; i <= MaxClients; i++)
 	{
 		if(IsClientInGame(i) && (GetClientTeam(i) > 1))
 		{
 			EmitSoundToClient(i, sound);
 		}
-	}
-	//EmitSoundToAll(sound);
+	}*/
+	EmitSoundToAll(sound);
 }
 
 public Action AmbientSHook(char sample[PLATFORM_MAX_PATH], int& entity, float& volume, int& level, int& pitch, float pos[3], int& flags, float& delay)
 {
 	if(StrContains(sample, "sifflet_start.wav") != -1)
 	{
-		if(volume > 0.0)
+		if(matchStart)	return Plugin_Handled;
+		else return Plugin_Continue;
+		/*if(volume > 0.0)
 		{
 			if(matchStart)
 			{
@@ -24,11 +26,13 @@ public Action AmbientSHook(char sample[PLATFORM_MAX_PATH], int& entity, float& v
 			}
 			else return Plugin_Continue;
 		}
-		else return Plugin_Continue;
+		else return Plugin_Continue;*/
 	}
 	else if(StrContains(sample, "sifflet_but.wav") != -1)
 	{
-		if(volume > 0.0)
+		if((matchGoldenGoalActive || matchStoppageTimeStarted)) return Plugin_Handled;
+		else return Plugin_Continue;
+		/*if(volume > 0.0)
 		{
 			if((matchGoldenGoalActive || matchStoppageTimeStarted))
 			{
@@ -38,7 +42,7 @@ public Action AmbientSHook(char sample[PLATFORM_MAX_PATH], int& entity, float& v
 			}
 			else return Plugin_Continue;
 		}
-		else return Plugin_Continue;
+		else return Plugin_Continue;*/
 	}
 	else return Plugin_Continue;
 }

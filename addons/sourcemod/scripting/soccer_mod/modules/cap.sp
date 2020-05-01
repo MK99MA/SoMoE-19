@@ -332,7 +332,7 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 		if (IsClientInGame(player) && IsClientConnected(player))
 		{
 			PrintCenterText(player, "[%s] FIGHT!", prefix);
-			if (IsPlayerAlive(player)) 
+			if (GetClientTeam(player) > 1  && IsPlayerAlive(player)) 
 			{
 				SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
 				//Set Armor to 0 and cancel Timer
@@ -424,7 +424,7 @@ public void CapStartFight(int client)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player))
 			{
-				if (IsPlayerAlive(player)) SetEntityMoveType(player, MOVETYPE_NONE);
+				if (GetClientTeam(player) > 1  && IsPlayerAlive(player)) SetEntityMoveType(player, MOVETYPE_NONE);
 				else
 				{
 					char playerSteamid[32];

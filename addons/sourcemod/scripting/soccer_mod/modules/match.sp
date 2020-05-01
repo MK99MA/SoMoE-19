@@ -1685,11 +1685,6 @@ public Action MatchUnpauseCountdown(Handle timer, any time)
 	else matchTimer = CreateTimer(1.0, MatchUnpauseCountdown, time - 1);
 }
 
-public Action DelayFreezePlayer(Handle timer, any client)
-{
-	SetEntityMoveType(client, MOVETYPE_NONE);
-}
-
 public Action DelayMatchEnd(Handle timer)
 {
 	char timeString[16];

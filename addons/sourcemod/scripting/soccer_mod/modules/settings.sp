@@ -7,7 +7,7 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], DamageString[32], PubString[32];
+	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -18,6 +18,10 @@ public void OpenMenuSettings(int client)
 	if(publicmode == 0)					PubString = "Public Mode: Admins";
 	else if(publicmode == 1)			PubString = "Public Mode: !Cap / !Match";
 	else if(publicmode == 2)			PubString = "Public Mode: Free for All";
+	
+	if(dissolveSet == 0)				DissolveString = "Remove Ragdoll: OFF";
+	else if(dissolveSet == 1)			DissolveString = "Remove Ragdoll: YES";
+	else if (dissolveSet == 2)			DissolveString = "Remove Ragdoll: Dissolve";
 		
 	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
@@ -27,6 +31,7 @@ public void OpenMenuSettings(int client)
 	menu.AddItem("pubmode", PubString);
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
+	menu.AddItem("dissolve", DissolveString);
 	menu.AddItem("skinsmenu", "Skins");
 	if (shoutplugin != INVALID_HANDLE)
 	{
@@ -81,13 +86,34 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 			if(damageSounds == 0)
 			{
 				damageSounds = 1;
-				UpdateConfigInt("", "", damageSounds);
+				UpdateConfigInt("Misc Settings", "soccer_mod_damagesounds", damageSounds);
 				OpenMenuSettings(client);
 			}
 			else if(damageSounds >0)
 			{
 				damageSounds = 0;
-				UpdateConfigInt("", "", damageSounds);
+				UpdateConfigInt("Misc Settings", "soccer_mod_damagesounds", damageSounds);
+				OpenMenuSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "dissolve")) 
+		{
+			if(dissolveSet == 0)
+			{
+				dissolveSet = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
+				OpenMenuSettings(client);
+			}
+			else if(dissolveSet == 1)
+			{
+				dissolveSet = 2;
+				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
+				OpenMenuSettings(client);
+			}
+			else if(dissolveSet >= 2)
+			{
+				dissolveSet = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
 				OpenMenuSettings(client);
 			}
 		}

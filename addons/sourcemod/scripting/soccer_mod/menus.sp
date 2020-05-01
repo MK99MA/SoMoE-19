@@ -504,7 +504,7 @@ public int MenuHandlerCredits(Menu menu, MenuAction action, int client, int choi
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 
 		if (StrEqual(menuItem, "marco"))		CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/id/fcd_marco/", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "arturo"))	CPrintToChat(client, "{%s}[%s] {%s}https://github.com/MK99MA?tab=repositories", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "arturo"))	CPrintToChat(client, "{%s}[%s] {%s}https://github.com/MK99MA/soccermod-2019edit", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "termi"))   CPrintToChat(client, "{%s}[%s] {%s}https://steamcommunity.com/id/Termiii/", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "walmar"))  CPrintToChat(client, "{%s}[%s] {%s}(c) 2009-2013 walmar - walmar.postbox@gmail.com - http://github.com/walmar", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "group"))   CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/groups/soccer_mod", prefixcolor, prefix, textcolor);

@@ -667,6 +667,7 @@ public Action Command_TimeTest(int client, int args)
 
 public Action Command_Test(int client, int args)
 {
+	SetEntityMoveType(client, MOVETYPE_NONE);
 	return Plugin_Handled;
 }
 
