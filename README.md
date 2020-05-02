@@ -17,8 +17,8 @@ I incorporated parts of the following plugins and only modified them partially t
   ● Duckjump Script by Marco Boogers  
   ● Allchat (aka DeadChat) by Frenzzy - https://forums.alliedmods.net/showthread.php?t=171734  
   ● ShortSprint by walmar - https://forums.alliedmods.net/showthread.php?p=2294299  
-  ● Simple AFK kicker by shavit - https://forums.alliedmods.net/showthread.php?p=2409504
-Not included in soccer_mod.smx but relied on:  
+  ● Simple AFK kicker by shavit - https://forums.alliedmods.net/showthread.php?p=2409504  
+  Not included in soccer_mod.smx but relied on:  
   ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095  
   
 ## Example Changes
