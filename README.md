@@ -2,13 +2,6 @@
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
 
-### If you used a previous (edited) version of soccermod:  
-  ● Remove "exec soccer_mod.cfg" and any soccer_mod_* command from your server.cfg  
-  ● Remove the file "soccer_mod.cfg" from your cstrike/cfg folder  
-  ● Remove / Move shortsprint.smx and duckjumpblocker.smx to the disabled folder  
-  ● (OPTIONAL) Copy the contents of the old soccermod created files (addons/sourcemod/config and /data) to the new ones (created after the plugin loaded) in cfg/sm_soccermod  
-  ● (OPTIONAL) Remove SoccerMod only admins from admins_simple.ini and add them to the new SoccerMod admin file. (SteamID and Name required)  
-
 ## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#installation)  
   
 ## Credits:
@@ -158,6 +151,8 @@ I incorporated parts of the following plugins and only modified them partially t
   
 ## Installation
 ### 1. Download the required plugins
+Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
+
 To run Soccer Mod on your server you need the following plugins:  
  ● Metamod:Source 1.10 or higher  
 http://www.sourcemm.net/downloads.php?branch=stable  
@@ -180,8 +175,6 @@ https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.1.0
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
  [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
 ### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow [this](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) and [this](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/EXAMPLE_soccer_mod_downloads.cfg) for example files.  
-  
-Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
   
 ### 2. Extract the zip files
 Right click on each zip file and select "Extract Here". After extracting the zip files you should have 4 folders on your desktop:  
