@@ -142,7 +142,7 @@ public void OpenMenuDeadChatSet(int client)
 	Format(currentDeadChatSet, sizeof(currentDeadChatSet), "DeadChat: %s ", dcstate);
 	Format(currentDeadChatSet2, sizeof(currentDeadChatSet2), "Visibility: %s", dcvisstate);
 	Menu menu = new Menu(MenuHandlerDeadChatSet);
-	menu.SetTitle("Soccer Mod - Match Settings - MVP Display");
+	menu.SetTitle("Soccer Mod - Chat Settings - Deadchat settings");
 
 	menu.AddItem("enable", "Enable");
 
@@ -200,7 +200,7 @@ public void OpenMenuDeadChatSetVis(int client)
 {
 
 	Menu menu = new Menu(MenuHandlerDeadChatSetVis);
-	menu.SetTitle("Soccer Mod - Match Settings - MVP Display");
+	menu.SetTitle("Soccer Mod - Chat Settings - Deadchat visibility");
 
 	menu.AddItem("default", "Default");
 

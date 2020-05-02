@@ -1,8 +1,8 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // **************************************************************************************************************
-#define PLUGIN_VERSION "1.1.4"
-#define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/soccermod-2019edit/master/addons/sourcemod/updatefile.txt"
+#define PLUGIN_VERSION "1.1.5"
+#define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
 // **************************************************************************************************************
@@ -59,11 +59,11 @@
 // *****************************************************************************************************************
 public Plugin myinfo =
 {
-	name		 = "Soccer Mod Edit",
+	name		 = "SoMoE-19",
 	author		 = "Marco Boogers & Arturo",
 	description	 = "A plugin for soccer servers",
 	version		 = PLUGIN_VERSION,
-	url			 = "http://steamcommunity.com/groups/soccer_mod"
+	url			 = "https://github.com/MK99MA/soccermod-2019edit"
 };
 
 // ******************************************************************************************************************

@@ -22,8 +22,8 @@ char personalSettingsKV[PLATFORM_MAX_PATH]				= "cfg/sm_soccermod/soccer_mod_per
 KeyValues kvConfig;
 KeyValues kvSkins;
 KeyValues kvGKArea;
-KeyValues kvAdmins;
-KeyValues kvSMAdmins;
+KeyValues kvAdmins;  
+KeyValues kvSMAdmins; 
 //KeyValues kvAdminGroups;
 KeyValues LeagueMatchKV;
 KeyValues kvTemp;
@@ -48,7 +48,7 @@ float playerMaxHeight[66];
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
 Handle db			   			= INVALID_HANDLE;
-Handle cvar_BLOCKDJ_ENABLED = INVALID_HANDLE;
+Handle cvar_BLOCKDJ_ENABLED 	= INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
 
@@ -356,9 +356,9 @@ char skinsModelTGoalkeeperNumber[4]		= "0";
 bool showHudPrev[MAXPLAYERS+1]	= {false, ...};
 
 // FLOATS
-float fSPRINT_COOLDOWN 			= 0.0;
-float fSPRINT_SPEED 			= 0.0;
-float fSPRINT_TIME				= 0.0;
+float fSPRINT_COOLDOWN 			= 7.5;
+float fSPRINT_SPEED 			= 1.25;
+float fSPRINT_TIME				= 3.0;
 
 float x_val[MAXPLAYERS+1]		= {0.8, ...};
 float y_val[MAXPLAYERS+1]		= {0.8, ...};
