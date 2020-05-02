@@ -174,7 +174,7 @@ https://github.com/MK99MA/soccermod-2019edit/releases/tag/1.1.0
  ● (OPTIONAL) Download soccer skins  
  [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
  [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
-### If you are using alternate skins make sure to edit /sm_soccermod/soccer_mod_skins.cfg AND /sm_soccermod/soccer_mod_downloads.cfg!! Follow [this](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) and [this](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/EXAMPLE_soccer_mod_downloads.cfg) for example files.  
+### If you are using alternate skins make sure to edit cfg/sm_soccermod/soccer_mod_skins.cfg AND cfg/sm_soccermod/soccer_mod_downloads.cfg!! Follow [this](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) and [this](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/EXAMPLE_soccer_mod_downloads.cfg) for example files.  
   
 ### 2. Extract the zip files
 Right click on each zip file and select "Extract Here". After extracting the zip files you should have 4 folders on your desktop:  
