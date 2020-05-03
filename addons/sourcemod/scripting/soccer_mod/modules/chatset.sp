@@ -19,9 +19,6 @@ public void OpenMenuChat(int client)
 	menu.AddItem("mvpset", mvpstate);
 	
 	menu.AddItem("deadchatset", dcstate);
-	
-	menu.AddItem("locknumber", currentChatSet, ITEMDRAW_DISABLED);
-	menu.AddItem("locknumber", currentChatSet2, ITEMDRAW_DISABLED);
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
