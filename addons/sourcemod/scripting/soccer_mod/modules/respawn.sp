@@ -35,7 +35,6 @@ public Action TimerRespawn(Handle timer, any client)
 public Action DelayFreezePlayer(Handle timer, any client)
 {
 	SetEntityMoveType(client, MOVETYPE_NONE);
-	//if(GetEntityMoveType(client) == MOVETYPE_NONE) PrintToChat(client, "FREEZE! POLICE");
 }
 
 // ************************************************************************************************************

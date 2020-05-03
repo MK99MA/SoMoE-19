@@ -89,7 +89,6 @@ public Action Command_Forfeit(int client, int args)
 								if (ForfeitPublic == 1)
 								{	
 									// Prevent multiple uses at once & +1 votecount
-									//CPrintToChatAll("{%s}[%s] Forfeit vote started.");
 									ffActive = true;
 									ffcounter++;
 									
@@ -111,7 +110,6 @@ public Action Command_Forfeit(int client, int args)
 									if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
 									{
 										// Prevent multiple uses at once & +1 votecount
-										//CPrintToChatAll("{%s}[%s] Forfeit vote started.");
 										ffActive = true;
 										ffcounter++;
 										
@@ -152,7 +150,7 @@ public Action Command_Forfeit(int client, int args)
 
 public Action AdminListCommand(int client, int args)
 {
-	menuaccessed = false;
+	menuaccessed[client] = false;
 	if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode set - !menu is freely accessable by everyone", prefixcolor, prefix, textcolor);
 	else 									OpenMenuOnlineAdmin(client);
 	
@@ -809,7 +807,7 @@ public void Handle_VoteResults(Menu menu, int num_votes, int num_clients, const 
 	}
 	else CPrintToChatAll("{%s}[%s] %.2f\% out of %i votes were Yes. Match will continue. Try again in %.0f seconds.", prefixcolor, prefix, result, num_votes, cdTime);
 	
-	if(num_votes == 0) CPrintToChatAll("{%s}[%s] No votes were casted. Match will continue.");
+	if(num_votes == 0) CPrintToChatAll("{%s}[%s] {%s}No votes were casted. Match will continue.", prefixcolor, prefix, textcolor);
 }
 
 void ForfeitVoteMenu()

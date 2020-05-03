@@ -11,7 +11,6 @@ public void AFKKickOnClientPutInServer(int client)
 	
 	if(pwchange == true && passwordlock == 1)
 	{
-		//CPrintToChat(client, "{%s}[%s] AFK Kick enabled.", prefixcolor, prefix);
 		// get client pos and view on join
 		if(IsValidClient(client, true))
 		{
@@ -44,7 +43,7 @@ public void AFKKick()
 
 public void AFKKickStop()
 {
-	CPrintToChatAll("{%s}[%s] AFK Kick disabled.", prefixcolor, prefix);
+	CPrintToChatAll("{%s}[%s] {%s}AFK Kick disabled.", prefixcolor, prefix, textcolor);
 
 	for(int i = 1; i <= MaxClients; i++)
 	{

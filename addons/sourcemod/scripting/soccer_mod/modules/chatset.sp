@@ -3,21 +3,22 @@
 // ***************************************************************************************************************
 public void OpenMenuChat(int client)
 {
-	char currentChatSet[64], currentChatSet2[64];
 	char mvpstate[32];
-	if(MVPEnabled == 1) mvpstate = "On"
-	else if(MVPEnabled == 0) mvpstate = "Off"
-	Format(currentChatSet, sizeof(currentChatSet), "MVP messages: %s | Prefix: [%s]", mvpstate, prefix);
-	Format(currentChatSet2, sizeof(currentChatSet2), "Prefix color: %s | Text color: %s", prefixcolor, textcolor);
+	if(MVPEnabled == 1) mvpstate = "MVP Messages: On"
+	else if(MVPEnabled == 0) mvpstate = "MVP Messages: Off"
+	char dcstate[32]
+	if(DeadChatMode == 1) dcstate = "DeadChat: On";
+	else if(DeadChatMode == 0) dcstate = "DeadChat: Off";
+	else if(DeadChatMode == 2) dcstate = "DeadChat: Alltalk";
 	Menu menu = new Menu(MenuHandlerChat);
-
+	
 	menu.SetTitle("Soccer Mod - Settings - Chat");
 
 	menu.AddItem("chatstyle", "Chat Style");
 	
-	menu.AddItem("mvpset", "MVP Messages");
+	menu.AddItem("mvpset", mvpstate);
 	
-	menu.AddItem("deadchatset", "Dead Chat");
+	menu.AddItem("deadchatset", dcstate);
 	
 	menu.AddItem("locknumber", currentChatSet, ITEMDRAW_DISABLED);
 	menu.AddItem("locknumber", currentChatSet2, ITEMDRAW_DISABLED);
@@ -46,13 +47,18 @@ public void OpenMenuChatStyle(int client)
 {
 	Menu menu = new Menu(MenuHandlerChatStyle);
 
+	char currentPrefix[64], currentColor1[64], currentColor2[64];
+	Format(currentPrefix, sizeof(currentPrefix), "Prefix: %s", prefix);
+	Format(currentColor1, sizeof(currentColor1), "Prefix color: %s ", prefixcolor);
+	Format(currentColor2, sizeof(currentColor2), "Text color: %s", textcolor);
+
 	menu.SetTitle("Soccer Mod - Settings - Chat Style");
 
-	menu.AddItem("ch_prefix", "Chat Prefix");
+	menu.AddItem("ch_prefix", currentPrefix);
 
-	menu.AddItem("prefix_col", "Prefix Color");
+	menu.AddItem("prefix_col", currentColor1);
 
-	menu.AddItem("text_col", "Text Color");
+	menu.AddItem("text_col", currentColor2);
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -131,16 +137,10 @@ public int MenuHandlerMVPSet(Menu menu, MenuAction action, int client, int choic
 
 public void OpenMenuDeadChatSet(int client)
 {
-	char currentDeadChatSet[64], currentDeadChatSet2[64], dcstate[32], dcvisstate[32];
-	if(DeadChatMode == 1) dcstate = "On";
-	else if(DeadChatMode == 0) dcstate = "Off";
-	else if(DeadChatMode == 2) dcstate = "Alltalk";
-	if(DeadChatVis == 1) dcvisstate = "Teammates";
-	else if(DeadChatVis == 0) dcvisstate = "Default";
-	else if(DeadChatVis == 2) dcvisstate = "Everyone";
-	
-	Format(currentDeadChatSet, sizeof(currentDeadChatSet), "DeadChat: %s ", dcstate);
-	Format(currentDeadChatSet2, sizeof(currentDeadChatSet2), "Visibility: %s", dcvisstate);
+	char dcvisstate[32];
+	if(DeadChatVis == 1) dcvisstate = "Visible to: Teammates";
+	else if(DeadChatVis == 0) dcvisstate = "Visible to: Default";
+	else if(DeadChatVis == 2) dcvisstate = "Visible to: Everyone";
 	Menu menu = new Menu(MenuHandlerDeadChatSet);
 	menu.SetTitle("Soccer Mod - Chat Settings - Deadchat settings");
 
@@ -150,10 +150,7 @@ public void OpenMenuDeadChatSet(int client)
 
 	menu.AddItem("disable", "Disable");
 	
-	menu.AddItem("visibility", "Visibility");
-	
-	menu.AddItem("locknumber", currentDeadChatSet, ITEMDRAW_DISABLED);
-	menu.AddItem("locknumber", currentDeadChatSet2, ITEMDRAW_DISABLED);
+	menu.AddItem("visibility", dcvisstate);
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);

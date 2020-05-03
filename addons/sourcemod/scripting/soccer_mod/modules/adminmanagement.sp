@@ -42,7 +42,7 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 		}
 		else if (StrEqual(menuItem, "OnlineLists"))
 		{
-			menuaccessed = true;
+			menuaccessed[client] = true;
 			OpenMenuOnlineAdmin(client);
 		}
 
@@ -816,7 +816,7 @@ public void OpenMenuOnlineAdmin(int client)
 	menu.AddItem("SMonline", "Sourcemod Online List");
 	menu.AddItem("Socceronline", "Soccer Online List");
 	
-	if(menuaccessed == true) menu.ExitBackButton = true;
+	if(menuaccessed[client] == true) menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 

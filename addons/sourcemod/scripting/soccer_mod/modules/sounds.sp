@@ -1,12 +1,5 @@
 public void PlaySound(char sound[PLATFORM_MAX_PATH])
 {
-	/*for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i) && (GetClientTeam(i) > 1))
-		{
-			EmitSoundToClient(i, sound);
-		}
-	}*/
 	EmitSoundToAll(sound);
 }
 

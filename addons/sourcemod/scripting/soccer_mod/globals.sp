@@ -37,7 +37,7 @@ KeyValues personalCannonSettings;
 bool bLATE_LOAD 				= false;
 bool currentMapAllowed			= false;
 bool goalScored					= false;
-bool menuaccessed;
+bool menuaccessed[MAXPLAYERS+1];
 bool roundEnded					= false;
 
 // FLOATS

@@ -332,7 +332,7 @@ public void OpenMenuMaps(int client)
 {
 	Menu menu = new Menu(MenuHandlerMaps);
 
-	menu.SetTitle("Soccer mod - Admin - Settings - Allowed Maps");
+	menu.SetTitle("Soccer Mod - Admin - Settings - Allowed Maps");
 
 	menu.AddItem("add", "Add Map");
 
@@ -363,7 +363,7 @@ public void OpenMenuMapsAdd(int client)
 {
 	Menu menu = new Menu(MenuHandlerMapsAdd);
 
-	menu.SetTitle("Soccer mod - Admin - Settings - Allowed Maps - Add");
+	menu.SetTitle("Soccer Mod - Admin - Settings - Allowed Maps - Add");
 
 	OpenMapsDirectory("maps", menu);
 

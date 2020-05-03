@@ -363,7 +363,7 @@ public int MenuHandlerMatchSettings(Menu menu, MenuAction action, int client, in
 		else if (action == MenuAction_Cancel && choice == -6)	OpenMatchMenu(client);
 		else if (action == MenuAction_End)						  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 // ************************************** MATCHLOG SETTINGS ************************************************
@@ -420,7 +420,7 @@ public int MenuHandlerMatchlogSettings(Menu menu, MenuAction action, int client,
 				{
 					matchlog = 1;
 					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-					CPrintToChat(client, "{%s}[%s] Match Log enabled!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Match Log enabled!", prefixcolor, prefix, textcolor);
 					OpenMenuMatchlogSettings(client);
 				}
 				else if (matchlog == 1)
@@ -428,14 +428,14 @@ public int MenuHandlerMatchlogSettings(Menu menu, MenuAction action, int client,
 					if(!FileExists(matchlogSettingsKV))		CreateMatchlogSettings();
 					matchlog = 2;
 					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-					CPrintToChat(client, "{%s}[%s] Match Log set to time-based!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Match Log set to time-based!", prefixcolor, prefix, textcolor);
 					OpenMenuMatchlogSettings(client);
 				}
 				else if (matchlog == 2)
 				{
 					matchlog = 0;
 					UpdateConfigInt("Admin Settings", "soccer_mod_matchlog", matchlog);
-					CPrintToChat(client, "{%s}[%s] Match Log disabled!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Match Log disabled!", prefixcolor, prefix, textcolor);
 					OpenMenuMatchlogSettings(client);
 				}
 			}
@@ -480,7 +480,7 @@ public int MenuHandlerMatchlogSettings(Menu menu, MenuAction action, int client,
 		else if (action == MenuAction_Cancel && choice == -6)	OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)						  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 public void OpenMenuMatchlogDays(int client)
@@ -525,7 +525,7 @@ public int MenuHandlerMatchlogDays(Menu menu, MenuAction action, int client, int
 		else if (action == MenuAction_Cancel && choice == -6)	OpenMenuMatchlogSettings(client);
 		else if (action == MenuAction_End)						  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 public bool TimeEnabledMatchlog()
@@ -681,7 +681,7 @@ public int MenuHandlerMatchInfoSettings(Menu menu, MenuAction action, int client
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 public void MatchInfoFunction()
@@ -812,14 +812,14 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 				{
 					ForfeitEnabled = 1;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
-					CPrintToChat(client, "{%s}[%s] Forfeit vote enabled!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Forfeit vote enabled!", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 				else if(ForfeitEnabled == 1)
 				{
 					ForfeitEnabled = 0;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
-					CPrintToChat(client, "{%s}[%s] Forfeit vote disabled!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Forfeit vote disabled!", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 
@@ -835,14 +835,14 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 				{
 					ForfeitPublic = 1;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitpublic", ForfeitPublic);
-					CPrintToChat(client, "{%s}[%s] Everyone can now start the vote if the conditions are met!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Everyone can now start the vote if the conditions are met!", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 				else if(ForfeitPublic == 1)
 				{
 					ForfeitPublic = 0;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitpublic", ForfeitPublic);
-					CPrintToChat(client, "{%s}[%s] Only Admins can now start the vote if the conditions are met!", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Only Admins can now start the vote if the conditions are met!", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 			}
@@ -852,14 +852,14 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 				{
 					ForfeitAutoSpec = 1;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitautospec", ForfeitAutoSpec);
-					CPrintToChat(client, "{%s}[%s] Everyone will be put to spectator after a successful forfeit vote.", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Everyone will be put to spectator after a successful forfeit vote.", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 				else if(ForfeitAutoSpec == 1)
 				{
 					ForfeitAutoSpec = 0;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitautospec", ForfeitAutoSpec);
-					CPrintToChat(client, "{%s}[%s] Disabled auto-spec after a successful forfeit vote.", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Disabled auto-spec after a successful forfeit vote.", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 			}
@@ -872,7 +872,7 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 					ForfeitEnabled = 0;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitcapmode", ForfeitCapMode);
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
-					CPrintToChat(client, "{%s}[%s] Enabled forfeit vote for cap matches only.", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Enabled forfeit vote for cap matches only.", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 				else if(ForfeitCapMode == 1)
@@ -881,7 +881,7 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 					ForfeitEnabled = forfeitHelper;
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitcapmode", ForfeitCapMode);
 					UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
-					CPrintToChat(client, "{%s}[%s] Disabled forfeit vote for cap matches only.", prefixcolor, prefix);
+					CPrintToChat(client, "{%s}[%s] {%s}Disabled forfeit vote for cap matches only.", prefixcolor, prefix, textcolor);
 					OpenMenuForfeitSettings(client);
 				}
 			}
@@ -890,7 +890,7 @@ public int MenuHandlerForfeitSettings(Menu menu, MenuAction action, int client, 
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 
@@ -933,7 +933,7 @@ public int MenuHandlerNameSettings(Menu menu, MenuAction action, int client, int
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 
@@ -1058,7 +1058,7 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuNameSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 
@@ -1128,7 +1128,7 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 		else if (action == MenuAction_End)					  menu.Close();
 		tagindex = 1;
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 // ****************************************** PERIOD SETTINGS ************************************************
@@ -1189,7 +1189,7 @@ public int MenuHandlerMatchPeriod(Menu menu, MenuAction action, int client, int 
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 // ****************************************** BREAK SETTINGS ************************************************
@@ -1260,7 +1260,7 @@ public int MenuHandlerMatchBreak(Menu menu, MenuAction action, int client, int c
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 // ****************************************** GOLDEN GOAL SETTINGS ************************************************
@@ -1306,7 +1306,7 @@ public int MenuHandlerMatchGolden(Menu menu, MenuAction action, int client, int 
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMatchSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 	}
-	else CPrintToChat(client, "{%s}[%s] Can't change the settings during a match.", prefixcolor, prefix);
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
 }
 
 // ***********************************************************************************************************************
@@ -1780,7 +1780,7 @@ public void MatchStart(int client)
 			pwchange = false;		
 			AFKKickStop();
 			ResetPass();
-			CPrintToChatAll("{%s}[%s] Server password reset to default value.", prefixcolor, prefix);
+			CPrintToChatAll("{%s}[%s] {%s}Server password reset to default value.", prefixcolor, prefix, textcolor);
 		}
 		
 		RenameMatchLog();		

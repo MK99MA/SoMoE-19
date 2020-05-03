@@ -453,7 +453,7 @@ public void OnClientPutInServer(int client)
 	RadioCommandsOnClientPutInServer(client);
 	if((pwchange == true) && (GetClientCount() == PWMAXPLAYERS+1) && (passwordlock == 1))
 	{
-		CPrintToChatAll("{%s}[%s] Threshold hit. Locking server again");
+		CPrintToChatAll("{%s}[%s] {%s}Threshold hit. Locking server again", prefixcolor, prefix, textcolor);
 		RandPass();
 	}
 }

@@ -176,7 +176,7 @@ public void OpenMenuSpecPlayer(int client)
 {
 	Menu menu = new Menu(MenuHandlerSpecPlayer);
 
-	menu.SetTitle("Soccer mod - Admin - Spec player");
+	menu.SetTitle("Soccer Mod - Admin - Spec player");
 
 	int number = 0;
 	for (int player = 1; player <= MaxClients; player++)
