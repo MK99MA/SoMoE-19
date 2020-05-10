@@ -12,7 +12,7 @@ public void OpenMenuSoccer(int client)
 
 	if(publicmode == 0)
 	{
-		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))
 		{
 			menu.AddItem("admin", "Admin");
 		}
@@ -53,7 +53,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		{
 			if(publicmode == 0 )
 			{
-				if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+				if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))
 				{
 					OpenMenuAdmin(client);
 				}
@@ -92,7 +92,7 @@ public void OpenMenuAdmin(int client)
 
 	menu.SetTitle("Soccer Mod - Admin");
 	
-	if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client)))
+	if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "menu")))
 	{
 		menu.AddItem("match", "Match");
 
@@ -104,17 +104,23 @@ public void OpenMenuAdmin(int client)
 	}
 	else
 	{
-		menu.AddItem("match", "Match");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "match")) 		menu.AddItem("match", "Match");
+		else									menu.AddItem("match", "Match", ITEMDRAW_DISABLED);
 
-		menu.AddItem("cap", "Cap");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap")) 		menu.AddItem("cap", "Cap");
+		else									menu.AddItem("cap", "Cap", ITEMDRAW_DISABLED);
 		
-		menu.AddItem("referee", "Referee");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "referee"))	menu.AddItem("referee", "Referee");
+		else									menu.AddItem("referee", "Referee", ITEMDRAW_DISABLED);
 
-		menu.AddItem("training", "Training");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "training"))	menu.AddItem("training", "Training");
+		else									menu.AddItem("training", "Training", ITEMDRAW_DISABLED);
 
-		menu.AddItem("spec", "Spec Player");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "spec"))		menu.AddItem("spec", "Spec Player");
+		else									menu.AddItem("spec", "Spec Player", ITEMDRAW_DISABLED);
 
-		menu.AddItem("change", "Change Map");	
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "mapchange"))	menu.AddItem("change", "Change Map");	
+		else 									menu.AddItem("change", "Change Map", ITEMDRAW_DISABLED);	
 
 		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC))
 		{
@@ -135,7 +141,7 @@ public int MenuHandlerAdmin(Menu menu, MenuAction action, int client, int choice
 
 		if (StrEqual(menuItem, "settings"))
 		{
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMenuSettings(client);
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) OpenMenuSettings(client);
 		}
 		else if (StrEqual(menuItem, "spec"))				OpenMenuSpecPlayer(client);
 		else if (StrEqual(menuItem, "change")) 
@@ -359,7 +365,7 @@ public void OpenMenuCommands(int client)
 
 	menu.SetTitle("Soccer Mod - Help - Chat Commands");
 
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("admincom", "Admin Commands");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu")) menu.AddItem("admincom", "Admin Commands");	
 	menu.AddItem("menu", "!menu");
 	menu.AddItem("gk", "!gk");
 	menu.AddItem("cap", "!cap");
@@ -436,8 +442,8 @@ public void OpenMenuCommandsAdmin(int client)
 
 	menu.AddItem("admin", "!madmin");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "[RCON] !addadmin <SteamID>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("rr", "[GENERIC / SOCCER] !rr");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("settingscmd", "[GENERIC / SOCCER] !soccerset");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) menu.AddItem("rr", "[GENERIC / MATCH] !rr");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("settingscmd", "[GENERIC] !soccerset");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forcerdycmd", "[RCON] !forcerdy");	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forceunpcmd", "[RCON] !forceunp");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "[RCON] !dpass");		

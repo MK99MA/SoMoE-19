@@ -107,7 +107,7 @@ public Action Command_Forfeit(int client, int args)
 								}
 								else if (ForfeitPublic == 0)
 								{
-									if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+									if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))
 									{
 										// Prevent multiple uses at once & +1 votecount
 										ffActive = true;
@@ -167,7 +167,7 @@ public Action MaprrCommand(int client, int args)
 	{
 		if(publicmode == 0)
 		{
-			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "mapchange"))
 			{
 				Handle pack;
 				CreateDataTimer(2.0, DelayedServerCommand, pack);
@@ -210,7 +210,7 @@ public Action rrCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))
 		{
 			CS_TerminateRound(1.0, CSRoundEnd_Draw);
 			for (int player = 1; player <= MaxClients; player++)
@@ -232,7 +232,7 @@ public Action MatchRRCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 		{
 			if(matchStarted)
 			{
@@ -287,7 +287,7 @@ public Action StartCommand(int client, int args)
 	{
 		if(!matchStarted)
 		{
-			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 			{
 				MatchStart(client);
 			}
@@ -306,7 +306,7 @@ public Action PauseCommand(int client, int args)
 	{
 		if(!matchPaused)
 		{
-			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 			{	
 				MatchPause(client);
 			}
@@ -324,7 +324,7 @@ public Action StopCommand(int client, int args)
 	{
 		if(matchStarted)
 		{
-			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+			if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 			{
 				MatchStop(client);
 			}
@@ -361,7 +361,7 @@ public Action UnpauseCommand(int client, int args)
 		{
 			if(matchPaused)
 			{
-				if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+				if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 				{
 					UnpauseCheck(client);
 				}
@@ -384,7 +384,7 @@ public Action GkCommand(int client, int args)
 
 public Action AdminCommand(int client, int args)
 {
-	if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+	if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))))
 	{
 		OpenMenuAdmin(client);
 	}
@@ -395,7 +395,7 @@ public Action CapCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "cap"))))
 		{
 			OpenCapMenu(client);
 		}
@@ -409,7 +409,7 @@ public Action MatchCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))))
 		{
 			OpenMatchMenu(client);
 		}
@@ -423,7 +423,7 @@ public Action TrainingCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "training"))))
 		{
 			OpenTrainingMenu(client);
 		}
@@ -437,7 +437,7 @@ public Action RefCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))))
+		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "referee"))))
 		{
 			OpenRefereeMenu(client);
 		}

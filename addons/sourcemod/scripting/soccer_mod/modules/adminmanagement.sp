@@ -1,3 +1,9 @@
+#include "soccer_mod\modules\adminmanagement\add_admins.sp"
+#include "soccer_mod\modules\adminmanagement\edit_admins.sp"
+#include "soccer_mod\modules\adminmanagement\remove_admins.sp"
+#include "soccer_mod\modules\adminmanagement\online_admins.sp"
+#include "soccer_mod\modules\adminmanagement\admin_list.sp"
+
 // *******************************************************************************************************************
 // *************************************************** ADMIN MENU ****************************************************
 // *******************************************************************************************************************
@@ -51,120 +57,134 @@ public int MenuHandlerAdminSet(Menu menu, MenuAction action, int client, int cho
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
-// *******************************************************************************************************************
-// *************************************************** ADD ADMINS ****************************************************
-// *******************************************************************************************************************
-// *************************************************** PLAYERLIST ****************************************************
+// ************************************************ MODULES SELECTION **************************************************
 
-public void OpenMenuAddAdmin(int client)
+public void OpenMenuSoccerAdminModules(int client)
 {
-	char userid[64];
+	char buffer[32], name[64];
 	
-	Menu menu = new Menu(MenuHandlerAddAdmin);
-	menu.SetTitle("Add Admin: Player List");
+	kvAdmins = new KeyValues("Admins");
+	kvAdmins.ImportFromFile(adminFileKV);
 
-	for (playerindex = 1; playerindex <= MaxClients; playerindex++)
-	{
-		if (IsClientInGame(playerindex) && IsClientConnected(playerindex) && !IsFakeClient(playerindex) && !IsClientSourceTV(playerindex))
-		{
-			GetClientName(playerindex, clientName, sizeof(clientName));
-			//GetClientAuthId(playerindex, AuthId_Engine, SteamID, sizeof(SteamID));
-			IntToString(GetClientUserId(playerindex), userid, sizeof(userid));
-			AddMenuItem(menu, userid, clientName);
-		}
-	}
+	kvAdmins.JumpToKey(SteamID, true);
+	kvAdmins.GetString("name", name, sizeof(name))
 	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerAddAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	char userid[64];
-	int userindex2;
-	menu.GetItem(choice, userid, sizeof(userid));
-	if (action == MenuAction_Select)
-	{
-		int userindex = StringToInt(userid);
-		userindex2 = GetClientOfUserId(userindex);
-		GetClientName(userindex2, clientName, sizeof(clientName));
-		//PrintToChatAll(clientName);
-		GetClientAuthId(userindex2, AuthId_Engine, SteamID, sizeof(SteamID))
-		//PrintToChatAll(SteamID);
-		//AdminId ID = GetUserAdmin(userindex2);
-		/*if(ID != INVALID_ADMIN_ID)
-		{
-			playerindex = 1;
-			char targetName[50]
-			targetName = clientName;
-			if(IsSMAdmin(SteamID)) CPrintToChat(client, "{%s}[%s] {%s}%s(%s) is already Sourcemod admin.", prefixcolor, prefix, textcolor, targetName, clientName);
-			else CPrintToChat(client, "{%s}[%s] {%s}%s is already admin (%s in: admins_simple.ini).", prefixcolor, prefix, textcolor, clientName, SteamID);
-			OpenMenuAddAdmin(client);
-		}
-		else if(IsSoccerAdmin(userindex2))
-		{
-			playerindex = 1;
-			CPrintToChat(client, "{%s}[%s] {%s}%s is already Soccer Mod admin.", prefixcolor, prefix, textcolor, clientName);
-			OpenMenuAddAdmin(client);
-		}
-		else 
-		{
-			OpenMenuAddAdminType(client);
-		}*/
-		OpenMenuAddAdminType(client);
-	}
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-	playerindex = 1;
-}
-
-// *************************************************** TYPE SELECTION ****************************************************
-
-public void OpenMenuAddAdminType(int client)
-{
-	Menu menu = new Menu(MenuHandlerAddAdminType);
-	menu.SetTitle("Add %s as:", clientName);
-
-	menu.AddItem("addadmin", "Source Mod Admin");
-	menu.AddItem("addadminsoccer", "Soccer Mod Admin");
-	menu.AddItem("", "No further ingame editing:", ITEMDRAW_DISABLED);
-	menu.AddItem("addadminsimplefull", "Admins_simple.ini: Root Admin");
-	menu.AddItem("addadminsimplecustom", "Admins_simple.ini: Custom Flags");
+	Menu menu = new Menu(MenuHandlerSoccerModules);
+	menu.SetTitle("Set Modules of %s", name);
+	
+	kvAdmins.JumpToKey("modules", true);
+	Format(buffer, sizeof(buffer), "[%i] - Match", kvAdmins.GetNum("match", 0));
+	menu.AddItem("matchmod", buffer);
+	Format(buffer, sizeof(buffer), "[%i] - Cap", kvAdmins.GetNum("cap", 0));
+	menu.AddItem("capmod", buffer);
+	Format(buffer, sizeof(buffer), "[%i] - Training", kvAdmins.GetNum("training", 0));
+	menu.AddItem("trainmod", buffer);
+	Format(buffer, sizeof(buffer), "[%i] - Referee", kvAdmins.GetNum("referee", 0));
+	menu.AddItem("refmod", buffer);
+	Format(buffer, sizeof(buffer), "[%i] - Spec", kvAdmins.GetNum("spec", 0));
+	menu.AddItem("specmod", buffer);
+	Format(buffer, sizeof(buffer), "[%i] - Map", kvAdmins.GetNum("mapchange", 0));
+	menu.AddItem("mapmod", buffer);
+	
+	kvAdmins.Rewind();
+	kvAdmins.Close();
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
 
-public int MenuHandlerAddAdminType(Menu menu, MenuAction action, int client, int choice)
+public int MenuHandlerSoccerModules(Menu menu, MenuAction action, int client, int choice)
 {
 	char menuItem[32];
 	menu.GetItem(choice, menuItem, sizeof(menuItem));
 	
+	kvAdmins = new KeyValues("Admins");
+	kvAdmins.ImportFromFile(adminFileKV);
+	
+	kvAdmins.JumpToKey(SteamID, true);
+	kvAdmins.JumpToKey("modules", true);
+		
 	if (action == MenuAction_Select)
 	{
-		if (StrEqual(menuItem, "addadminsimplefull"))
+		if(StrEqual(menuItem, "matchmod"))
 		{
-			addoredit = 0;
-			OpenMenuWarning(client);
+			if (kvAdmins.GetNum("match", 0) == 0)
+			{
+				kvAdmins.SetNum("match", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("match", 0);
+			}
 		}
-		else if (StrEqual(menuItem, "addadminsoccer"))
+		else if(StrEqual(menuItem, "capmod"))
 		{
-			adminmode = 1;
-			AddSoccerAdminMenuFunc(client);
+			if (kvAdmins.GetNum("cap", 0) == 0)
+			{
+				kvAdmins.SetNum("cap", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("cap", 0);
+			}
 		}
-		else if (StrEqual(menuItem, "addadminsimplecustom"))
+		else if(StrEqual(menuItem, "trainmod"))
 		{
-			adminmode = 2;
-			AddAdminSimpleMenuFunc(client);
+			if (kvAdmins.GetNum("training", 0) == 0)
+			{
+				kvAdmins.SetNum("training", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("training", 0);
+			}
 		}
-		else if (StrEqual(menuItem, "addadmin"))
+		else if(StrEqual(menuItem, "refmod"))
 		{
-			addoredit = 0;
-			CPrintToChat(client, "{%s}[%s] {%s}%s added as an admin", prefixcolor, prefix, textcolor, clientName);
-			OpenMenuAddAdminValues(client);
+			if (kvAdmins.GetNum("referee", 0) == 0)
+			{
+				kvAdmins.SetNum("referee", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("referee", 0);
+			}
 		}
+		else if(StrEqual(menuItem, "specmod"))
+		{
+			if (kvAdmins.GetNum("spec", 0) == 0)
+			{
+				kvAdmins.SetNum("spec", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("spec", 0);
+			}
+		}
+		else if(StrEqual(menuItem, "mapmod"))
+		{
+			if (kvAdmins.GetNum("mapchange", 0) == 0)
+			{
+				kvAdmins.SetNum("mapchange", 1);
+			}
+			else
+			{
+				kvAdmins.SetNum("mapchange", 0);
+			}
+		}
+		kvAdmins.GoBack();
+		
+		kvAdmins.Rewind();
+		kvAdmins.ExportToFile(adminFileKV);
+		kvAdmins.Close();	
+		
+		OpenMenuSoccerAdminModules(client);
 	}
-	else if (action == MenuAction_Cancel && choice == -6) 	OpenMenuAddAdmin(client);
+	else if (action == MenuAction_Cancel && choice == -6)
+	{
+		if(addoredit == 1)OpenMenuEditSoccerAdmin(client);
+		else if(addoredit == 0) OpenMenuAddAdmin(client);
+	}
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
@@ -174,12 +194,12 @@ public void OpenMenuAddAdminValues(int client)
 {
 	char nameString[256], steamidString[256], flagString[32], immunityString[32], groupString[128];
 	
-	if (!IsSMAdmin(SteamID))
+	if(!GetAdminFlag(FindAdminByIdentity("steam", SteamID), Admin_Generic)) //(!IsSMAdmin(SteamID))
 	{
 		AddAdminFunc(SteamID);
 		ReadAdminFile();
 	}
-	else if (IsSMAdmin(SteamID)) ReadAdminFile();
+	else ReadAdminFile();
 	
 	Format(nameString, sizeof(nameString), "Name: %s", adminName);
 	Format(steamidString, sizeof(steamidString), "SteamID: %s",SteamID);
@@ -282,724 +302,30 @@ public int MenuHandlerGroupList(Menu menu, MenuAction action, int client, int ch
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
-
-// *******************************************************************************************************************
-// ************************************************ PROMOTE ADMINS ***************************************************
-// *******************************************************************************************************************
-public void OpenMenuEditAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerEditAdmin);
-	menu.SetTitle("Edit Admin");
-	
-	menu.AddItem("editSM", "Edit SM Admin");
-	menu.AddItem("promote", "Promote Soccer Admin");
-
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerEditAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "editSM"))
-		{
-			OpenMenuEditList(client);
-		}
-		else if (StrEqual(menuItem, "promote"))
-		{
-			OpenMenuPromoteAdmin(client);
-		}
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *************************************************** ADMINLISTS ****************************************************
-
-public void OpenMenuEditList(int client)
-{
-	Menu menu = new Menu(MenuHandlerEditList);
-	menu.SetTitle("Admins.cfg Admin List");
-	
-	kvSMAdmins = new KeyValues("Admins");
-	kvSMAdmins.ImportFromFile(adminSMFileKV);
-	
-	if (kvSMAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
-		OpenMenuEditAdmin(client);
-		
-		kvSMAdmins.Rewind();
-		kvSMAdmins.Close();	
-	}
-	else
-	{
-		kvSMAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
-			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
-			
-			menu.AddItem(clientName, clientName);
-		}
-		while (kvSMAdmins.GotoNextKey());
-	}
-	
-	kvSMAdmins.Rewind();
-	kvSMAdmins.Close();	
-		
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerEditList(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		addoredit = 1;
-		OpenMenuAddAdminValues(client);
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuEditAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-public void OpenMenuPromoteAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerPromoteAdmin);
-	menu.SetTitle("Soccer Mod Admin List");
-	
-	kvAdmins = new KeyValues("Admins");
-	kvAdmins.ImportFromFile(adminFileKV);
-	
-	if (kvAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor)
-		OpenMenuEditAdmin(client);
-		
-		kvAdmins.Rewind();
-		kvAdmins.Close();	
-	}
-	else
-	{
-		kvAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName, sizeof(clientName));
-			
-			menu.AddItem(clientName, clientName);
-		}
-		while (kvAdmins.GotoNextKey());
-	}
-	
-	kvAdmins.Rewind();
-	kvAdmins.Close();	
-		
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerPromoteAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		OpenMenuPromoteAdminFlags(client);
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuEditAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *************************************************** PROMOTE SELECTION ****************************************************
-
-public void OpenMenuPromoteAdminFlags(int client)
-{
-	Menu menu = new Menu(MenuHandlerPromoteAdminFlags);
-	menu.SetTitle("Promote %s to:", clientName);
-
-	menu.AddItem("addadminsm", "admins.cfg");
-	menu.AddItem("", "No further ingame editing:", ITEMDRAW_DISABLED);
-	menu.AddItem("addadminfull", "Admins_simple: Root Admin");
-	menu.AddItem("addadmincustom", "Admins_simple: Custom Flags");
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerPromoteAdminFlags(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "addadminfull"))
-		{
-			addoredit = 1;
-			OpenMenuWarning(client);
-		}
-		else if (StrEqual(menuItem, "addadmincustom"))
-		{
-			adminmode = 2;
-			RemoveSoccerAdminMenuFunc(client);
-			AddAdminSimpleMenuFunc(client);
-		}
-		else if(StrEqual(menuItem, "addadminsm"))
-		{
-			RemoveSoccerAdminMenuFunc(client);
-			addoredit = 2;
-			OpenMenuAddAdminValues(client)
-		}
-	}
-	else if (action == MenuAction_Cancel && choice == -6)  OpenMenuPromoteAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *******************************************************************************************************************
-// ************************************************* REMOVE ADMINS ***************************************************
-// *******************************************************************************************************************
-
-public void OpenMenuRemoveAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerRemoveAdmin);
-	menu.SetTitle("Remove Admin");
-	
-	menu.AddItem("removeSM", "Remove SM Admin");
-	menu.AddItem("removeSoccer", "Remove Soccer Admin");
-
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerRemoveAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "removeSM"))
-		{
-			OpenMenuRemoveSMAdmin(client);
-		}
-		else if (StrEqual(menuItem, "removeSoccer"))
-		{
-			OpenMenuRemoveSoccerAdmin(client);
-		}
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *************************************************** ADMINLISTS ****************************************************
-
-public void OpenMenuRemoveSMAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerRemoveSMAdmin);
-	menu.SetTitle("Admins.cfg Admin List");
-	
-	kvSMAdmins = new KeyValues("Admins");
-	kvSMAdmins.ImportFromFile(adminSMFileKV);
-	
-	if (kvSMAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
-		OpenMenuRemoveAdmin(client);
-		
-		kvSMAdmins.Rewind();
-		kvSMAdmins.Close();	
-	}
-	else
-	{
-		kvSMAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
-			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
-			
-			menu.AddItem(clientName, clientName);
-		}
-		while (kvSMAdmins.GotoNextKey());
-	}
-	
-	kvSMAdmins.Rewind();
-	kvSMAdmins.Close();	
-		
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerRemoveSMAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		RemoveSMAdminMenuFunc(clientName);
-		FakeClientCommandEx(client, "sm_reloadadmins");
-		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s}%s was removed from the Sourcemod adminlist", prefixcolor, prefix, textcolor, clientName);
-		OpenMenuRemoveAdmin(client);
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuRemoveAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-public void OpenMenuRemoveSoccerAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerRemoveSoccerAdmin);
-	menu.SetTitle("Soccer Mod Admin List");
-	
-	kvAdmins = new KeyValues("Admins");
-	kvAdmins.ImportFromFile(adminFileKV);
-	
-	if (kvAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor)
-		OpenMenuRemoveAdmin(client);
-		
-		kvAdmins.Rewind();
-		kvAdmins.ExportToFile(adminFileKV);
-		kvAdmins.Close();	
-	}
-	else
-	{
-		kvAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName, sizeof(clientName));
-			
-			menu.AddItem(SteamID, clientName);
-		}
-		while (kvAdmins.GotoNextKey());
-	}
-	
-	kvAdmins.Rewind();
-	kvAdmins.ExportToFile(adminFileKV);
-	kvAdmins.Close();	
-		
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerRemoveSoccerAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	adminRemoved = false;
-	menu.GetItem(choice, SteamID, sizeof(SteamID));
-	if (action == MenuAction_Select)
-	{
-		RemoveSoccerAdminMenuFunc(client);
-		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s}%s was removed from the Soccer Mod adminlist", prefixcolor, prefix, textcolor, clientName);
-		OpenMenuRemoveAdmin(client);
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuRemoveAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *******************************************************************************************************************
-// ************************************************** ADMIN LIST *****************************************************
-// *******************************************************************************************************************
-public void OpenMenuAdminLists(int client)
-{
-	Menu menu = new Menu(MenuHandlerAdminLists);
-	menu.SetTitle("Admin Lists");
-	
-	menu.AddItem("Soccerlist", "Soccer Mod List");
-	menu.AddItem("SMlist", "Admins.cfg List");
-	menu.AddItem("Simplelist", "Admins_simple.ini List");
-
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerAdminLists(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "Soccerlist"))
-		{
-			OpenMenuAdminListSoccerMod(client);
-		}
-		else if (StrEqual(menuItem, "SMlist"))
-		{
-			OpenMenuAdminListSM(client);
-		}
-		else if (StrEqual(menuItem, "Simplelist"))
-		{
-			OpenMenuAdminListSimple(client);
-		}
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *************************************************** SM LIST ******************************************************
-
-public void OpenMenuAdminListSM(int client)
-{
-	Menu menu = new Menu(MenuHandlerAdminlistSM);
-	menu.SetTitle("Admins.cfg Admin List");
-	
-	kvSMAdmins = new KeyValues("Admins");
-	kvSMAdmins.ImportFromFile(adminSMFileKV);
-	
-	if (kvSMAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No admins found in admins.cfg", prefixcolor, prefix, textcolor)
-		OpenMenuAdminLists(client);
-		
-		kvSMAdmins.Rewind();
-		kvSMAdmins.Close();	
-	}
-	else
-	{
-		kvSMAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvSMAdmins.GetSectionName(clientName, sizeof(clientName));
-			kvSMAdmins.GetString("identity", SteamID, sizeof(SteamID));
-			
-			menu.AddItem(clientName, clientName, ITEMDRAW_DISABLED);
-		}
-		while (kvSMAdmins.GotoNextKey());
-	}
-	
-	kvSMAdmins.Rewind();
-	kvSMAdmins.Close();	
-		
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);	
-}
-
-public int MenuHandlerAdminlistSM(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, SteamID, sizeof(SteamID));
-	if (action == MenuAction_Select)
-	{
-		CPrintToChat(client, "How?");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// ************************************************** SIMPLE LIST *****************************************************
-
-public void OpenMenuAdminListSimple(int client)
-{
-	char sLine[128];
-	char szFile[256];
-	File hFile;
-	//char regexLine[128] = "^.\\[.:\\d:[0-9]+\\].\\s.[0-9]+:[a-zA-Z]+.";
-	
-	Menu menu = new Menu(MenuHandlerAdminlistSimple);
-	menu.SetTitle("Admins_simple List");
-
-	BuildPath(Path_SM, szFile, sizeof(szFile), "configs/admins_simple.ini");
-	
-	hFile = OpenFile(szFile, "r");
-	
-	while (!hFile.EndOfFile() && hFile.ReadLine(sLine, sizeof(sLine)))
-	{
-		if(!(StrContains(sLine, "\"[U:") == -1))
-		{
-			menu.AddItem(SteamID, sLine, ITEMDRAW_DISABLED);
-		}
-	}
-	hFile.Close();
-	
-	if(GetMenuItemCount(menu) == 0)
-	{
-		menu.AddItem(SteamID, "No admins found", ITEMDRAW_DISABLED);
-		//CPrintToChat(client, "{%s}[%s] {%s}No admins found", prefixcolor, prefix, textcolor);
-		//OpenMenuAdminLists(client);
-	}
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerAdminlistSimple(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, SteamID, sizeof(SteamID));
-	if (action == MenuAction_Select)
-	{
-		CPrintToChat(client, "How?");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// ************************************************** SOCCER LIST *****************************************************
-
-public void OpenMenuAdminListSoccerMod(int client)
-{
-	Menu menu = new Menu(MenuHandlerAdminlistSoccerMod);
-	menu.SetTitle("Soccer Mod Admin List");
-	
-	kvAdmins = new KeyValues("Admins");
-	kvAdmins.ImportFromFile(adminFileKV);
-	
-	if (kvAdmins.GotoFirstSubKey() == false) 
-	{
-		CPrintToChat(client, "{%s}[%s] {%s}No Soccer Mod admins found", prefixcolor, prefix, textcolor);
-		OpenMenuAdminLists(client);
-		
-		kvAdmins.Rewind();
-		kvAdmins.Close();	
-	}
-	else
-	{
-		kvAdmins.GotoFirstSubKey();
-		
-		do
-		{
-			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
-			kvAdmins.GetString("name", clientName, sizeof(clientName));
-			
-			menu.AddItem(SteamID, clientName, ITEMDRAW_DISABLED);
-		}
-		while (kvAdmins.GotoNextKey());
-	}
-	
-	kvAdmins.Rewind();
-	kvAdmins.Close();	
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerAdminlistSoccerMod(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, SteamID, sizeof(SteamID));
-	if (action == MenuAction_Select)
-	{
-		CPrintToChat(client, "How?");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminLists(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-// *******************************************************************************************************************
-// ************************************************** ONLINE LIST ****************************************************
-// *******************************************************************************************************************
-
-public void OpenMenuOnlineAdmin(int client)
-{
-	Menu menu = new Menu(MenuHandlerOnlineAdmin);
-	menu.SetTitle("Online Admin lists");
-	
-	menu.AddItem("Adminonline", "Admin Online List");
-	menu.AddItem("SMonline", "Sourcemod Online List");
-	menu.AddItem("Socceronline", "Soccer Online List");
-	
-	if(menuaccessed[client] == true) menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerOnlineAdmin(Menu menu, MenuAction action, int client, int choice)
-{
-	char menuItem[32];
-	menu.GetItem(choice, menuItem, sizeof(menuItem));
-	
-	if (action == MenuAction_Select)
-	{
-		if (StrEqual(menuItem, "SMonline"))
-		{
-			OpenMenuOnlineAdminSourcemod(client);
-		}
-		else if (StrEqual(menuItem, "Socceronline"))
-		{
-			OpenMenuOnlineSoccerAdmin(client);
-		}
-		else if (StrEqual(menuItem, "Adminonline"))
-		{
-			OpenMenuOnlineAdminAll(client);
-		}
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdminSet(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-public void OpenMenuOnlineAdminAll(int client)
-{
-	//bool onserver = false;
-	int onlinecount = 0;
-	
-	Menu menu = new Menu(MenuHandlerOnlineAdminAll);
-	menu.SetTitle("Online Admins");
-
-	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
-	{
-		if (IsClientInGame(clientindex))
-		{
-			if (adminRemoved)	RemoveAllMenuItems(menu);
-			if(GetUserAdmin(clientindex) != INVALID_ADMIN_ID)
-			{
-				char AdminName[64];
-				GetClientName(clientindex, AdminName, sizeof(AdminName));
-				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				onlinecount++;
-				//if(!onserver) onserver = true;
-			}
-			else if (IsSoccerAdmin(clientindex))
-			{
-				char AdminName[64];
-				GetClientName(clientindex, AdminName, sizeof(AdminName));
-				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				onlinecount++;
-				//if(!onserver) onserver = true;
-			}
-		}
-	}
-	if(onlinecount == 0) menu.AddItem("", "No Admins on the server", ITEMDRAW_DISABLED);
-	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerOnlineAdminAll(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		PrintToChatAll("bla");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-
-public void OpenMenuOnlineAdminSourcemod(int client)
-{
-	//bool onserver = false;
-	int onlinecount = 0;
-	
-	Menu menu = new Menu(MenuHandlerOnlineAdminSourcemod);
-	menu.SetTitle("Online Admins");
-
-	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
-	{
-		if (IsClientInGame(clientindex))
-		{
-			if (adminRemoved)	RemoveAllMenuItems(menu);
-			if(GetUserAdmin(clientindex) != INVALID_ADMIN_ID)
-			{
-				char AdminName[64];
-				GetClientName(clientindex, AdminName, sizeof(AdminName));
-				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				onlinecount++;
-				//if(!onserver) onserver = true;
-			}
-		}
-	}
-	if(onlinecount == 0) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
-	//if(!onserver) menu.AddItem("", "No Sourcemod Admins on the server", ITEMDRAW_DISABLED);
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerOnlineAdminSourcemod(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		PrintToChatAll("bla");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
-public void OpenMenuOnlineSoccerAdmin(int client)
-{
-	//bool onserver = false;
-	int onlinecount = 0;
-	
-	Menu menu = new Menu(MenuHandlerOnlineAdminSoccermod);
-	menu.SetTitle("Online Soccer Admins");
-
-	for (int clientindex = 1; clientindex <= MaxClients; clientindex++)
-	{
-		if (IsClientInGame(clientindex))
-		{
-			if (IsSoccerAdmin(clientindex))
-			{
-				char AdminName[64];
-				GetClientName(clientindex, AdminName, sizeof(AdminName));
-				menu.AddItem(AdminName, AdminName, ITEMDRAW_DISABLED);
-				onlinecount++;
-				//if(!onserver) onserver = true;
-			}
-		}
-	}
-	if(onlinecount == 0) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
-	//if(!onserver) menu.AddItem("", "No Soccermod Admins on the server", ITEMDRAW_DISABLED);
-	
-	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
-}
-
-public int MenuHandlerOnlineAdminSoccermod(Menu menu, MenuAction action, int client, int choice)
-{
-	menu.GetItem(choice, clientName, sizeof(clientName));
-	if (action == MenuAction_Select)
-	{
-		PrintToChatAll("bla");
-	}
-		
-	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuOnlineAdmin(client);
-	else if (action == MenuAction_End)					  menu.Close();
-}
-
 // *******************************************************************************************************************
 // *************************************************** FUNCTIONS *****************************************************
 // *******************************************************************************************************************
 // ************************************************** CHECK FUNCS ****************************************************
-public bool IsSoccerAdmin(int client)
+public bool IsSoccerAdmin(int client, char module[32])
 {
-	char buffer[32];
+	//char buffer[32];
 	bool check = false;
-	GetClientAuthId(client, AuthId_Engine, SteamID, sizeof(SteamID))
+	char temp_SteamID[20];
+	GetClientAuthId(client, AuthId_Engine, temp_SteamID, sizeof(temp_SteamID))
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
-	if(kvAdmins.GotoFirstSubKey())
+	
+	if(StrEqual(module, "menu"))
 	{
-		do
-		{
-			kvAdmins.GetSectionName(buffer, sizeof(buffer));
-			if (StrEqual(buffer, SteamID)) check = true;
-		}
-		while (kvAdmins.GotoNextKey());
+		if(kvAdmins.JumpToKey(temp_SteamID, false))		check = true;
+		else 											check = false;
 	}
-	else return false;
+	else
+	{
+		kvAdmins.JumpToKey(temp_SteamID, false);
+		kvAdmins.JumpToKey("modules", false);
+		if(kvAdmins.GetNum(module, 0) == 1) check = true;
+	}
 	
 	kvAdmins.Rewind();
 	kvAdmins.Close();	
@@ -1163,7 +489,7 @@ public void AddAdminSimpleMenuFunc(int client)
 		WriteFileLine(hFile, "\"%s\" \"99:z\"	//%s", szTarget2, clientName);
 		CPrintToChat(client, "{%s}[%s] {%s}%s was added with root access.", prefixcolor, prefix, textcolor, clientName);
 		if(addoredit == 0) OpenMenuAddAdmin(client);
-		else OpenMenuPromoteAdmin(client)
+		else OpenMenuEditSoccerAdmin(client)
 	}
 
 	hFile.Close();
@@ -1174,20 +500,25 @@ public void AddAdminSimpleMenuFunc(int client)
 
 public void AddSoccerAdminMenuFunc(int client)
 {
-	szTarget2 = SteamID;
-	
 	kvAdmins = new KeyValues("Admins");
 	kvAdmins.ImportFromFile(adminFileKV);
 	
-	kvAdmins.JumpToKey(szTarget2, true);
+	kvAdmins.JumpToKey(SteamID, true);
 	kvAdmins.SetString("name", clientName);	
+	kvAdmins.JumpToKey("modules", true);
+	kvAdmins.SetNum("match", 		0);
+	kvAdmins.SetNum("cap", 			0);
+	kvAdmins.SetNum("training",		0);
+	kvAdmins.SetNum("referee", 		0);
+	kvAdmins.SetNum("spec", 		0);
+	kvAdmins.SetNum("mapchange",	0);
+	kvAdmins.GoBack();
+	
+	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod admin.", prefixcolor, prefix, textcolor, clientName);
 	
 	kvAdmins.Rewind();
 	kvAdmins.ExportToFile(adminFileKV);
 	kvAdmins.Close();	
-	
-	CPrintToChat(client, "{%s}[%s] {%s}%s was added as a Soccer Mod admin.", prefixcolor, prefix, textcolor, clientName);
-	OpenMenuAddAdmin(client);
 }
 
 public void RemoveSoccerAdminMenuFunc(int client)

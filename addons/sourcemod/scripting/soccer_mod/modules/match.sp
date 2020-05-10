@@ -138,7 +138,7 @@ public void OpenMatchMenu(int client)
 	
 	menu.AddItem("settings", "Match Settings");
 	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))
 	{
 		if(matchlog > 0)	menu.AddItem("log", "Match Log");
 	}
@@ -197,7 +197,7 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 		}
 		else if (StrEqual(menuItem, "log"))
 		{	 
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMatchLogMenu(client); 
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) OpenMatchLogMenu(client); 
 		}
 		else if (StrEqual(menuItem, "settings"))
 		{
@@ -330,7 +330,7 @@ public void OpenMenuMatchSettings(int client)
 	
 	menu.AddItem("golden", "Golden Goal");
 	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.AddItem("logset", "Match Log settings");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) menu.AddItem("logset", "Match Log settings");
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("forfeitset", "Forfeit Vote settings");
 	

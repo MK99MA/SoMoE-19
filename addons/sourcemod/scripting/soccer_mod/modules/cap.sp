@@ -85,7 +85,7 @@ public void OpenCapMenu(int client)
 	if(publicmode == 0 || publicmode == 2) menu.ExitBackButton = true;
 	else if(publicmode == 1) 
 	{
-		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) menu.ExitBackButton = true;
+		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "cap")) menu.ExitBackButton = true;
 		else menu.ExitBackButton = false;
 	}
 	menu.Display(client, MENU_TIME_FOREVER);

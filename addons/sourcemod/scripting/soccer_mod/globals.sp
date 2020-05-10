@@ -82,6 +82,7 @@ bool adminRemoved;
 
 // INTEGER
 int addoredit;
+int promoteoredit;
 int adminmode;
 int playerindex 		= 1;
 

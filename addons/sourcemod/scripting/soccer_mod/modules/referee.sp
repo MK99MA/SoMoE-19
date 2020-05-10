@@ -40,7 +40,7 @@ public void OpenRefereeMenu(int client)
 
 	menu.AddItem("remove_all", "Remove all cards");
 
-	if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))
+	if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "referee"))
 	{	
 		menu.AddItem("score", "Score");
 	}
@@ -63,12 +63,12 @@ public int RefereeMenuHandler(Menu menu, MenuAction action, int client, int choi
 		else if (StrEqual(menuItem, "remove_all"))		  RemoveAllCards(client);
 		else if (StrEqual(menuItem, "score"))
 		{	 
-			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client)) OpenMatchScoreMenu(client); 
+			if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "referee")) OpenMatchScoreMenu(client); 
 		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)
 	{
-		if((publicmode ==1) && !(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client))) OpenMatchMenu(client);
+		if((publicmode ==1) && !(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))) OpenMatchMenu(client);
 		else OpenMenuAdmin(client);
 	}
 	else if (action == MenuAction_End)					  menu.Close();
