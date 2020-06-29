@@ -4,13 +4,12 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.1.6"
-			"Previous"	"1.1.5"
+			"Latest"	"1.2.0"
+			"Previous"	"1.1.6"
 		}
 		
-		"Notes"	"Added modular permissions for soccermod admins"
-		"Notes" "Fixed stuff"
-		"Notes" "At least its worth an update this time..."
+		"Notes"	"Default Cannon should not ask to choose a ball if there is a soccer ball found"
+		"Notes" "Pushed version number to 1.2.0 because I can"
 	}
 	
 	"Files"

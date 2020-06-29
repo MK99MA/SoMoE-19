@@ -92,7 +92,7 @@ public int MenuHandlerRemoveSMAdmin(Menu menu, MenuAction action, int client, in
 
 public void OpenMenuRemoveSoccerAdmin(int client)
 {
-	char name[64];
+	char name[64], info[128];
 	Menu menu = new Menu(MenuHandlerRemoveSoccerAdmin);
 	menu.SetTitle("Soccer Mod Admin List");
 	
@@ -114,8 +114,9 @@ public void OpenMenuRemoveSoccerAdmin(int client)
 		{
 			kvAdmins.GetSectionName(SteamID, sizeof(SteamID));
 			kvAdmins.GetString("name", name, sizeof(name));
+			Format(info, sizeof(info), "%s,|,%s", SteamID, name);
 
-			menu.AddItem(SteamID, name);
+			menu.AddItem(info, name);
 		}
 		while (kvAdmins.GotoNextKey());
 	}
@@ -130,13 +131,19 @@ public void OpenMenuRemoveSoccerAdmin(int client)
 
 public int MenuHandlerRemoveSoccerAdmin(Menu menu, MenuAction action, int client, int choice)
 {
+	char menuItem[128], name[64];
 	adminRemoved = false;
-	menu.GetItem(choice, SteamID, sizeof(SteamID));
+	menu.GetItem(choice, menuItem, sizeof(menuItem));
 	if (action == MenuAction_Select)
 	{
+		char infoarray[2][128];
+		char splitter[16] = ",|,";
+		ExplodeString(menuItem, splitter, infoarray, sizeof(infoarray), sizeof(infoarray[]))
+		strcopy(SteamID, sizeof(SteamID), infoarray[0]);
+		strcopy(name, sizeof(name), infoarray[1]);
 		RemoveSoccerAdminMenuFunc(client);
 		adminRemoved = true;
-		CPrintToChat(client, "{%s}[%s] {%s}%s was removed from the Soccer Mod adminlist", prefixcolor, prefix, textcolor, clientName);
+		CPrintToChat(client, "{%s}[%s] {%s}Admin %s was removed from the Soccer Mod adminlist", prefixcolor, prefix, textcolor, name);
 		OpenMenuRemoveAdmin(client);
 	}
 		

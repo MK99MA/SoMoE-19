@@ -485,6 +485,15 @@ public void TrainingCannonOn(int client)
 	{
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		
+		int index2 = GetEntityIndexByName("ball", "prop_physics");
+		if (index2 == -1) {
+			index2 = GetEntityIndexByName("ball", "func_physbox");
+		}
+		if (index2 == -1) {
+			index2 = GetEntityIndexByName("ballon", "func_physbox");
+		}
+		if (index2 != -1) trainingCannonBallIndex = index2;
 
 		if (!IsValidEntity(trainingCannonBallIndex))
 		{
@@ -513,10 +522,10 @@ public void TrainingCannonOn(int client)
 				{
 					numbers[count] = index;
 					count++;
-				}
+				}	
 			}
 
-			if (count > 1)
+			if (count > 1 )
 			{
 				CPrintToChat(client, "{%s}[%s] {%s}More than one possible ball found", prefixcolor, prefix, textcolor);
 				OpenTrainingCannonSelectBallMenu(client, count, numbers);
