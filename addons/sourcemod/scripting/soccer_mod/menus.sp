@@ -104,22 +104,22 @@ public void OpenMenuAdmin(int client)
 	}
 	else
 	{
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "match")) 		menu.AddItem("match", "Match");
-		else									menu.AddItem("match", "Match", ITEMDRAW_DISABLED);
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "match") || (publicmode == 2)) 		menu.AddItem("match", "Match");
+		else 								menu.AddItem("match", "Match", ITEMDRAW_DISABLED);
 
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap")) 		menu.AddItem("cap", "Cap");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2)) 		menu.AddItem("cap", "Cap");
 		else									menu.AddItem("cap", "Cap", ITEMDRAW_DISABLED);
 		
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "referee"))	menu.AddItem("referee", "Referee");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "referee") || (publicmode == 2))	menu.AddItem("referee", "Referee");
 		else									menu.AddItem("referee", "Referee", ITEMDRAW_DISABLED);
 
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "training"))	menu.AddItem("training", "Training");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "training") || (publicmode == 2))	menu.AddItem("training", "Training");
 		else									menu.AddItem("training", "Training", ITEMDRAW_DISABLED);
 
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "spec"))		menu.AddItem("spec", "Spec Player");
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "spec") || (publicmode == 2))		menu.AddItem("spec", "Spec Player");
 		else									menu.AddItem("spec", "Spec Player", ITEMDRAW_DISABLED);
 
-		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "mapchange"))	menu.AddItem("change", "Change Map");	
+		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "mapchange") || (publicmode == 2))	menu.AddItem("change", "Change Map");	
 		else 									menu.AddItem("change", "Change Map", ITEMDRAW_DISABLED);	
 
 		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC))

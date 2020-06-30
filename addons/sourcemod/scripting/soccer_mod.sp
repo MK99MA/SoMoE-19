@@ -406,7 +406,7 @@ public void OnMapStart()
 
 		return;
 	}
-	else LoadConfigNonSoccer();
+	//else LoadConfigNonSoccer();
 
 	MatchOnMapStart();
 	SkinsOnMapStart();
@@ -780,8 +780,8 @@ public void LoadConfigNonSoccer()
 	SetCvarInt("mp_roundtime",				  3);
 	SetCvarInt("phys_pushscale",				1);
 	SetCvarFloat("phys_timescale",			  1.0);
-	SetCvarInt("sv_client_min_interp_ratio",	-1);
-	SetCvarInt("sv_client_max_interp_ratio",	1);
+	//SetCvarInt("sv_client_min_interp_ratio",	-1);
+	//SetCvarInt("sv_client_max_interp_ratio",	1);
 
 	if (FileExists("cfg/non_soccer.cfg", false)) ServerCommand("exec non_soccer");
 }
