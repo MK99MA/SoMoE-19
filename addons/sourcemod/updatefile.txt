@@ -4,12 +4,12 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.0"
-			"Previous"	"1.1.6"
+			"Latest"	"1.2.1"
+			"Previous"	"1.2.0"
 		}
 		
-		"Notes"	"Default Cannon should not ask to choose a ball if there is a soccer ball found"
-		"Notes" "Pushed version number to 1.2.0 because I can"
+		"Notes"	"Admin menu changed"
+		"Notes" "People without any rights would still be able to see the adminmenu but every option would be greyed out."
 	}
 	
 	"Files"

@@ -92,20 +92,23 @@ public void OpenMenuAdmin(int client)
 
 	menu.SetTitle("Soccer Mod - Admin");
 	
-	if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "menu")))
+	if(publicmode == 1 && !(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)))
 	{
 		menu.AddItem("match", "Match");
 
 		menu.AddItem("cap", "Cap");
 		
 		menu.AddItem("referee", "Referee");
-	
+		
+		if(IsSoccerAdmin(client, "training")) 	menu.AddItem("training", "Training");
+		if(IsSoccerAdmin(client, "spec")) 		menu.AddItem("spec", "Spec Player");
+		
 		menu.AddItem("change", "Change Map");
 	}
 	else
 	{
 		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "match") || (publicmode == 2)) 		menu.AddItem("match", "Match");
-		else 								menu.AddItem("match", "Match", ITEMDRAW_DISABLED);
+		else 									menu.AddItem("match", "Match", ITEMDRAW_DISABLED);
 
 		if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2)) 		menu.AddItem("cap", "Cap");
 		else									menu.AddItem("cap", "Cap", ITEMDRAW_DISABLED);
