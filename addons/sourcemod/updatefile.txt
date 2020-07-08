@@ -4,12 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.1"
-			"Previous"	"1.2.0"
+			"Latest"	"1.2.2"
+			"Previous"	"1.2.1"
 		}
 		
-		"Notes"	"Admin menu changed"
-		"Notes" "People without any rights would still be able to see the adminmenu but every option would be greyed out."
+		"Notes"	"Added Duckjump-toggle to settings menu."
+		"Notes" "Edited Duckjump-toggle command accordingly."
+		"Notes" "Command-usage requires a server restart because of how Sourcemod handles plugin-created CVars.."
 	}
 	
 	"Files"

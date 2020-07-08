@@ -48,7 +48,6 @@ float playerMaxHeight[66];
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
 Handle db			   			= INVALID_HANDLE;
-Handle cvar_BLOCKDJ_ENABLED 	= INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
 

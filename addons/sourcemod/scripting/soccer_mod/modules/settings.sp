@@ -7,7 +7,7 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32];
+	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32], DJString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -22,6 +22,9 @@ public void OpenMenuSettings(int client)
 	if(dissolveSet == 0)				DissolveString = "Remove Ragdoll: OFF";
 	else if(dissolveSet == 1)			DissolveString = "Remove Ragdoll: YES";
 	else if (dissolveSet == 2)			DissolveString = "Remove Ragdoll: Dissolve";
+	
+	if(djbenabled == 0)					DJString = "DJBlock: OFF";
+	else if (djbenabled == 1)			DJString = "DJBlock: ON";
 		
 	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
@@ -38,6 +41,7 @@ public void OpenMenuSettings(int client)
 		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, true)) menu.AddItem("shoutplug", "Shout Plugin");
 	}
 	menu.AddItem("lockenabled", "Lock Server");
+	menu.AddItem("djblock", DJString);
 
 	if (debuggingEnabled) menu.AddItem("gk_areas", "Set gk area's");
 
@@ -114,6 +118,21 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 			{
 				dissolveSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
+				OpenMenuSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "djblock")) 
+		{
+			if(djbenabled == 0)
+			{
+				djbenabled = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
+				OpenMenuSettings(client);
+			}
+			else if(djbenabled == 1)
+			{
+				djbenabled = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
 				OpenMenuSettings(client);
 			}
 		}

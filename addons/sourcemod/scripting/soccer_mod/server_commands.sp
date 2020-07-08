@@ -95,8 +95,12 @@ public void RegisterServerCommands()
 		ServerCommands,
 		"Toggle the creation of matchlogs - default: 0"
 	);
+	RegServerCmd(
+		"soccer_mod_blockdj_enable",
+		ServerCommands,
+		"Enable/Disable Duckjump Block - default: 1"
+	);
 
-	RegisterServerCVarsBlockDJ();
 	RegisterServerCommandsHealth();
 	RegisterServerCommandsMatch();
 	RegisterServerCommandsRanking();
@@ -353,8 +357,35 @@ public Action ServerCommands(int args)
 		}
 		else if(matchlog == 0)
 		{
-			PrintToServer("[%s] Matchlog enabled", prefix);
+			PrintToServer("[%s] Matchlog disabled", prefix);
 			//CPrintToChat(client, "{%s}[%s] {%s}Matchlog enabled", prefixcolor, prefix, textcolor);
+		}
+		else if(matchlog > 1)
+		{
+			matchlog = 0;
+			PrintToServer("[%s] Matchlog disabled", prefix);
+			//CPrintToChat(client, "{%s}[%s] {%s}Matchlog enabled", prefixcolor, prefix, textcolor);
+		}
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_blockdj_enable"))
+	{
+		djbenabled = StringToInt(cmdArg1);
+		UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
+		if (djbenabled == 1)
+		{
+			PrintToServer("[%s] Duckjumpblock enabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}Duckjumpblock enabled", prefixcolor, prefix, textcolor);
+		}
+		else if(djbenabled == 0)
+		{
+			PrintToServer("[%s] Duckjumpblock disabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}Duckjumpblock disabled", prefixcolor, prefix, textcolor);
+		}
+		else if(djbenabled > 1)
+		{
+			djbenabled = 0;
+			PrintToServer("[%s] Duckjumpblock disabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}Duckjumpblock disabled", prefixcolor, prefix, textcolor);
 		}
 	}
 

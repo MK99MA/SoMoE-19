@@ -1,26 +1,5 @@
-public void RegisterServerCVarsBlockDJ()
-{
-	cvar_BLOCKDJ_ENABLED = CreateConVar(
-		"soccer_mod_blockdj_enable", 
-		"1",
-		"Enable/Disable Duckjump Block - Default 1",
-		0, true, 0.0, true, 1.0
-	);
-	
-	HookConVarChange		(cvar_BLOCKDJ_ENABLED, DJBlockEnabledConVarChanged);
-}
-
-
-public void DJBlockEnabledConVarChanged(Handle convar, char[] oldValue, char[] newValue)
-{
-	djbenabled = GetConVarInt(cvar_BLOCKDJ_ENABLED);
-	UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
-	return;
-}
-
 public Action DJBOnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)
 {
-	djbenabled = GetConVarInt(cvar_BLOCKDJ_ENABLED);
 	if (djbenabled == 1)
 	{
 		int onGround = GetEntPropEnt(client, view_as<PropType>(0), "m_hGroundEntity", 0);
