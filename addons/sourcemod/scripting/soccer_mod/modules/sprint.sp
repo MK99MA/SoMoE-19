@@ -127,7 +127,7 @@ public Action SprintHud(Handle timer, DataPack pack)
 	char cdBuffer[32];
 	SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
 	
-	if(time > 0.0)
+	if(time > 0.0 && IsValidClient(client))
 	{
 		if(StrEqual(sBuf, "Sprinting"))Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
 		else if(StrEqual(sBuf, "Cooldown"))Format(cdBuffer, sizeof(cdBuffer), "Cooldown: %.1f ", time);
@@ -139,7 +139,16 @@ public Action SprintHud(Handle timer, DataPack pack)
 		pack.WriteFloat(time);
 		pack.WriteString(sBuf);
 	}
-	else if(time == 0.0)
+	else if(time == 0.0 && IsValidClient(client))
+	{
+		if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
+		{
+			delete h_SPRINT_DURATION[client];
+		}
+		CloseHandle(pack);
+		ShowHudText(client, 5, "");	
+	}
+	else if(!IsValidClient(client))
 	{
 		if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
 		{

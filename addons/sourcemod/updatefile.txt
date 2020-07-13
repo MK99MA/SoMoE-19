@@ -4,13 +4,12 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.2"
-			"Previous"	"1.2.1"
+			"Latest"	"1.2.3"
+			"Previous"	"1.2.2"
 		}
 		
-		"Notes"	"Added Duckjump-toggle to settings menu."
-		"Notes" "Edited Duckjump-toggle command accordingly."
-		"Notes" "Command-usage requires a server restart because of how Sourcemod handles plugin-created CVars.."
+		"Notes"	"Small fixes to sprint causing logspam"
+		"Notes" "Changed default SM Admingroup value"
 	}
 	
 	"Files"

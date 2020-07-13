@@ -404,13 +404,13 @@ public void ReadAdminFile()
 	
 	do
 	{
-		kvSMAdmins.GetString("identity", adminSteamID, sizeof(adminSteamID), "Not set");
+		kvSMAdmins.GetString("identity", adminSteamID, sizeof(adminSteamID), "");
 		if (StrEqual(adminSteamID, SteamID))
 		{		
 			kvSMAdmins.GetSectionName(adminName, sizeof(adminName));
-			kvSMAdmins.GetString("flags", adminFlags, sizeof(adminFlags), "Not set");
-			kvSMAdmins.GetString("immunity", adminImmunity, sizeof(adminImmunity), "Not set");
-			kvSMAdmins.GetString("group", adminGroup, sizeof(adminGroup), "Not set");
+			kvSMAdmins.GetString("flags", adminFlags, sizeof(adminFlags), "");
+			kvSMAdmins.GetString("immunity", adminImmunity, sizeof(adminImmunity), "");
+			kvSMAdmins.GetString("group", adminGroup, sizeof(adminGroup), "");
 		}
 	}
 	while (kvSMAdmins.GotoNextKey());
@@ -425,7 +425,7 @@ public void AddAdminFunc(char SteamIDbuffer[20])
 	kvSMAdmins.ImportFromFile(adminSMFileKV);
 	
 	adminFlags = "b";
-	adminGroup = "Not Set";
+	adminGroup = "Default";
 	adminImmunity = "0";
 	kvSMAdmins.JumpToKey(clientName, true);
 	adminName = clientName;
