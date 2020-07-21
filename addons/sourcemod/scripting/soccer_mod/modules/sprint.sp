@@ -101,17 +101,19 @@ public Action Command_StartSprint(int client, int args)
 				
 				float time = fSPRINT_TIME;
 				
-				if (IsValidClient(client))
+				DataPack pack = new DataPack();
+				if (pack != INVALID_HANDLE)
 				{
-					DataPack pack = new DataPack();
-					if (pack != INVALID_HANDLE)
+					if (IsValidClient(client))
 					{
 						h_SPRINT_DURATION[client] = CreateDataTimer(0.1, SprintHud, pack, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE|TIMER_DATA_HNDL_CLOSE);
 						pack.WriteCell(client);
 						pack.WriteFloat(time);
 						pack.WriteString("Sprinting");
 					}
+					else CloseHandle(pack);
 				}
+				else CloseHandle(pack);
 			}
 			//---- 
 
@@ -125,51 +127,44 @@ public Action Command_StartSprint(int client, int args)
 public Action SprintHud(Handle timer, DataPack pack)
 {
 	char sBuf[32]
-	if (pack != INVALID_HANDLE)
+
+	pack.Reset();
+	int client = pack.ReadCell();
+	float time = pack.ReadFloat();
+	pack.ReadString(sBuf, sizeof(sBuf));
+	
+	char cdBuffer[32];
+	SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
+	
+	if(time > 0.0 && IsValidClient(client))
 	{
+		if(StrEqual(sBuf, "Sprinting"))Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
+		else if(StrEqual(sBuf, "Cooldown"))Format(cdBuffer, sizeof(cdBuffer), "Cooldown: %.1f ", time);
+		ShowHudText(client, 5, cdBuffer); 
+		time = time - 0.1;
+		
 		pack.Reset();
-		int client = pack.ReadCell();
-		float time = pack.ReadFloat();
-		pack.ReadString(sBuf, sizeof(sBuf));
-		
-		char cdBuffer[32];
-		SetHudTextParams(x_val[client], y_val[client], 0.1, red_val[client], green_val[client], blue_val[client], 255);
-		
-		if(time > 0.0 && IsValidClient(client))
+		pack.WriteCell(client);
+		pack.WriteFloat(time);
+		pack.WriteString(sBuf);
+	}
+	else if(time == 0.0 && IsValidClient(client))
+	{
+		if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
 		{
-			if(StrEqual(sBuf, "Sprinting"))Format(cdBuffer, sizeof(cdBuffer), "Sprinting: %.1f ", time);
-			else if(StrEqual(sBuf, "Cooldown"))Format(cdBuffer, sizeof(cdBuffer), "Cooldown: %.1f ", time);
-			ShowHudText(client, 5, cdBuffer); 
-			time = time - 0.1;
-			
-			pack.Reset();
-			pack.WriteCell(client);
-			pack.WriteFloat(time);
-			pack.WriteString(sBuf);
+			delete h_SPRINT_DURATION[client];
 		}
-		else if(time == 0.0 && IsValidClient(client))
+		ShowHudText(client, 5, "");	
+	}
+	else if(!IsValidClient(client))
+	{
+		if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
 		{
-			if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
-			{
-				delete h_SPRINT_DURATION[client];
-			}
-			CloseHandle(pack);
-			ShowHudText(client, 5, "");	
+			delete h_SPRINT_DURATION[client];
 		}
-		else if(!IsValidClient(client))
-		{
-			if(h_SPRINT_DURATION[client] != INVALID_HANDLE)
-			{
-				delete h_SPRINT_DURATION[client];
-			}
-			CloseHandle(pack);
-			ShowHudText(client, 5, "");	
-		}
-		
-		return;
 	}
 	
-	
+	return;
 }
 
 public void OnGameFrame()

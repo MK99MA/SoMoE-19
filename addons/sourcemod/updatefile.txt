@@ -4,8 +4,8 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.4"
-			"Previous"	"1.2.3"
+			"Latest"	"1.2.5"
+			"Previous"	"1.2.4"
 		}
 		
 		"Notes"	"More fixes to sprint causing logspam"
