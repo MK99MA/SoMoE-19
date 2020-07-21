@@ -4,12 +4,12 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.3"
-			"Previous"	"1.2.2"
+			"Latest"	"1.2.4"
+			"Previous"	"1.2.3"
 		}
 		
-		"Notes"	"Small fixes to sprint causing logspam"
-		"Notes" "Changed default SM Admingroup value"
+		"Notes"	"More fixes to sprint causing logspam"
+		"Notes" "Thats it"
 	}
 	
 	"Files"
