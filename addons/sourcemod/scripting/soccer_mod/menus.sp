@@ -387,6 +387,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("ref", "!ref");
 	menu.AddItem("stats", "!stats");
 	menu.AddItem("rank", "!rank");
+	menu.AddItem("prank", "!prank");
 	menu.AddItem("adminlist", "!admins");
 	menu.AddItem("help", "!help");
 	menu.AddItem("credits", "!credits");
@@ -405,7 +406,8 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		if (StrEqual(menuItem, "menu"))				CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod main menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "help"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod help menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "stats"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod statistics menu", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "rank"))		CPrintToChat(client, "{%s}[%s] {%s}Shows your public ranking", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "rank"))		CPrintToChat(client, "{%s}[%s] {%s}Shows your match ranking", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "prank"))		CPrintToChat(client, "{%s}[%s] {%s}Shows your public ranking", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "gk"))		  	CPrintToChat(client, "{%s}[%s] {%s}Enables or disables the goalkeeper skin", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "pick"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap picking menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "admin"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod admin menu", prefixcolor, prefix, textcolor);

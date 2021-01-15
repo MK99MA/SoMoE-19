@@ -4,12 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.5"
-			"Previous"	"1.2.4"
+			"Latest"	"1.2.6"
+			"Previous"	"1.2.5"
 		}
 		
-		"Notes"	"More fixes to sprint causing logspam"
-		"Notes" "Thats it"
+		"Notes"	"Fix to !rank command output"
+		"Notes" "Fix for Rounds Won not being counted"
+		"Notes" "Added separate ranking commands"
 	}
 	
 	"Files"

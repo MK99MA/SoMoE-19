@@ -1,4 +1,4 @@
-# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.2.5)  
+# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.2.6)  
 
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
@@ -47,17 +47,17 @@ I incorporated parts of the following plugins and only modified them partially t
  ● Match menu reworked + added display of certain settings  
  ● Match Log: Contents of "soccer_mod_last_match.txt" viewable in a menu (if Match Log is enabled)  
  ● Match settings changeable ingame (Image of the menu below)    
- ● (RCONFLAG ADMIN ONLY) Possibility to rename the teams (custom, default, clantag of a player)
+ ● Possibility to rename the teams (custom, default, clantag of a player)
   
 #### Misc:
  ● Added toggleable duckjump block script  
  ● Added toggleable password change after starting a cap and hitting a set threshold (Image of the menu below)  
- ● While passwordchange is enabled a simple AFK Kicker is enabled (Configurable times)  
+ ● While the serverlock is enabled a simple AFK Kicker is enabled (Configurable times)  
  ● Switchable modes - Public menu, public cap/match, admins only (Image of the menu below)  
  ● New entries in settings menu + added display of certain settings (Image of the menu below)   
  ● Rearranged a few menu options    
 
-#### Commands:
+#### Misc Commands:
  ● (RCONFLAG ADMIN ONLY) !addadmin <steamid> <flags> <name> - adds an entry with the specified values to the admins_simple.ini  
  ● (RCONFLAG ADMIN ONLY) !pass <password> - Set the current sv password  
  ● !admins - Shows a list of online admins  
@@ -65,7 +65,7 @@ I incorporated parts of the following plugins and only modified them partially t
   
 #### MatchLog aka "soccer_mod_last_match.txt":  
  ● Toggleable (On, Off, Time-Based)  
- ● **1.0.5** Time-Based mode to enable the log only for certain days or a certain time window   
+ ● Time-Based mode to enable the log only for certain days or a certain time window   
  ● Teamnames are listed at the top  
  ● Goals are saved to a textfile with a timestamp, the scorer & assister names (in case of an owngoal the assistername will be set to "Owngoal")  
  ● Goals added by a referee will say "Added by referee" for its scorername  

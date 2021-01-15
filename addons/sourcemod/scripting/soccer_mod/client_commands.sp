@@ -18,8 +18,9 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_p", PauseCommand, "Pauses a match");
 	RegConsoleCmd("sm_pause", PauseCommand, "Pauses a match");	
 	RegConsoleCmd("sm_pick", PickCommand, "Opens the Soccer Mod pick menu");
-	RegConsoleCmd("sm_pos", PosCommand, "Opens the Soccer Mod Positions menu");
-	RegConsoleCmd("sm_rank", RankCommand, "Opens the Soccer Mod rank menu");	
+	RegConsoleCmd("sm_pos", PosCommand, "Opens the Soccer Mod Positions menu"); 
+	RegConsoleCmd("sm_prank", PRankCommand, "Displays your public rank in the chat");	
+	RegConsoleCmd("sm_rank", RankCommand, "Displays your match rank in the chat");	
 	RegConsoleCmd("sm_ref", RefCommand, "Opens the Soccer Mod referee menu");
 	RegConsoleCmd("sm_rr", rrCommand, "rr the round");
 	RegConsoleCmd("sm_start", StartCommand, "Starts a match");
@@ -462,6 +463,13 @@ public Action StatsCommand(int client, int args)
 }
 
 public Action RankCommand(int client, int args)
+{
+	if (currentMapAllowed) ClientCommandMatchRanking(client);
+	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	return Plugin_Handled;
+}
+
+public Action PRankCommand(int client, int args)
 {
 	if (currentMapAllowed) ClientCommandPublicRanking(client);
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);

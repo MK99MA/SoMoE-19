@@ -1,11 +1,18 @@
 // *********************************************************************************************************************
 // ************************************************** CLIENT COMMANDS **************************************************
-// *********************************************************************************************************************
+// ********************************************************************************************************************* 
 public void ClientCommandPublicRanking(int client)
 {
     char query[256] = "SELECT soccer_mod_players.steamid, points FROM soccer_mod_players, soccer_mod_public_stats \
         WHERE soccer_mod_players.steamid = soccer_mod_public_stats.steamid AND hits > 0 ORDER BY points desc";
     SQL_TQuery(db, ClientCommandPublicRankingCallback, query, client);
+}
+
+public void ClientCommandMatchRanking(int client)
+{
+    char query[256] = "SELECT soccer_mod_players.steamid, points FROM soccer_mod_players, soccer_mod_match_stats \
+        WHERE soccer_mod_players.steamid = soccer_mod_match_stats.steamid AND hits > 0 ORDER BY points desc";
+    SQL_TQuery(db, ClientCommandMatchRankingCallback, query, client);
 }
 
 public void ClientCommandPublicRankingCallback(Handle owner, Handle hndl, const char[] error, any client)
@@ -16,7 +23,7 @@ public void ClientCommandPublicRankingCallback(Handle owner, Handle hndl, const 
     if (hndl == INVALID_HANDLE)
     {
         LogError("Failed to query (error: %s)", error);
-        CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet", prefixcolor, prefix, textcolor);
+        CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
     }
     else if (total)
     {
@@ -36,10 +43,44 @@ public void ClientCommandPublicRankingCallback(Handle owner, Handle hndl, const 
 
         for (int player = 1; player <= MaxClients; player++)
         {
-            if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points", prefixcolor, prefix, textcolor, client, rank, total, points);
+            if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points in the public rankings.", prefixcolor, prefix, textcolor, client, rank, points);
         }
     }
-    else CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet", prefixcolor, prefix, textcolor);
+    else CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
+}
+
+public void ClientCommandMatchRankingCallback(Handle owner, Handle hndl, const char[] error, any client)
+{
+    int total;
+    total = SQL_GetRowCount(hndl);
+
+    if (hndl == INVALID_HANDLE)
+    {
+        LogError("Failed to query (error: %s)", error);
+        CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
+    }
+    else if (total)
+    {
+        char clientSteamid[32];
+        GetClientAuthId(client, AuthId_Engine, clientSteamid, sizeof(clientSteamid));
+
+        char steamid[32];
+        int rank;
+        int points;
+        while (SQL_FetchRow(hndl))
+        {
+            rank++;
+            SQL_FetchString(hndl, 0, steamid, sizeof(steamid));
+            points = SQL_FetchInt(hndl, 1);
+            if (StrEqual(clientSteamid, steamid)) break;
+        }
+
+        for (int player = 1; player <= MaxClients; player++)
+        {
+            if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points in the match rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+        }
+    }
+    else CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
 }
 
 // ******************************************************************************************************************

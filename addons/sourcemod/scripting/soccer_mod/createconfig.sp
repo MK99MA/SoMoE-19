@@ -345,7 +345,7 @@ public void CreateGKAreaConfig()
 	kvGKArea.SetNum("t_max_z",		120);
 	kvGKArea.GoBack();
 	
-	kvGKArea.JumpToKey("ka_soccer_stadium_2019_b1", true);
+	kvGKArea.JumpToKey("ka_soccer_avalon_v8", true);
 	kvGKArea.SetNum("ct_min_x",		-313);
 	kvGKArea.SetNum("ct_max_x",		313);
 	kvGKArea.SetNum("ct_min_y",		-1379);

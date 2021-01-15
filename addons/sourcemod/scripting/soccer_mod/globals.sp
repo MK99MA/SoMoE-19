@@ -267,14 +267,14 @@ char kvOwngoals[32]		= "Owngoals:";
 // HANDLES
 
 // INTEGER
-int rankingPointsForGoal			= 12;
-int rankingPointsForAssist			= 12;
+int rankingPointsForGoal			= 15;
+int rankingPointsForAssist			= 15;
 int rankingPointsForOwnGoal			= -10;
 int rankingPointsForHit				= 1;
 int rankingPointsForPass			= 5;
 int rankingPointsForInterception	= 3;
 int rankingPointsForBallLoss		= -3;
-int rankingPointsForSave			= 10;
+int rankingPointsForSave			= 8;
 int rankingPointsForRoundWon		= 10;
 int rankingPointsForRoundLost		= -10;
 int rankingPointsForMVP				= 15;

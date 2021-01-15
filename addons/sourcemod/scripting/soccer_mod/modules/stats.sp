@@ -202,7 +202,7 @@ public void StatsOnTakeDamage(int ball, int client)
 	statsKeygroupRound.SetNum("hits", keyValue + 1);
 
 	keyValue = statsKeygroupMatch.GetNum("hits", 0);
-	keyValue++;
+	//keyValue++;
 	statsKeygroupMatch.SetNum("hits", keyValue + 1);
 
 	if (StrEqual(gamevar, "csgo")) SetEntProp(client, Prop_Data, "m_iDeaths", statsKeygroupMatch.GetNum("assists", 0));
@@ -325,7 +325,7 @@ public void StatsOnTakeDamage(int ball, int client)
 
 	// keygroupRound.ExportToFile(statsKeygroupRound);
 	// keygroupMatch.ExportToFile(statsKeygroupMatch);
-
+	
 	// keygroupRound.Close();
 	// keygroupMatch.Close();
 
@@ -569,6 +569,7 @@ public void StatsEventRoundEnd(Event event)
 						GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 
 						statsKeygroupMatch.JumpToKey(steamid, true);
+						statsKeygroupRound.JumpToKey(steamid, true);
 
 						if (team == winner)
 						{
@@ -576,6 +577,9 @@ public void StatsEventRoundEnd(Event event)
 							statsKeygroupMatch.SetNum("rounds_won", keyValue + 1);
 							keyValue = statsKeygroupMatch.GetNum("points", 0);
 							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundWon);
+							
+							statsKeygroupRound.SetNum("rounds_won", 1);
+							statsKeygroupRound.SetNum("rounds_lost", 0);
 
 							// Format(queryString, sizeof(queryString), "UPDATE %s SET rounds_won = (rounds_won + 1), points = (points + %i) WHERE steamid = '%s'", 
 							//  table, rankingPointsForRoundWon, steamid);
@@ -588,6 +592,9 @@ public void StatsEventRoundEnd(Event event)
 							keyValue = statsKeygroupMatch.GetNum("points", 0);
 							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundLost);
 
+							statsKeygroupRound.SetNum("rounds_won", 0);
+							statsKeygroupRound.SetNum("rounds_lost", 1);
+
 							// Format(queryString, sizeof(queryString), "UPDATE %s SET rounds_lost = (rounds_lost + 1), points = (points + %i) WHERE steamid = '%s'", 
 							//  table, rankingPointsForRoundLost, steamid);
 							// ExecuteQuery(queryString);
@@ -597,6 +604,7 @@ public void StatsEventRoundEnd(Event event)
 			}
 
 			statsKeygroupMatch.Rewind();
+			statsKeygroupRound.Rewind();
 			// keygroup.ExportToFile(statsKeygroupMatch);
 			// keygroup.Close();
 
@@ -620,8 +628,8 @@ public void StatsEventRoundEnd(Event event)
 	char table[32] = "soccer_mod_public_stats";
 	if (matchStarted) table = "soccer_mod_match_stats";
 
-	// keygroup = new KeyValues("roundStatistics");
-	// keygroup.ExportToFile(statsKeygroupRound);
+	//statsKeygroupRound = new KeyValues("roundStatistics");
+	//statsKeygroupRound.ExportToFile("cfg/sm_soccermod/temp.txt");
 	statsKeygroupRound.GotoFirstSubKey();
 
 	do
@@ -629,8 +637,16 @@ public void StatsEventRoundEnd(Event event)
 		int goals = statsKeygroupRound.GetNum("goals", 0);
 		int assists = statsKeygroupRound.GetNum("assists", 0);
 		int own_goals = statsKeygroupRound.GetNum("own_goals", 0);
-		int rounds_won = statsKeygroupRound.GetNum("rounds_won", 0);
-		int rounds_lost = statsKeygroupRound.GetNum("rounds_lost", 0);
+		int rounds_won = 0;
+		int rounds_lost = 0;
+		if (statsKeygroupRound.GetNum("rounds_won", 0) == 1)
+		{
+			rounds_won = 1;
+		}
+		if (statsKeygroupRound.GetNum("rounds_lost", 0) == 1)
+		{
+			rounds_lost = 1;
+		}
 		int hits = statsKeygroupRound.GetNum("hits", 0);
 		int saves = statsKeygroupRound.GetNum("saves", 0);
 		int passes = statsKeygroupRound.GetNum("passes", 0);
@@ -652,7 +668,7 @@ public void StatsEventRoundEnd(Event event)
 	while (statsKeygroupRound.GotoNextKey());
 
 	statsKeygroupRound.Rewind();
-	// keygroup.Close();
+	//statsKeygroupRound.Close();
 }
 
 public void StatsEventCSWinPanelMatch(Event event)
