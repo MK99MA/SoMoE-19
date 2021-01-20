@@ -24,5 +24,9 @@
 !/addons/sourcemod/scripting/soccer_mod
 !/addons/sourcemod/scripting/soccer_mod/*
 
+/addons/sourcemod/translations/
+/addons/sourcemod/scripting/WIP/
+/addons/sourcemod/scripting/WIP/*
+
 /skins
 /skins/*
