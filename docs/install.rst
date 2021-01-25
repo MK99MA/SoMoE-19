@@ -1,12 +1,12 @@
 .. _install:
 
-=========================
+===================
 Installing SoMoE-19
-=========================
+===================
 
--------------------------------
+----------------
 Pre-requirements
--------------------------------
+----------------
 
 SoMoE-19 is a Sourcemod plugin, so make sure to install Sourcemod and its pre-requirements for your OS properly.
 
@@ -23,9 +23,9 @@ The installation of Steamworks and Updater.smx is completely optional but recomm
 
 ----
 
-*********************************************
+*************************************
 Preparing Metamod: Source & SourceMod
-*********************************************
+*************************************
 
 First find out the OS your server is running on. Usually many gameservers are running on Linux machines, but there are exceptions.
 
@@ -75,9 +75,9 @@ Now you can finally move on to SoMoE-19.
 
 .. _install_somoe:
 
--------------------------------
+------------------
 Preparing SoMoE-19
--------------------------------
+------------------
 
 If you did not install SoMoe-19 before please download the latest full archive from here:
  - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5>`_
@@ -99,9 +99,9 @@ After downloading the skins of your choice again extract them to the same locati
 
 ----
 
--------------------------------
+-----------------------------
 Installing the prepared files
--------------------------------
+-----------------------------
 
 If you downloaded and extracted everything required, you should now have 5 folders in the location you chose.
  - addons

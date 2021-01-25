@@ -1,8 +1,8 @@
 .. _configs:
 
-=========================
+===================
 General Information
-=========================
+===================
 
 SoMoE-19 creates different config files at its first start or whenever one of those files is missing.
 Overal there are 11 files that are generated and found in
@@ -25,9 +25,9 @@ Every other file is editable ingame.
 
 ----
 
--------------------------------
+-----------------------
 List of generated files
--------------------------------
+-----------------------
 
 |**soccer_mod.cfg**
 |Main configuration controlling most toggles and settings.

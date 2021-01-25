@@ -5,7 +5,7 @@
 .. _main:
 
 Welcome to the SoMoE-19 documentation!
-=============================================
+======================================
 
 .. toctree::
 	:caption: Credits:
