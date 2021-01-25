@@ -5,7 +5,7 @@ Installing SoMoE-19
 =========================
 
 -------------------------------
-Preparing the pre-requirements
+Pre-requirements
 -------------------------------
 
 SoMoE-19 is a Sourcemod plugin, so make sure to install Sourcemod and its pre-requirements for your OS properly.
@@ -17,6 +17,9 @@ As such the pre-requirements are:
  - (OPTIONAL) Updater.smx
 
 The installation of Steamworks and Updater.smx is completely optional but recommended to be able to use all of the included features.
+
+.. tip::
+   If you installed SourceMod plugins before you can probably skip most of this section.
 
 ----
 

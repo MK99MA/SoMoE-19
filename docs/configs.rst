@@ -1,4 +1,4 @@
-.. _config:
+.. _configs:
 
 =========================
 General Information
@@ -65,6 +65,4 @@ Advanced control regarding automatic matchlog generation.
 .. tip::
    Every file got its own site in this documentation. Make sure to check them out if you're having issues!
 
-
 ----
-
