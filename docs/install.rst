@@ -28,20 +28,20 @@ First find out the OS your server is running on. Usually many gameservers are ru
 
 If you can't find any information about the OS used on the webpage of your hoster you can find out the OS by the types of certain files on the server.
 
- - *.so indicates it is using Linux binaries.
- - *.dll indicates it is using Windows binaries.
+ - *.so binaries indicate it is running on **Linux**.
+ - *.dll binaries indicate it is running on **Windows**.
 
 After you have determined the OS download the release for your OS of 
-* `Metamod:Source  <http://www.sourcemm.net/downloads.php?branch=stable>`_
-* `SourceMod  <https://www.sourcemod.net/downloads.php?branch=stable>`_
+ - `Metamod:Source  <http://www.sourcemm.net/downloads.php?branch=stable>`_
+ - `SourceMod  <https://www.sourcemod.net/downloads.php?branch=stable>`_
 
 Extract the contents of both of the archives by using a tool like 7-zip or WinRar to a location of your choice.
 
 Either continue with the optional `optionals` or `install_somoe`.
 
-.. _optionals:
-
 ----
+
+.. _optionals:
 
 *********************************************
 (OPTIONAL) Preparing SteamWorks & Updater.smx
@@ -52,34 +52,36 @@ Either continue with the optional `optionals` or `install_somoe`.
  - Automatic Updater functionality
 
 Both of these options depend on Steamworks, so if you want to use either one please visit
-* `SteamWorks <http://users.alliedmods.net/~kyles/builds/SteamWorks/>`_
+ - `SteamWorks <http://users.alliedmods.net/~kyles/builds/SteamWorks/>`_
 and downlod the version for your OS.
 
 After downloading the archive, extract the contents of the archive to the same location you already extracted Metamod and Sourcemod to.
 
 If you want to activate the auto-update functionality you also have to download 'Updater.smx' from:
-* `Updater.smx <https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx>`_
+ - `Updater.smx <https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx>`_
 
 In the location where you extracted the archives from before should be a folder called 'addons'. Place the downloaded .smx file in:
 
-* addons/sourcemod/plugins/
+	.. code-block:: none
+		addons/sourcemod/plugins/
 
 Now you can finally move on to SoMoE-19.
 
+----
+
 .. _install_somoe:
 
-----
-*********************************************
+-------------------------------
 Preparing SoMoE-19
-*********************************************
+-------------------------------
 
 If you did not install SoMoe-19 before please download the latest full archive from here:
-* `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5>`_
+ - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5>`_
 
 Again extract the contents of the archive to the location you chose before.
 
 Usually SoccerMod Servers are using soccer related skins. A few possible skins can be found here:
-* `Skins <https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below>`_
+ - `Skins <https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below>`_
 
 The most commonly used and default ones are those created by `Termi <https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below>`_
 
@@ -93,9 +95,9 @@ After downloading the skins of your choice again extract them to the same locati
 
 ----
 
-********************************
+-------------------------------
 Installing the prepared files
-********************************
+-------------------------------
 
 If you downloaded and extracted everything required, you should now have 5 folders in the location you chose.
  - addons
@@ -119,6 +121,6 @@ else, if it is running on a hosted server upload the files to:
 		/home/cstrike
 
 
-.. attention:: The installation will be completed after restarting your server.
+.. attention:: The installation will be completed after you restarted your server.
 
 ----
