@@ -3,6 +3,9 @@
 
 /Releases/
 
+!/docs/
+!/docs/*
+
 !/addons
 /addons/*
 
