@@ -37,7 +37,7 @@ After you have determined the OS download the release for your OS of
 
 Extract the contents of both of the archives by using a tool like 7-zip or WinRar to a location of your choice.
 
-Either continue with the optional :ref:`optionals` or :ref:`install_somoe`.
+Either continue with the :ref:`optionals` or :ref:`install_somoe`.
 
 ----
 
@@ -63,6 +63,7 @@ If you want to activate the auto-update functionality you also have to download 
 In the location where you extracted the archives from before should be a folder called 'addons'. Place the downloaded .smx file in:
 
 	.. code-block:: none
+
 		addons/sourcemod/plugins/
 
 Now you can finally move on to SoMoE-19.

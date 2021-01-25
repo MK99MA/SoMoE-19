@@ -1,4 +1,4 @@
-.. _config_general:
+.. _config:
 
 =========================
 General Information
@@ -8,6 +8,7 @@ SoMoE-19 creates different config files at its first start or whenever one of th
 Overal there are 11 files that are generated and found in
 
 	.. code-block:: none
+	
 		cstrike/cfg/sm_soccermod
 
 whereas 3 of them are only used to store information and **should not be edited manually**.

@@ -23,7 +23,7 @@ Welcome to the SoMoE-19 documentation!
     :maxdepth: 2
     :caption: Config Files:
 
-	config_general
+	config
     config/main
 	config/admins
 	config/maps
@@ -41,10 +41,6 @@ Welcome to the SoMoE-19 documentation!
     :caption: Ingame Commands:
 
     commslist
-    comms/admin
-    comms/match
-    comms/cap
-    comms/misc
 	
 .. toctree::
     :maxdepth: 2
