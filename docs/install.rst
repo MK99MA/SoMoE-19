@@ -126,5 +126,3 @@ else, if it is running on a hosted server upload the files to:
 
 
 .. attention:: The installation will be completed after you restarted your server.
-
-----

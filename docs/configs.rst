@@ -64,5 +64,3 @@ List of generated files
 
 .. tip::
    Every file got its own site in this documentation. Make sure to check them out if you're having issues!
-
-----

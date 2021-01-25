@@ -10,7 +10,7 @@ Overall there are 32 chat commands, 13 :ref:`public` commands and 19 :ref:`admin
 
 ----
 
-.. _admin
+.. _admin:
 
 -------------------------------
 Admin Commands
@@ -102,7 +102,7 @@ Match commands
 		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
 		Stops and restarts the current match
 
-**sm_pause / !pause / sm_p / !p*
+**sm_pause / !pause / sm_p / !p**
 
 	.. code-block:: none
 	
@@ -175,7 +175,7 @@ Misc commands
 
 ----
 
-.. _public
+.. _public:
 
 -------------------------------
 Public Commands
@@ -267,6 +267,3 @@ General commands
 	.. code-block:: none
 	
 		Starts a forfeit vote if forfeits are enabled
-
-----
-
