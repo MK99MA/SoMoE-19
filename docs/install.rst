@@ -5,7 +5,7 @@ Installing SoMoE-19
 =========================
 
 -------------------------------
-Installing the pre-requirements
+Preparing the pre-requirements
 -------------------------------
 
 SoMoE-19 is a Sourcemod plugin, so make sure to install Sourcemod and its pre-requirements for your OS properly.
@@ -28,8 +28,8 @@ First find out the OS your server is running on. Usually many gameservers are ru
 
 If you can't find any information about the OS used on the webpage of your hoster you can find out the OS by the types of certain files on the server.
 
- - *.so binaries indicate it is running on **Linux**.
- - *.dll binaries indicate it is running on **Windows**.
+ - .so binaries indicate it is running on **Linux**.
+ - .dll binaries indicate it is running on **Windows**.
 
 After you have determined the OS download the release for your OS of 
  - `Metamod:Source  <http://www.sourcemm.net/downloads.php?branch=stable>`_
@@ -37,7 +37,7 @@ After you have determined the OS download the release for your OS of
 
 Extract the contents of both of the archives by using a tool like 7-zip or WinRar to a location of your choice.
 
-Either continue with the optional `optionals` or `install_somoe`.
+Either continue with the optional :ref:`optionals` or :ref:`install_somoe`.
 
 ----
 

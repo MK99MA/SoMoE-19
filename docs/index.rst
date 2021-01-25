@@ -9,6 +9,12 @@ Welcome to the SoMoE-19 documentation!
 
 .. toctree::
     :maxdepth: 1
+    :caption: Credits: 
+
+    credits
+
+.. toctree::
+    :maxdepth: 1
     :caption: Installation: 
 
     install
