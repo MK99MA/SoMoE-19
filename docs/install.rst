@@ -1,0 +1,124 @@
+.. _install:
+
+=========================
+Installing SoMoE-19
+=========================
+
+-------------------------------
+Installing the pre-requirements
+-------------------------------
+
+SoMoE-19 is a Sourcemod plugin, so make sure to install Sourcemod and its pre-requirements for your OS properly.
+
+As such the pre-requirements are:
+ - Metamod:Source 1.10 or higher
+ - SourceMod 1.10 or higher
+ - (OPTIONAL) Steamworks
+ - (OPTIONAL) Updater.smx
+
+The installation of Steamworks and Updater.smx is completely optional but recommended to be able to use all of the included features.
+
+----
+
+*********************************************
+Preparing Metamod: Source & SourceMod
+*********************************************
+
+First find out the OS your server is running on. Usually many gameservers are running on Linux machines, but there are exceptions.
+
+If you can't find any information about the OS used on the webpage of your hoster you can find out the OS by the types of certain files on the server.
+
+ - *.so indicates it is using Linux binaries.
+ - *.dll indicates it is using Windows binaries.
+
+After you have determined the OS download the release for your OS of 
+* `Metamod:Source  <http://www.sourcemm.net/downloads.php?branch=stable>`_
+* `SourceMod  <https://www.sourcemod.net/downloads.php?branch=stable>`_
+
+Extract the contents of both of the archives by using a tool like 7-zip or WinRar to a location of your choice.
+
+Either continue with the optional `optionals` or `install_somoe`.
+
+.. _optionals:
+
+----
+
+*********************************************
+(OPTIONAL) Preparing SteamWorks & Updater.smx
+*********************************************
+
+2 features of SoMoe-19 require you to install additional tools in order to use them:
+ - Setting the game name in the serverlist to "CS:S Soccer Mod"
+ - Automatic Updater functionality
+
+Both of these options depend on Steamworks, so if you want to use either one please visit
+* `SteamWorks <http://users.alliedmods.net/~kyles/builds/SteamWorks/>`_
+and downlod the version for your OS.
+
+After downloading the archive, extract the contents of the archive to the same location you already extracted Metamod and Sourcemod to.
+
+If you want to activate the auto-update functionality you also have to download 'Updater.smx' from:
+* `Updater.smx <https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx>`_
+
+In the location where you extracted the archives from before should be a folder called 'addons'. Place the downloaded .smx file in:
+
+* addons/sourcemod/plugins/
+
+Now you can finally move on to SoMoE-19.
+
+.. _install_somoe:
+
+----
+*********************************************
+Preparing SoMoE-19
+*********************************************
+
+If you did not install SoMoe-19 before please download the latest full archive from here:
+* `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5>`_
+
+Again extract the contents of the archive to the location you chose before.
+
+Usually SoccerMod Servers are using soccer related skins. A few possible skins can be found here:
+* `Skins <https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below>`_
+
+The most commonly used and default ones are those created by `Termi <https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below>`_
+
+
+Please note that SoMoE-19 generates a config for the skins created by Termi and thus every other chosen skin has to be added to the skins and download config files manually. More information about the relevant files can be found `here <config_skins>` and `here <config_downloads>`.
+
+After downloading the skins of your choice again extract them to the same location as everything else. You can now proceed with the last step of the installation.
+
+.. tip::
+   If it's the first time you're using SoMoE-19, you should check out the other sections of this documentation too.
+
+----
+
+********************************
+Installing the prepared files
+********************************
+
+If you downloaded and extracted everything required, you should now have 5 folders in the location you chose.
+ - addons
+ - cfg
+ - materials
+ - models
+ - sound
+
+.. attention:: To avoid alot of chat spam you might want to edit addons/sourcemod/config/core.cfg and set '!' as a silent chat trigger. You can either simply swap the silent and public triggers or add '!' to the silent trigger-list.
+
+If you are running your server locally copy those folders to: 
+
+    .. code-block:: none
+
+        <path-to-your-server>\cstrike
+
+else, if it is running on a hosted server upload the files to:
+
+    .. code-block:: none
+
+		/home/cstrike
+
+
+.. attention:: The installation will be completed after restarting your server.
+
+----

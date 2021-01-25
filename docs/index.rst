@@ -11,10 +11,7 @@ Welcome to the SoMoE-19 documentation!
     :maxdepth: 1
     :caption: Installation: 
 
-    install/requirements
-	install/download
-    install/install
-    install/update
+    install
 
 .. toctree::
     :maxdepth: 2
