@@ -8,7 +8,8 @@ Welcome to the SoMoE-19 documentation!
 =============================================
 
 .. toctree::
-
+	:caption: Credits:
+	
     credits
 
 .. toctree::
@@ -21,17 +22,17 @@ Welcome to the SoMoE-19 documentation!
     :caption: Config Files:
 
 	configs
-    config/main
-	config/admins
-	config/maps
-	config/downloads
-	config/gk
-	config/last_match
-	config/defaults
-	config/personal
-	config/skins
-	config/pos
-	config/matchlog
+    config/conf-main
+	config/conf-admins
+	config/conf-maps
+	config/conf-downloads
+	config/conf-gk
+	config/conf-last-match
+	config/conf-defaults
+	config/conf-personal
+	config/conf-skins
+	config/conf-pos
+	config/conf-matchlog
 
 .. toctree::
     :maxdepth: 2
@@ -44,14 +45,14 @@ Welcome to the SoMoE-19 documentation!
     :caption: Menus:
 
     mainmenu
-    menu/admin
-    menu/ranking
-    menu/statistics
-    menu/positions
-	menu/help
-	menu/sprintset
-	menu/shouts
-	menu/credits
+    menu/menu-admin
+    menu/menu-ranking
+    menu/menu-statistics
+    menu/menu-positions
+	menu/menu-help
+	menu/menu-sprintset
+	menu/menu-shouts
+	menu/menu-credits
 
 
 
