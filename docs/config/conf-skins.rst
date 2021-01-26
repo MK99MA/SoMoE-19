@@ -52,6 +52,7 @@ An example configuration adding support for 4 additional skinssets could look li
 As you can see *teamrus* and *teamukr* could be assigned to both teams (which you would not want to do at the same time for obvious reasons). The other 3 sets are complete sets providing 2 skins per team. Ingame however you would be still able to use this example setup:
 
 	.. code_block:: none
+	
 		"CT"        "models/player/soccer_mod/termi/2011/away/ct_urban.mdl"
 		"T"         "models/player/tusharsl/teamrus/ct_urban.mdl"
 		"CTGK"      "models/player/soccer_mod/natsu2021/gkaway/ct_urban.mdl"

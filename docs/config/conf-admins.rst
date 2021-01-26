@@ -24,7 +24,7 @@ The structure of the file looks like this:
 					"training"   "1"
 					"referee"    "1"
 					"spec"       "1"
-					"mapchange"	 "1"
+					"mapchange"  "1"
 				}
 			}
 			"[U:0:0]"
@@ -37,7 +37,7 @@ The structure of the file looks like this:
 					"training"   "0"
 					"referee"    "1"
 					"spec"       "0"
-					"mapchange"	 "1"
+					"mapchange"  "1"
 				}
 			}
 		}

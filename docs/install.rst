@@ -81,7 +81,7 @@ Preparing SoMoE-19
 ------------------
 
 If you did not install SoMoe-19 before please download the latest full archive from here:
- - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5>`_
+ - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.7>`_
 
 Again extract the contents of the archive to the location you chose before.
 

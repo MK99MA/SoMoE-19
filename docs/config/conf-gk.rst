@@ -10,7 +10,7 @@ An area that is too small could prevent the goalkeepers from receiving deserved 
 
 	.. attention:: Except for the 2 generated entries you have to manually add the entries for any map you intend to use. It is possible that different maps will use he coordinates if the creators used the same position and orientation. 
 	
-	You can use *cl_drawpos 1* to display the coordinates of your current position.
+		You can use *cl_drawpos 1* to display the coordinates of your current position.
 	
 The file, in case it wasn't generated properly should look like this:
 

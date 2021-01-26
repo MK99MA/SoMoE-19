@@ -133,7 +133,7 @@ public void OpenJoinlistPanel(int client)
 
 public int JoinlistPanelHandler(Menu menu, MenuAction action, int client, int key)
 {
-	if(action == MenuAction_Select && key == 0)
+	if(action == MenuAction_Select)
 	{
 		if(lcPanelArray.FindValue(client) != -1)		
 		{

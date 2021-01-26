@@ -26,7 +26,7 @@ An example matchlog could look like this:
 			{
 				"0:1"
 				{
-					"Time:"		    "00:01"
+					"Time:"         "00:01"
 					"Scorer:"       "Player [U:X:XXXXXXXX]"
 				}
 				"0:2"
