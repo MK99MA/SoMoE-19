@@ -339,6 +339,8 @@ public void OpenMenuHelp(int client)
 
 	menu.AddItem("guide", "Guide");
 
+	menu.AddItem("docs", "Documentation");
+
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 }
@@ -355,6 +357,11 @@ public int MenuHandlerHelp(Menu menu, MenuAction action, int client, int choice)
 		else if (StrEqual(menuItem, "guide"))
 		{
 			CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/sharedfiles/filedetails/?id=267151106", prefixcolor, prefix, textcolor);
+			OpenMenuHelp(client);
+		}
+		else if (StrEqual(menuItem, "docs"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}https://somoe-19.readthedocs.io/en/latest/index.html", prefixcolor, prefix, textcolor);
 			OpenMenuHelp(client);
 		}
 	}
