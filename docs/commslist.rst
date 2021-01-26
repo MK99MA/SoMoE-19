@@ -5,7 +5,7 @@ Commands Information
 ====================
 
 SoMoE-19 features a row of chat commands you can use to quickly access certain features.
-Overall there are 32 chat commands, 13 :ref:`public` commands and 19 :ref:`admin` commands.
+Overall there are 32 chat commands, 13 :ref:`public` and 19 :ref:`admin`.
 
 
 ----
