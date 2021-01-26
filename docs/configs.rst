@@ -31,36 +31,47 @@ List of generated files
 
 | **soccer_mod.cfg**
 | Main configuration controlling most toggles and settings.
+| More information can be found :ref:`here <config/conf-main>`
 
-| **soccer_mod_admins.cfg**_
+| **soccer_mod_admins.cfg**
 | Custom admin file to grant players access to certain admin features.
+| More information can be found :ref:`here <config/conf-admins>`
 
 | **soccer_mod_allowed_maps.cfg**
 | List of maps that should activate certain features of the plugin.
+| More information can be found :ref:`here <config/conf-maps>`
 
 | **soccer_mod_cap_positions.txt**
 | *NO CONFIG* - Storage for the selected positions of every player.
+| More information can be found :ref:`here <config/conf-pos>`
 
 | **soccer_mod_downloads.cfg**
 | *MANUAL CONFIG* - Determines which files are downloaded to the clients when joining.
+| More information can be found :ref:`here <config/conf-downloads>`
 
 | **soccer_mod_GKAreas.cfg**
 | *MANUAL CONFIG* - Determines the areas around a goal needed to allow tracking of saves.
+| More information can be found :ref:`here <config/conf-gk>`
 
 | **socer_mod_last_match.txt**
 | *NO CONFIG* - Storage for matchlogs (if activated). Old logs will be moved to /sm_soccermod/logs.
+| More information can be found :ref:`here <config/conf-last-match>`
 
 | **soccer_mod_mapdefaults.cfg**
 | *MANUAL CONFIG* - Set default values for period and breaklength per map.
+| More information can be found :ref:`here <config/conf-defaults>`
 
 | **soccer_mod_matchlogsettings.cfg**
 | Advanced control regarding automatic matchlog generation.
+| More information can be found :ref:`here <config/conf-matchlog>`
 
 | **soccer_mod_personalcannonsettings.cfg**
 | *NO CONFIG* - Storage for personal cannon settings of every client.
+| More information can be found :ref:`here <config/conf-personal>`
 
 | **soccer_mod_skins.cfg**
 | *MANUAL CONFIG* - Add skins that are selectable ingame form a menu in here.
+| More information can be found :ref:`here <config/conf-skins>`
 
 .. tip::
    Every file got its own site in this documentation. Make sure to check them out if you're having issues!
