@@ -41,13 +41,16 @@ Admin Settings
 As the name suggests this section features settings that only admins can change ingame.
 
 	.. code-block:: none
-	
-		"soccer_mod_pubmode"		"1"
-		"soccer_mod_passwordlock"	"1"
-		"soccer_mod_passwordlock_max"		"12"
-		"soccer_mod_afk_time"		"100.000000"
-		"soccer_mod_afk_menu"		"20"
-		"soccer_mod_matchlog"		"0"
+		
+		"Admin Settings"
+		{
+			"soccer_mod_pubmode"          "1"
+			"soccer_mod_passwordlock"     "1"
+			"soccer_mod_passwordlock_max" "12"
+			"soccer_mod_afk_time"         "100.000000"
+			"soccer_mod_afk_menu"         "20"
+			"soccer_mod_matchlog"         "0"
+		}
 
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
 
@@ -70,12 +73,15 @@ As the name suggests, this section features settings related to the plugins chat
 
 	.. code-block:: none
 	
-		"soccer_mod_prefix"		"Soccer Mod"
-		"soccer_mod_textcolor"		"lightgreen"
-		"soccer_mod_prefixcolor"		"green"
-		"soccer_mod_mvp"		"1"
-		"soccer_mod_deadchat_mode"		"0"
-		"soccer_mod_deadchat_visibility"		"0"
+		"Chat Settings"
+		{
+			"soccer_mod_prefix"     "Soccer Mod"
+			"soccer_mod_textcolor"     "lightgreen"
+			"soccer_mod_prefixcolor"     "green"
+			"soccer_mod_mvp"     "1"
+			"soccer_mod_deadchat_mode"     "0"
+			"soccer_mod_deadchat_visibility"     "0"
+		}
  
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually. In case of the colorselection it is even advised to do this ingame as you can access a menu with every valid colorname there.
 
@@ -98,13 +104,13 @@ As the name suggests, this section features settings related to matches.
 
 	.. code-block:: none
 	
-		"soccer_mod_match_periods"		"2"
-		"soccer_mod_match_period_length"		"900"
-		"soccer_mod_match_period_break_length"		"60"
-		"soccer_mod_match_golden_goal"		"1"
-		"soccer_mod_teamnamect"		"CT"
-		"soccer_mod_teamnamet"		"T"
-		"soccer_mod_match_readycheck"		"1"
+		"soccer_mod_match_periods"     "2"
+		"soccer_mod_match_period_length"     "900"
+		"soccer_mod_match_period_break_length"     "60"
+		"soccer_mod_match_golden_goal"     "1"
+		"soccer_mod_teamnamect"     "CT"
+		"soccer_mod_teamnamet"     "T"
+		"soccer_mod_match_readycheck"     "1"
 
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
 
