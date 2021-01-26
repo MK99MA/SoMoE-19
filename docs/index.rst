@@ -8,9 +8,10 @@ Welcome to the SoMoE-19 documentation!
 ======================================
 
 .. toctree::
-	:caption: Credits:
+    :caption: Credits:
 	
     credits
+    features
 
 .. toctree::
     :maxdepth: 1
@@ -21,7 +22,7 @@ Welcome to the SoMoE-19 documentation!
 .. toctree::
     :caption: Config Files:
 
-	configs
+    configs
     config/conf-main
 	config/conf-admins
 	config/conf-maps

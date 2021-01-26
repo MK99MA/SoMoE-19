@@ -124,5 +124,6 @@ else, if it is running on a hosted server upload the files to:
 
 		/home/cstrike
 
+If the upload of the 2 .exe files in sourcemod/scripting fails, you do not have to mind them, since they're only used when you're actually (re-)compiling a plugin.
 
 .. attention:: The installation will be completed after you restarted your server.

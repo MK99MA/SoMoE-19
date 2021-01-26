@@ -143,7 +143,7 @@ Match commands
 Misc commands
 *************
 
-**sm_addadmin / !addadmin **
+**sm_addadmin / !addadmin**
 
 	.. code-block:: none
 	
@@ -184,7 +184,7 @@ Public Commands
 *************
 Menu commands
 *************
-**sm_menu / !menu **
+**sm_menu / !menu**
 
 	.. code-block:: none
 	
