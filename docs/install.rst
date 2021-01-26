@@ -56,6 +56,7 @@ Either continue with the :ref:`optionals` or :ref:`install_somoe`.
 
 Both of these options depend on Steamworks, so if you want to use either one please visit
  - `SteamWorks <http://users.alliedmods.net/~kyles/builds/SteamWorks/>`_
+
 and downlod the version for your OS.
 
 After downloading the archive, extract the contents of the archive to the same location you already extracted Metamod and Sourcemod to.

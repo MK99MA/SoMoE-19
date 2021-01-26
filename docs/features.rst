@@ -1,8 +1,8 @@
 .. _features:
 
-=======
+========
 Features
-=======
+========
 
 This version of SoMoE-19 is just an edited version of Marco Boogers original `Soccermod <https://github.com/marcoboogers/soccermod>`_. I merely edited his plugin by adding stuff I thought to be useful or fixing parts that were not working as intended. This version of his plugin is also strictly **limited to Counter-Strike: Source** and unlike his version does not work for Counter-Strike Global Offensive.
 

@@ -215,7 +215,7 @@ This section features miscellaneous settings that do not fit into any of the oth
  - **soccer_mod_dissolver** controls what happens to a players corpse (Allowed values: 0 - Default ragdoll, 1 - Remove ragdoll, 2 - Dissolve animation).
  - **soccer_mod_joinclass** controls whether players should see the class selection screen after joining a team.
  - **soccer_mod_hostname** controls whether SoMoE-19 should update the servers name under certain conditions (Cap started, Match running etc.)
- - **soccer_mod_rrchecktime" controls the number of seconds a player got to rejoin the server before it won't be considered a "rr" in the connection list.
+ - **soccer_mod_rrchecktime** controls the number of seconds a player got to rejoin the server before it won't be considered a "rr" in the connection list.
  - **soccer_mod_loaddefaults** controls whether SoMoE-19 should load default mapvalues in its *soccer_mod_mapdefaults.cfg* file.
  
 ----
@@ -305,7 +305,7 @@ Each key determines the number of points a player will receive when performing t
  
 ----
 
-.. training_settings:
+.. _training_settings:
 
 *****************
 Training Settings
