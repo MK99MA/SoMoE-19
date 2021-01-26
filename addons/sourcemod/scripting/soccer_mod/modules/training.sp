@@ -302,7 +302,7 @@ public int TrainingCannonSettingsMenuHandler(Menu menu, MenuAction action, int c
 		}
 		else if (StrEqual(menuItem, "fire_rate"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}Type a value between %f and %f", prefixcolor, prefix, textcolor, 0.5, 10.0);
+			CPrintToChat(client, "{%s}[%s] {%s}Type a value between %f and %f", prefixcolor, prefix, textcolor, 0.1, 10.0);
 			changeSetting[client] = "fire_rate";
 		}
 		else if (StrEqual(menuItem, "power"))

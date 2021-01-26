@@ -3,3 +3,50 @@
 ======================
 soccer_mod_GKAreas.cfg
 ======================
+
+**soccer_mod_GKAreas.cfg** is the config storing the coordinates spanning the box in which players will be able to receive points for saves. Ideally this box should be in front of the goals and not too small or too big. 
+
+An area that is too small could prevent the goalkeepers from receiving deserved saves, an area that is too big could reward defensive players with saves for regular interceptions. The coordinates provided in the generated configuration file are the same size as the 5m-boxes / 6yd-boxes in front of the goals and as high as the goals..
+
+	.. attention:: Except for the 2 generated entries you have to manually add the entries for any map you intend to use. It is possible that different maps will use he coordinates if the creators used the same position and orientation. 
+	
+	You can use *cl_drawpos 1* to display the coordinates of your current position.
+	
+The file, in case it wasn't generated properly should look like this:
+
+	.. code-block:: none
+	
+		"gk_areas"
+		{
+			"ka_soccer_xsl_stadium_b1"
+			{
+				"ct_min_x"      "-313"
+				"ct_max_x"      "313"
+				"ct_min_y"      "-1379"
+				"ct_max_y"      "-1188"
+				"ct_min_z"      "0"
+				"ct_max_z"      "120"
+				"t_min_x"       "-313"
+				"t_max_x"       "313"
+				"t_min_y"       "1188"
+				"t_max_y"       "1379"
+				"t_min_z"       "0"
+				"t_max_z"       "120"
+			}
+			"ka_soccer_avalon_v8"
+			{
+				"ct_min_x"      "-313"
+				"ct_max_x"      "313"
+				"ct_min_y"      "-1379"
+				"ct_max_y"      "-1188"
+				"ct_min_z"      "0"
+				"ct_max_z"      "120"
+				"t_min_x"       "-313"
+				"t_max_x"       "313"
+				"t_min_y"       "1188"
+				"t_max_y"       "1379"
+				"t_min_z"       "0"
+				"t_max_z"       "120"
+			}
+		}
+		

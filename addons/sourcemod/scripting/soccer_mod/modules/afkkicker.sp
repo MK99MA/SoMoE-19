@@ -134,7 +134,7 @@ public Action Timer_AFKCheck(Handle Timer, any client)
 
 	if(IsValidClient(client, true))
 	{
-		if(!(CheckCommandAccess(client, "afk-kicker-immunity", ADMFLAG_RCON)))
+		if(!(CheckCommandAccess(client, "afk-kicker-immunity", ADMFLAG_RCON) || CheckCommandAccess(client, "admflag_reservation", ADMFLAG_RESERVATION)))
 		{
 		
 			float fPosition[3];

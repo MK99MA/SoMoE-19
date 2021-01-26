@@ -52,6 +52,9 @@ public void CapEventRoundEnd(Event event)
 	if (capFightStarted)
 	{
 		capFightStarted = false;
+		
+		HostName_Change_Status("Picking");
+		
 		//reenable sprint
 		bSPRINT_ENABLED = 1;
 
@@ -279,6 +282,13 @@ public void OpenCapPositionMenu(int client)
 	Format(langString, sizeof(langString), "%s: %s", langString1, langString2);
 	menu.AddItem("rw", langString);
 
+	keyValue = keygroup.GetNum("spec", 0);
+	Format(langString1, sizeof(langString1), "Spec only", client);
+	if (keyValue) Format(langString2, sizeof(langString2), "Yes", client);
+	else Format(langString2, sizeof(langString2), "No", client);
+	Format(langString, sizeof(langString), "%s: %s", langString1, langString2);
+	menu.AddItem("spec", langString);
+
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
 
@@ -358,6 +368,8 @@ public void CapPutAllToSpec(int client)
 			if (GetClientTeam(player) != 1) ChangeClientTeam(player, 1);
 		}
 	}
+	
+	HostName_Change_Status("Specced");
 
 	char steamid[32];
 	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -437,8 +449,9 @@ public void CapStartFight(int client)
 					int mf = keygroup.GetNum("mf", 0);
 					int lw = keygroup.GetNum("lw", 0);
 					int rw = keygroup.GetNum("rw", 0);
-					
-					if (!(gk || lb || rb || mf || lw || rw > 0))
+					int spec = keygroup.GetNum("spec", 0);
+
+					if (!(gk || lb || rb || mf || lw || rw > 0) || spec > 0)
 					{
 						OpenCapPositionMenu(player);
 						noPos = true;
@@ -455,6 +468,8 @@ public void CapStartFight(int client)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a cap fight", prefixcolor, prefix, textcolor, client);
 		}
+
+		HostName_Change_Status("Capfight");
 
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -496,6 +511,7 @@ public void CapCreatePickMenu(int client)
 				if (keygroup.GetNum("mf", 0)) Format(positions, sizeof(positions), "%s[MF]", positions);
 				if (keygroup.GetNum("lw", 0)) Format(positions, sizeof(positions), "%s[LW]", positions);
 				if (keygroup.GetNum("rw", 0)) Format(positions, sizeof(positions), "%s[RW]", positions);
+				if (keygroup.GetNum("spec", 0)) Format(positions, sizeof(positions), "[SPEC ONLY]");
 
 				char menuString[64];
 				if (positions[0]) Format(menuString, sizeof(menuString), "%s %s", playerName, positions);

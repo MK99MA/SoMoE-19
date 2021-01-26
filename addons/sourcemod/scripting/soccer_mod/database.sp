@@ -7,6 +7,13 @@ public void ConnectToDatabase()
     else CreateTables();
 }
 
+public void WipeStatsTable(char[] table)
+{
+	char query[1024];
+	Format(query, sizeof(query), "DELETE FROM %s", table);
+	SQL_FastQuery(db, query);
+}
+
 public void CreateTables() 
 {
     char query[1024] = "CREATE TABLE soccer_mod_players (\

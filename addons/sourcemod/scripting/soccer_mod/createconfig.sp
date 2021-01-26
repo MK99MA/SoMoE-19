@@ -24,6 +24,7 @@ public void ConfigFunc()
 	if (!FileExists(pathCapPositionsFile)) CreateCapPositionsConfig();
 	if (!FileExists(skinsKeygroup)) CreateSkinsConfig();
 	if (!FileExists(statsKeygroupGoalkeeperAreas)) CreateGKAreaConfig();
+	if (!FileExists(mapDefaults)) CreateMapDefaultsConfig();
 	
 	if (FileExists(configFileKV)) ReadFromConfig();
 }
@@ -149,6 +150,10 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_blockdj_enable",				djbenabled);
 	kvConfig.SetNum("soccer_mod_damagesounds",					damageSounds);
 	kvConfig.SetNum("soccer_mod_dissolver",						dissolveSet);
+	kvConfig.SetNum("soccer_mod_joinclass",						joinclassSet);
+	kvConfig.SetNum("soccer_mod_hostname", 						hostnameToggle);
+	kvConfig.SetFloat("soccer_mod_rrchecktime",					rrchecktime);
+	kvConfig.SetNum("soccer_mod_loaddefaults",					defaultSet);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -179,6 +184,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_ranking_points_round_lost",			rankingPointsForRoundLost);
 	kvConfig.SetNum("soccer_mod_ranking_points_mvp",				rankingPointsForMVP);
 	kvConfig.SetNum("soccer_mod_ranking_points_motm",				rankingPointsForMOTM);
+	kvConfig.SetNum("soccer_mod_ranking_cdtime",					rankingCDTime);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Training Settings", true);
@@ -257,36 +263,22 @@ public void CreateDownloadFile()
 	if (FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg", false)) AutoExecConfig(false, "soccer_mod_downloads", "sm_soccermod");
 }
 
-public void AddSoccerTags()
+public void CreateMapDefaultsConfig()
 {
-	char oldtags[256], newtags[256];
-	//char soccertags[64] = "soccer,soccermod,soccer_mod";
-	int flags;
+	File hFile = OpenFile(mapDefaults, "at");
+	hFile.Close();
 	
-	ConVar tags = FindConVar("sv_tags");
-	flags = GetConVarFlags(tags);
-	flags &= ~FCVAR_NOTIFY;
-	SetConVarFlags(tags, flags);
+	mapdefaultKV = new KeyValues("Map Defaults");
+	mapdefaultKV.ImportFromFile(mapDefaults);
 	
-	tags.GetString(oldtags, sizeof(oldtags));
-	//PrintToChatAll(oldtags);
-	if(SimpleRegexMatch(oldtags, "soccer\\W", false) == -1)
-	{
-		Format(newtags, sizeof(newtags), "%s,soccer", oldtags);
-		tags.SetString(newtags, false, false);
-	}
-	if(StrContains(oldtags, "soccermod,", false) == -1)
-	{
-		Format(newtags, sizeof(newtags), "%s,soccermod", oldtags);
-		tags.SetString(newtags, false, false);
-	}
-	if(StrContains(oldtags, "soccer_mod,", false) == -1)
-	{
-		Format(newtags, sizeof(newtags), "%s,soccer_mod", oldtags);
-		tags.SetString(newtags, false, false);
-	}
+	mapdefaultKV.JumpToKey("ka_soccer_xsl_stadium_b1", true);
+	mapdefaultKV.SetNum("default_periodlength", 900);
+	mapdefaultKV.SetNum("default_breaklength", 5);
+	mapdefaultKV.SetNum("default_periods", 2);
 	
-	CloseHandle(tags);
+	mapdefaultKV.Rewind();
+	mapdefaultKV.ExportToFile(mapDefaults);
+	mapdefaultKV.Close();
 }
 
 public void CreateAdminConfig()
@@ -510,6 +502,10 @@ public void ReadFromConfig()
 	djbenabled				= kvConfig.GetNum("soccer_mod_blockdj_enable", 1);
 	damageSounds			= kvConfig.GetNum("soccer_mod_damagesounds", 0);
 	dissolveSet				= kvConfig.GetNum("soccer_mod_dissolver", 2);
+	joinclassSet			= kvConfig.GetNum("soccer_mod_joinclass", 0);
+	hostnameToggle			= kvConfig.GetNum("soccer_mod_hostname", 1);
+	rrchecktime				= kvConfig.GetFloat("soccer_mod_rrchecktime",	90.0);
+	defaultSet				= kvConfig.GetNum("soccer_mod_loaddefaults", 1);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -532,18 +528,19 @@ public void ReadFromConfig()
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Stats Settings", true);
-	rankingPointsForGoal			= kvConfig.GetNum("soccer_mod_ranking_points_goal", 12);
+	rankingPointsForGoal			= kvConfig.GetNum("soccer_mod_ranking_points_goal", 17);
 	rankingPointsForAssist			= kvConfig.GetNum("soccer_mod_ranking_points_assist", 12);
 	rankingPointsForOwnGoal			= kvConfig.GetNum("soccer_mod_ranking_points_own_goal", -10);
 	rankingPointsForHit				= kvConfig.GetNum("soccer_mod_ranking_points_hit", 1);
 	rankingPointsForPass			= kvConfig.GetNum("soccer_mod_ranking_points_pass", 5);
 	rankingPointsForInterception	= kvConfig.GetNum("soccer_mod_ranking_points_interception",3);
 	rankingPointsForBallLoss		= kvConfig.GetNum("soccer_mod_ranking_points_ball_loss", -3);
-	rankingPointsForSave			= kvConfig.GetNum("soccer_mod_ranking_points_save", 10);
+	rankingPointsForSave			= kvConfig.GetNum("soccer_mod_ranking_points_save", 8);
 	rankingPointsForRoundWon		= kvConfig.GetNum("soccer_mod_ranking_points_round_won", 10);
 	rankingPointsForRoundLost		= kvConfig.GetNum("soccer_mod_ranking_points_round_lost", -10);
 	rankingPointsForMVP				= kvConfig.GetNum("soccer_mod_ranking_points_mvp", 15);
 	rankingPointsForMOTM			= kvConfig.GetNum("soccer_mod_ranking_points_motm", 25);
+	rankingCDTime					= kvConfig.GetNum("soccer_mod_ranking_cdtime", 300);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Training Settings", true);

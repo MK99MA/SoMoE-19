@@ -335,8 +335,11 @@ public int RefereeYellowCardMenuHandler(Menu menu, MenuAction action, int client
 			keygroup.ExportToFile(pathRefCardsFile);
 			keygroup.Close();
 		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
-
+		else 
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
+		}
+		
 		OpenRefereeMenu(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenRefereeMenu(client);
@@ -449,8 +452,8 @@ public int RefereeRedCardMenuHandler(Menu menu, MenuAction action, int client, i
 		else 
 		{
 			CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
-			OpenRefereeMenu(client);
 		}
+		OpenRefereeMenu(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6) OpenRefereeMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -537,11 +540,17 @@ public int RemoveYellowCardMenuHandler(Menu menu, MenuAction action, int client,
 			
 			OpenRemoveYellowCardMenu(client);
 		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Yellow card already removed", prefixcolor, prefix, textcolor);
+		else
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Yellow card already removed", prefixcolor, prefix, textcolor);
 
-		keygroup.Close();
+			keygroup.Rewind();
+			keygroup.Close();
+			
+			OpenRefereeMenu(client);
+		}
 
-		OpenRefereeMenu(client);
+		
 	}
 	else if (action == MenuAction_Cancel && choice == -6) OpenRefereeMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -629,11 +638,17 @@ public int RemoveRedCardMenuHandler(Menu menu, MenuAction action, int client, in
 			
 			OpenRemoveRedCardMenu(client);
 		}
-		else CPrintToChat(client, "{%s}[%s] {%s}Red card already removed", prefixcolor, prefix, textcolor);
+		else 
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Red card already removed", prefixcolor, prefix, textcolor);
 
-		keygroup.Close();
+			keygroup.Rewind();
+			keygroup.Close();
+			
+			OpenRefereeMenu(client);
+		}
 
-		OpenRefereeMenu(client);
+		
 	}
 	else if (action == MenuAction_Cancel && choice == -6) OpenRefereeMenu(client);
 	else if (action == MenuAction_End)					  menu.Close();

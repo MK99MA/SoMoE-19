@@ -29,7 +29,7 @@ whereas the titles should be pretty self-explanatory. Below you will find more i
 ----
 
 -----------------------
-soccer_mod.cfg sections
+soccer_mod.cfg Sections
 -----------------------
 
 .. _admin_settings:
@@ -75,12 +75,12 @@ As the name suggests, this section features settings related to the plugins chat
 	
 		"Chat Settings"
 		{
-			"soccer_mod_prefix"     "Soccer Mod"
-			"soccer_mod_textcolor"     "lightgreen"
-			"soccer_mod_prefixcolor"     "green"
-			"soccer_mod_mvp"     "1"
-			"soccer_mod_deadchat_mode"     "0"
-			"soccer_mod_deadchat_visibility"     "0"
+			"soccer_mod_prefix"               "Soccer Mod"
+			"soccer_mod_textcolor"            "lightgreen"
+			"soccer_mod_prefixcolor"          "green"
+			"soccer_mod_mvp"                  "1"
+			"soccer_mod_deadchat_mode"        "0"
+			"soccer_mod_deadchat_visibility"  "0"
 		}
  
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually. In case of the colorselection it is even advised to do this ingame as you can access a menu with every valid colorname there.
@@ -104,13 +104,13 @@ As the name suggests, this section features settings related to matches.
 
 	.. code-block:: none
 	
-		"soccer_mod_match_periods"     "2"
-		"soccer_mod_match_period_length"     "900"
-		"soccer_mod_match_period_break_length"     "60"
-		"soccer_mod_match_golden_goal"     "1"
-		"soccer_mod_teamnamect"     "CT"
-		"soccer_mod_teamnamet"     "T"
-		"soccer_mod_match_readycheck"     "1"
+		"soccer_mod_match_periods"              "2"
+		"soccer_mod_match_period_length"        "900"
+		"soccer_mod_match_period_break_length"  "60"
+		"soccer_mod_match_golden_goal"          "1"
+		"soccer_mod_teamnamect"                 "CT"
+		"soccer_mod_teamnamet"                  "T"
+		"soccer_mod_match_readycheck"           "1"
 
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
 
@@ -135,15 +135,16 @@ As the name suggests, this section features settings related to the match info m
 
 	.. code-block:: none
 	
-		"soccer_mod_period_info"		"1"
-		"soccer_mod_break_info"		"1"
-		"soccer_mod_golden_info"		"1"
-		"soccer_mod_forfeit_info"		"1"
-		"soccer_mod_forfeitset_info"		"0"
-		"soccer_mod_matchlog_info"		"0"
+		"soccer_mod_period_info"        "1"
+		"soccer_mod_break_info"         "1"
+		"soccer_mod_golden_info"        "1"
+		"soccer_mod_forfeit_info"       "1"
+		"soccer_mod_forfeitset_info"    "0"
+		"soccer_mod_matchlog_info"      "0"
 
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
 	Each value can either be 0 - Off or 1 - On.
+
 
  - **soccer_mod_period_info** controls the display of the period length in the message.
  - **soccer_mod_break_info** controls the display of the break length in the message.
@@ -164,11 +165,11 @@ As the name suggests, this section features settings related to the toggle-able 
 
 	.. code-block:: none
 		
-		"soccer_mod_forfeitvote"		"0"
-		"soccer_mod_forfeitscore"		"8"
-		"soccer_mod_forfeitpublic"		"0"
-		"soccer_mod_forfeitautospec"		"0"
-		"soccer_mod_forfeitcapmode"		"0"
+		"soccer_mod_forfeitvote"        "0"
+		"soccer_mod_forfeitscore"       "8"
+		"soccer_mod_forfeitpublic"      "0"
+		"soccer_mod_forfeitautospec"    "0"
+		"soccer_mod_forfeitcapmode"     "0"
 		
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
 	
@@ -190,15 +191,15 @@ This section features miscellaneous settings that do not fit into any of the oth
 
 	.. code-block:: none
 		
-		"soccer_mod_health_godmode"		"1"
-		"soccer_mod_respawn_delay"		"10.000000"
-		"soccer_mod_blockdj_enable"		"1"
-		"soccer_mod_damagesounds"		"0"
-		"soccer_mod_dissolver"		"2"
-		"soccer_mod_joinclass"		"0"
-		"soccer_mod_hostname"		"1"
-		"soccer_mod_rrchecktime"		"90.0"
-		"soccer_mod_loaddefaults"		"1"
+		"soccer_mod_health_godmode"     "1"
+		"soccer_mod_respawn_delay"      "10.000000"
+		"soccer_mod_blockdj_enable"     "1"
+		"soccer_mod_damagesounds"       "0"
+		"soccer_mod_dissolver"          "2"
+		"soccer_mod_joinclass"          "0"
+		"soccer_mod_hostname"           "1"
+		"soccer_mod_rrchecktime"        "90.0"
+		"soccer_mod_loaddefaults"       "1"
 		
 	.. attention:: Most keys in this section are changeable ingame. Exceptions are *soccer_mod_health_godmode* and *soccer_mod_respawn_delay* which usually should not be changed at all.
 	
@@ -224,11 +225,11 @@ As the name suggests, this section features settings related to the sprint syste
 
 	.. code-block:: none
 	
-		"soccer_mod_sprint_enable"		"1"
-		"soccer_mod_sprint_speed"		"1.250000"
-		"soccer_mod_sprint_time"		"3.000000"
-		"soccer_mod_sprint_cooldown"		"7.500000"
-		"soccer_mod_sprint_button"		"1"
+		"soccer_mod_sprint_enable"      "1"
+		"soccer_mod_sprint_speed"       "1.250000"
+		"soccer_mod_sprint_time"        "3.000000"
+		"soccer_mod_sprint_cooldown"    "7.500000"
+		"soccer_mod_sprint_button"      "1"
 		
 	.. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file. However most people should be used to these settings so changes are not advised.
 	
@@ -250,10 +251,10 @@ As the name suggests, this sections features the currently active skins.
 
 	.. code-block:: none
 	
-		"soccer_mod_skins_model_ct"		"models/player/soccer_mod/termi/2011/away/ct_urban.mdl"
-		"soccer_mod_skins_model_t"		"models/player/soccer_mod/termi/2011/home/ct_urban.mdl"
-		"soccer_mod_skins_model_ct_gk"		"models/player/soccer_mod/termi/2011/gkaway/ct_urban.mdl"
-		"soccer_mod_skins_model_t_gk"		"models/player/soccer_mod/termi/2011/gkhome/ct_urban.mdl"
+		"soccer_mod_skins_model_ct"     "models/player/soccer_mod/termi/2011/away/ct_urban.mdl"
+		"soccer_mod_skins_model_t"      "models/player/soccer_mod/termi/2011/home/ct_urban.mdl"
+		"soccer_mod_skins_model_ct_gk"  "models/player/soccer_mod/termi/2011/gkaway/ct_urban.mdl"
+		"soccer_mod_skins_model_t_gk"   "models/player/soccer_mod/termi/2011/gkhome/ct_urban.mdl"
 		
 	.. attention:: These keys are changeable ingame and depend on the contents of your *soccer_mod_skins.cfg* file.
 	
@@ -271,19 +272,19 @@ As the name suggests, this section features settings related to the stats system
 
 	.. code-block:: none
 	
-		"soccer_mod_ranking_points_goal"		"17"
-		"soccer_mod_ranking_points_assist"		"12"
-		"soccer_mod_ranking_points_own_goal"		"-10"
-		"soccer_mod_ranking_points_hit"		"1"
-		"soccer_mod_ranking_points_pass"		"5"
-		"soccer_mod_ranking_points_interception"		"3"
-		"soccer_mod_ranking_points_ball_loss"		"-3"
-		"soccer_mod_ranking_points_save"		"8"
-		"soccer_mod_ranking_points_round_won"		"10"
-		"soccer_mod_ranking_points_round_lost"		"-10"
-		"soccer_mod_ranking_points_mvp"		"15"
-		"soccer_mod_ranking_points_motm"		"25"
-		"soccer_mod_ranking_cdtime"		"300"
+		"soccer_mod_ranking_points_goal"          "17"
+		"soccer_mod_ranking_points_assist"        "12"
+		"soccer_mod_ranking_points_own_goal"      "-10"
+		"soccer_mod_ranking_points_hit"           "1"
+		"soccer_mod_ranking_points_pass"          "5"
+		"soccer_mod_ranking_points_interception"  "3"
+		"soccer_mod_ranking_points_ball_loss"     "-3"
+		"soccer_mod_ranking_points_save"          "8"
+		"soccer_mod_ranking_points_round_won"     "10"
+		"soccer_mod_ranking_points_round_lost"    "-10"
+		"soccer_mod_ranking_points_mvp"           "15"
+		"soccer_mod_ranking_points_motm"          "25"
+		"soccer_mod_ranking_cdtime"               "300"
 		
 	.. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file. The default values were not thoroughly tested, so feel free to adjust them to your needs if needed.
 	
@@ -303,7 +304,7 @@ As the name suggests, this section features settings related to the stats system
 
 	.. code-block:: none
 	
-		"soccer_mod_training_model_ball"		"models/soccer_mod/ball_2011.mdl"
+		"soccer_mod_training_model_ball"   "models/soccer_mod/ball_2011.mdl"
 		
 	.. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file. This is however only necessary if you want to use a different model for the spawnable training ball.
 	
@@ -321,7 +322,7 @@ As the name suggests, this section features debug settings.
 
 	.. code-block:: none
 	
-		"soccer_mod_debug"		"0"
+		"soccer_mod_debug"                    "0"
 
 	.. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file.
 	

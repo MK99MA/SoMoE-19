@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.6"
+#define PLUGIN_VERSION "1.2.7"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -18,6 +18,8 @@
 #include <clientprefs>
 #undef REQUIRE_PLUGIN
 #include <updater>
+#undef REQUIRE_EXTENSIONS
+#include <SteamWorks>
 
 #pragma newdecls required
 
@@ -49,6 +51,9 @@
 #include "soccer_mod\modules\training.sp"
 #include "soccer_mod\modules\training_personalcannon.sp"
 #include "soccer_mod\modules\savelogs.sp"
+#include "soccer_mod\modules\serverinfo.sp"
+#include "soccer_mod\modules\joinlist.sp"
+#include "soccer_mod\modules\mapdefaults.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -109,11 +114,13 @@ public void OnPluginStart()
 	HookEvent("round_start",			EventRoundStart);
 	HookEvent("round_end",			  EventRoundEnd);
 
+	HookUserMessage(GetUserMessageId("VGUIMenu"), HookMsg, true);
 	//LoadTranslations("soccer_mod.phrases.txt");
 	
 	ConnectToDatabase();
 	LoadAllowedMaps();
 	ConfigFunc();
+	//CreateDCListFile(true);
 	LoadConfigSoccer();
 	LoadConfigPublic();
 	RegisterClientCommands();
@@ -126,9 +133,17 @@ public void OnPluginStart()
 	SprintOnPluginStart();
 	StatsOnPluginStart();
 	TrainingOnPluginStart();
+	ConnectlistOnPluginStart();
 
 	LoadJoinTeamFix();
 	LoadRadioCommandsFix();
+}
+
+public void OnPluginEnd()
+{
+	//Clientprefs
+	WriteEveryClientCookie();
+	return;
 }
 
 // Updater******************************************
@@ -140,6 +155,22 @@ public void OnLibraryAdded(const char []name)
 	}
 }
 //**************************************************
+
+public Action HookMsg(UserMsg msg_id, BfRead msg, const int[] players, int playersNum, bool reliable, bool init)
+{
+	static char txt[16];
+	txt[0] = 0;
+	BfReadString(msg, txt, sizeof(txt));
+	if (joinclassSet == 0)
+	{
+		if(txt[0] == 'c' && txt[1] == 'l' && txt[2] == 'a' && txt[3] == 's' && txt[4] == 's' && txt[5] == '_')
+		{
+			FakeClientCommandEx(players[0], "joinclass %d", txt[6] == 't' ? 1 : 5);
+			return Plugin_Handled;
+		}
+	}
+	return Plugin_Continue;
+}
 
 // ***********************************************************************************************************************
 // ************************************************** COMMAND LISTENERS **************************************************
@@ -170,7 +201,7 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		}
 		else if (StrEqual(changeSetting[client], "fire_rate"))
 		{
-			TrainingCannonSet(client, "fire_rate", number, 0.5, 10.0);
+			TrainingCannonSet(client, "fire_rate", number, 0.1, 10.0);
 			return Plugin_Handled;
 		}
 		else if (StrEqual(changeSetting[client], "power"))
@@ -185,7 +216,7 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		}
 		else if (StrEqual(changeSetting[client], "pers_fire_rate"))
 		{
-			PersonalTrainingCannonSet(client, "fire_rate", number, 0.5, 10.0);
+			PersonalTrainingCannonSet(client, "fire_rate", number, 0.1, 10.0);
 			return Plugin_Handled;
 		}
 		else if (StrEqual(changeSetting[client], "pers_power"))
@@ -207,7 +238,12 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		{
 			MatchSet(client, "CustomPeriodBreakLength", intnumber, 5, 60);
 			return Plugin_Handled;			
-		}		
+		}
+		else if (StrEqual(changeSetting[client], "CustomRankCD"))
+		{
+			CDSet(client, "CustomRankCD", intnumber, 0, 3600);
+			return Plugin_Handled;
+		}
 		else if (StrEqual(changeSetting[client], "ForfeitScoreSet"))
 		{
 			ForfeitSet(client, "ForfeitScoreSet", intnumber, 4, 16);
@@ -363,13 +399,25 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnConfigsExecuted()
 {
 	//After every Config was executed change the tags to include soccer tags
-	AddSoccerTags();
+	//AddSoccerTags();
+	
+	// Set Defaults if existing
+	if(defaultSet == 1) SetDefaultValues();
+	
+	// Get hostname
+	g_hostname = FindConVar("hostname");
+	g_hostname.GetString(old_hostname, 250);
+	
+	if (GetExtensionFileStatus("SteamWorks.ext") > 0)
+	{
+		ChangeGameDesc();
+	}
 }
 
 public void OnMapStart()
 {
 	//Create missing ConfigFiles and/or read them
-	if (!FileExists(configFileKV) || !FileExists(adminFileKV) || !FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg") || !FileExists(allowedMapsConfigFile) || !FileExists(statsKeygroupGoalkeeperAreas) || !FileExists(skinsKeygroup) || !FileExists(pathCapPositionsFile))
+	if (!FileExists(configFileKV) || !FileExists(adminFileKV) || !FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg") || !FileExists(allowedMapsConfigFile) || !FileExists(statsKeygroupGoalkeeperAreas) || !FileExists(skinsKeygroup) || !FileExists(pathCapPositionsFile) || !FileExists(mapDefaults))
 	{
 		ConfigFunc();
 		ReadFromConfig();
@@ -380,6 +428,7 @@ public void OnMapStart()
 	}
 	if (FileExists(tempReadyFileKV)) DeleteTempFile();
 	ReadMatchlogSettings();
+	//CreateDCListFile(false);
 	
 	//Get the server password from server.cfg
 	GetDefaultPassword(defaultpw, sizeof(defaultpw));
@@ -387,6 +436,10 @@ public void OnMapStart()
 	//Get the available Admin Groups from admin_groups.cfg
 	groupArray = CreateArray(8);
 	ParseAdminGroups(groupArray);
+	
+	//lcPanel Array
+	lcPanelArray = CreateArray(MAXPLAYERS+1);
+	lcPanelArray.Clear();
 	
 	LoadAllowedMaps();
 	currentMapAllowed = IsCurrentMapAllowed();
@@ -439,6 +492,9 @@ public void OnAllPluginsLoaded()
 public void OnClientPutInServer(int client)
 {
 	changeSetting[client] = "";
+	
+	rankingPlayerCDTimes[client] = 0;
+	rankingPlayerSpammed[client] = false;
 
 	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamageArmor);
 	
@@ -448,6 +504,8 @@ public void OnClientPutInServer(int client)
 	SkinsOnClientPutInServer(client);
 	//SprintOnClientPutInServer(client);
 	AFKKickOnClientPutInServer(client);
+	
+	LCOnClientPutInServer(client);
 
 	ReadPersonalCannonSettings(client);
 	RadioCommandsOnClientPutInServer(client);
@@ -514,10 +572,15 @@ public void OnClientDisconnect(int client)
 	SavePersonalCannonSettings(client);
 	ReadyCheckOnClientDisconnect(client);
 	WriteClientCookie(client);
+	
+	LCDisconnect(client);
 }
 
 public void OnClientDisconnect_Post(int client)
 {
+	rankingPlayerCDTimes[client] = 0;
+	rankingPlayerSpammed[client] = false;
+
 	if((pwchange == true) && (passwordlock == 1) && (GetClientCount() == PWMAXPLAYERS))
 	{
 		CPrintToChatAll("{%s}[%s]A player left, reverting password to default", prefixcolor, prefix);
@@ -527,6 +590,11 @@ public void OnClientDisconnect_Post(int client)
 	{
 		AFKKickStop();
 		pwchange = false;
+	}
+	
+	if(GetClientCount() == 0 && !matchStarted)
+	{
+		HostName_Change_Status("Reset");
 	}
 }
 
@@ -556,7 +624,7 @@ public Action EventPlayerSpawn(Event event, const char[] name, bool dontBroadcas
 		iCLIENT_STATUS[client] &= ~ CLIENT_SPRINTUNABLE;
 		if(matchStarted && matchPaused)
 		{	
-			delayedFreezeTimer[client] = CreateTimer(0.0, DelayFreezePlayer, client);
+			delayedFreezeTimer[client] = CreateTimer(0.1, DelayFreezePlayer, client);
 		}
 	}
 }
@@ -1034,9 +1102,9 @@ public void PrintEntityOutput(char[] output, int caller, int activator)
 // ************************************************************************************************************
 public Action DelayedServerCommand(Handle timer, DataPack pack)
 {
-	pack.Reset();
+	ResetPack(pack);
 	char command[64];
-	pack.ReadString(command, sizeof(command));
+	ReadPackString(pack, command, sizeof(command));
 	ServerCommand(command);
 }
 

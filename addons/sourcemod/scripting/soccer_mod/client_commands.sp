@@ -11,7 +11,8 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_forfeit", Command_Forfeit, "Starts a forfeit vote");
 	RegConsoleCmd("sm_gk", GkCommand, "Toggle the GK skin");	
 	RegConsoleCmd("sm_help", HelpCommand, "Opens the Soccer Mod help menu");
-	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");	
+	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");
+	RegConsoleCmd("sm_lc", JoinlistCommand, "Opens the Soccer Mod joinlist");
 	RegConsoleCmd("sm_maprr", MaprrCommand, "Quickly rr the map");
 	RegConsoleCmd("sm_match", MatchCommand, "Opens the Soccer Mod match menu");
 	RegConsoleCmd("sm_matchrr", MatchRRCommand, "Restart the match");
@@ -39,15 +40,23 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "[GENERICFLAG]Shortcut to the Settings menu");
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG]Prints your current clantag - Test");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
+	RegAdminCmd("sm_wiperanks", Command_WipeRanks, ADMFLAG_RCON, "[RCONFLAG]Wipes the given ranking table");
 	
 	
-	RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "[RCONFLAG]Test command");
+	//RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "[RCONFLAG]Test command");
 
 }
 
 // *******************************************************************************************************************
 // ************************************************ CLIENT COMMANDS **************************************************
 // *******************************************************************************************************************
+
+public Action JoinlistCommand(int client, int args)
+{
+	OpenJoinlistPanel(client);
+	
+	return Plugin_Handled;
+}
 
 public Action rdyCommand(int client, int args)
 {
@@ -464,7 +473,22 @@ public Action StatsCommand(int client, int args)
 
 public Action RankCommand(int client, int args)
 {
-	if (currentMapAllowed) ClientCommandMatchRanking(client);
+	if (currentMapAllowed) 
+	{
+		if(rankingPlayerCDTimes[client] == 0 || rankingPlayerCDTimes[client] <= ( GetTime() - rankingCDTime))
+		{
+			rankingPlayerCDTimes[client] = GetTime();
+			
+			rankingPlayerSpammed[client] = false;
+			ClientCommandMatchRanking(client);
+		}
+		else if (!rankingPlayerSpammed[client])
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command in the next %d seconds.", prefixcolor, prefix, textcolor, rankingCDTime - (GetTime() - rankingPlayerCDTimes[client]));
+			
+			rankingPlayerSpammed[client] = true;
+		}
+	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
 	return Plugin_Handled;
 }
@@ -504,7 +528,40 @@ public Action CreditsCommand(int client, int args)
 
 // *******************************************************************************************************************
 // ************************************************ ADMIN COMMANDS ***************************************************
-// *******************************************************************************************************************
+// ******************************************************************************************************************* 
+public Action Command_WipeRanks(int client, int args)
+{
+	if(args < 1)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_wiperanks match OR public");
+		return Plugin_Handled;
+	}
+
+	char table[64];
+	GetCmdArg(1, table, sizeof(table));
+
+	if (StrEqual(table, "match") || StrEqual(table,"public"))
+	{
+		if(StrEqual(table, "match"))
+		{
+			WipeStatsTable("soccer_mod_match_stats");
+			CPrintToChat(client, "{%s}[%s] Match rankings have been wiped.", prefixcolor, prefix); 
+		}
+		if(StrEqual(table,"public"))
+		{
+			WipeStatsTable("soccer_mod_public_stats");
+			CPrintToChat(client, "{%s}[%s] Public rankings have been wiped.", prefixcolor, prefix);
+		}
+	}
+	else
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_wiperanks match OR public");
+		return Plugin_Handled;
+	}
+	
+	return Plugin_Handled;
+}
+
 public Action Command_SoccerSet(int client, int args)
 {
 	OpenMenuSettings(client)

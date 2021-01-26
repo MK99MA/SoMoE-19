@@ -15,6 +15,8 @@ char pathCapPositionsFile[PLATFORM_MAX_PATH] 			= "cfg/sm_soccermod/soccer_mod_c
 char pathRefCardsFile[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/soccer_mod_referee_cards.txt";
 char matchlogKV[PLATFORM_MAX_PATH] 						= "cfg/sm_soccermod/soccer_mod_last_match.txt";
 char tempReadyFileKV[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/temp_readycheck.txt";
+//char DCListKV[PLATFORM_MAX_PATH] 						= "cfg/sm_soccermod/soccer_mod_dclist.txt";
+char mapDefaults[PLATFORM_MAX_PATH]						= "cfg/sm_soccermod/soccer_mod_mapdefaults.cfg";
 char matchlogSettingsKV[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/soccer_mod_matchlogsettings.cfg";
 char personalSettingsKV[PLATFORM_MAX_PATH]				= "cfg/sm_soccermod/soccer_mod_personalCannonSettings.cfg";
 
@@ -26,7 +28,9 @@ KeyValues kvAdmins;
 KeyValues kvSMAdmins; 
 //KeyValues kvAdminGroups;
 KeyValues LeagueMatchKV;
+KeyValues mapdefaultKV;
 KeyValues kvTemp;
+KeyValues kvConnectlist;
 KeyValues kvMLSettings;
 KeyValues statsKeygroupMatch;
 KeyValues statsKeygroupRound;
@@ -44,14 +48,17 @@ bool roundEnded					= false;
 float phys_timescale			= 1.0;
 float respawnDelay 				= 10.0;
 float playerMaxHeight[66];
+float rrchecktime				= 90.0;
 
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
 Handle db			   			= INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
+Handle dclistTimer;
 
 ArrayList groupArray;
+ArrayList lcPanelArray;
 
 // INTEGER
 int djbenabled					= 1;
@@ -62,6 +69,8 @@ int phys_pushscale				= 900;
 int healthGodmode				= 1;
 int healthAmount				= 250;
 int dissolveSet					= 2;
+int joinclassSet				= 0;
+int defaultSet					= 1;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -210,6 +219,8 @@ int infoGolden					= 1;
 // STRINGS
 char custom_name_ct[32]			= "CT";
 char custom_name_t[32]			= "T";
+char default_name_ct[32]		= "";
+char default_name_t[32]			= "";
 char tagName[32];
 
 // ************************************************** MATCHINFO *************************************************
@@ -261,14 +272,15 @@ char kvOwngoals[32]		= "Owngoals:";
 // *************************************************** RANKING **************************************************
 
 // BOOL
+bool rankingPlayerSpammed[MAXPLAYERS+1];
 
 // FLOATS
 
 // HANDLES
 
 // INTEGER
-int rankingPointsForGoal			= 15;
-int rankingPointsForAssist			= 15;
+int rankingPointsForGoal			= 17;
+int rankingPointsForAssist			= 12;
 int rankingPointsForOwnGoal			= -10;
 int rankingPointsForHit				= 1;
 int rankingPointsForPass			= 5;
@@ -279,6 +291,9 @@ int rankingPointsForRoundWon		= 10;
 int rankingPointsForRoundLost		= -10;
 int rankingPointsForMVP				= 15;
 int rankingPointsForMOTM			= 25;
+
+int rankingCDTime					= 300;
+int rankingPlayerCDTimes[MAXPLAYERS+1];
 
 // STRINGS
 
@@ -304,6 +319,26 @@ int pauseplayernum				= 0;
 // STRINGS
 char vState[32] 				= "Not Ready";
 char totalpausetime[32];
+
+// ************************************************** SERVERINFO ************************************************
+
+// BOOL
+
+// ConVars
+ConVar g_hostname;
+
+// FLOATS
+float hostname_update_time		= 1.0;
+
+// HANDLES
+Handle hostnameTimer;
+
+// INTEGER
+int hostnameToggle				= 1;
+
+// STRINGS
+char old_hostname[250];
+char new_hostname[250];
 
 // ************************************************** SERVERLOCK ************************************************
 

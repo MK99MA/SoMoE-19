@@ -4,13 +4,15 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.6"
-			"Previous"	"1.2.5"
+			"Latest"	"1.2.7"
+			"Previous"	"1.2.6"
 		}
 		
-		"Notes"	"Fix to !rank command output"
-		"Notes" "Fix for Rounds Won not being counted"
-		"Notes" "Added separate ranking commands"
+		"Notes"	"Added option to reset your rank"
+		"Notes" "Added configurable cooldown for !rank command"
+		"Notes" "Added [Spec Only] option to pos menu"
+		"Notes" "Added optional joinclass disabler"
+		"Notes" "Added additional AFK-Kick immunity to reservation-flag (a)"
 	}
 	
 	"Files"

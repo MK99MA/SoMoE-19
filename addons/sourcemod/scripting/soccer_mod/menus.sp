@@ -389,6 +389,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("rank", "!rank");
 	menu.AddItem("prank", "!prank");
 	menu.AddItem("adminlist", "!admins");
+	menu.AddItem("lc", "!lc");
 	menu.AddItem("help", "!help");
 	menu.AddItem("credits", "!credits");
 
@@ -424,6 +425,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "unpause"))		CPrintToChat(client, "{%s}[%s] {%s}Unpause a Match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "stop"))		CPrintToChat(client, "{%s}[%s] {%s}Stop a Match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "rdy"))			CPrintToChat(client, "{%s}[%s] {%s}Bring back the ready menu if you closed it by accident", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "lc"))			CPrintToChat(client, "{%s}[%s] {%s}Opens the last connected panel", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "adminlist"))	
 		{
 			if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode is set to everyone. Try using !menu yourself", prefixcolor, prefix, textcolor);
@@ -453,7 +455,8 @@ public void OpenMenuCommandsAdmin(int client)
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forceunpcmd", "[RCON] !forceunp");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "[RCON] !dpass");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "[RCON] !pass <PW>");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rankwipe", "[RCON] !wiperanks <table> ");		
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -474,6 +477,7 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "forcerdycmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the state of everyone to ready during a readycheck.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "forceunpcmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the match to unpause in case of a readycheck.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "settingscmd"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the settings menu.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "rankwipe"))	CPrintToChat(client, "{%s}[%s] {%s}Wipes the given ranking table. {%s}THIS IS NOT REVERSIBLE!!", prefixcolor, prefix, textcolor, "crimson");	
 
 		OpenMenuCommands(client);
 	}

@@ -9,13 +9,6 @@
 #include "soccer_mod\modules\sprint\timers.sp"
 
 
-public void OnPluginEnd()
-{
-  //Clientprefs
-  WriteEveryClientCookie();
-  return;
-}
-
 public void SprintOnPluginStart()
 {
 	//Commands

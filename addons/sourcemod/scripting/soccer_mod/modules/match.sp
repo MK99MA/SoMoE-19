@@ -26,6 +26,7 @@ public void MatchOnStartTouch(int caller, int activator)
 public void MatchOnMapStart()
 {
 	MatchReset();
+	NameReset();
 	ForfeitReset();
 }
 
@@ -105,6 +106,7 @@ public void MatchEventRoundEnd(Event event)
 public void MatchEventCSWinPanelMatch(Event event)
 {
 	MatchReset();
+	NameReset();
 	ForfeitReset();
 }
 
@@ -902,8 +904,10 @@ public void OpenMenuNameSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Name Settings");	
 	
-	menu.AddItem("name_t_menu", "Change Terrorists Name");
-	menu.AddItem("name_ct_menu", "Change CTs Name");
+	menu.AddItem("matchname_t", "[Match] Change Terrorists Name");
+	menu.AddItem("matchname_ct", "[Match] Change CTs Name");
+	menu.AddItem("name_t_menu", "[Perm] Change Terrorists Name");
+	menu.AddItem("name_ct_menu", "[Perm] Change CTs Name");
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -913,6 +917,11 @@ public int MenuHandlerNameSettings(Menu menu, MenuAction action, int client, int
 {
 	char menuItem[16];
 	menu.GetItem(choice, menuItem, sizeof(menuItem));
+	
+	int playerNumT, playerNumCT;
+	
+	playerNumT = GetTeamClientCount(2);
+	playerNumCT = GetTeamClientCount(3);
 	
 	if (!matchStarted)
 	{
@@ -927,6 +936,59 @@ public int MenuHandlerNameSettings(Menu menu, MenuAction action, int client, int
 			{
 				teamIndicator = 3;
 				OpenMenuTeamName(client);
+			}
+			else if (StrEqual(menuItem, "matchname_t"))
+			{
+				teamIndicator = 2;
+				if (playerNumT == 0)
+				{
+					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
+					OpenMenuTeamName(client);
+				}
+				else if(playerNumT == 1)
+				{
+					for (tagindex = 1; tagindex <= MaxClients; tagindex++)
+					{	
+						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_T) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
+						{
+							CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
+							//PrintCenterTextAll(tagName);
+							if(!(strlen(tagName) > 0))
+							{
+								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
+								OpenMenuNameSettings(client);
+							}
+							else OpenMenuTeamNameList(client, "match");
+						}
+					}
+				}
+				else if (playerNumT >= 1)	OpenMenuTeamNameList(client, "match");
+			}
+			else if (StrEqual(menuItem, "matchname_ct"))
+			{
+				teamIndicator = 3;
+				if (playerNumCT == 0)
+				{
+					CPrintToChat(client, "{%s}[%s] {%s}No targets found", prefixcolor, prefix, textcolor);
+					OpenMenuTeamName(client);
+				}
+				else if(playerNumCT == 1)
+				{
+					for (tagindex = 1; tagindex <= MaxClients; tagindex++)
+					{	
+						if (IsClientInGame(tagindex) && IsClientConnected(tagindex) && (GetClientTeam(tagindex) == CS_TEAM_CT) && !IsFakeClient(tagindex) && !IsClientSourceTV(tagindex))
+						{
+							CS_GetClientClanTag(tagindex, tagName, sizeof(tagName));
+							if(!(strlen(tagName) > 0))
+							{
+								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
+								OpenMenuNameSettings(client);
+							}
+							else OpenMenuTeamNameList(client, "match");
+						}
+					}
+				}
+				else if (playerNumCT >= 1) OpenMenuTeamNameList(client, "match");
 			}
 		}
 		
@@ -999,11 +1061,11 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
 								OpenMenuTeamName(client);
 							}
-							else OpenMenuTeamNameList(client);
+							else OpenMenuTeamNameList(client, "perm");
 						}
 					}
 				}
-				else if (playerNumT >= 1)	OpenMenuTeamNameList(client);
+				else if (playerNumT >= 1)	OpenMenuTeamNameList(client, "perm");
 			}
 			else if (StrEqual(menuItem, "cust_name_t"))
 			{
@@ -1036,11 +1098,11 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 								CPrintToChat(client, "{%s}[%s] {%s}No targets found.", prefixcolor, prefix, textcolor);
 								OpenMenuTeamName(client);
 							}
-							else OpenMenuTeamNameList(client);
+							else OpenMenuTeamNameList(client, "perm");
 						}
 					}
 				}
-				else OpenMenuTeamNameList(client);
+				else if (playerNumCT >= 1) OpenMenuTeamNameList(client, "perm");
 			}
 			else if (StrEqual(menuItem, "cust_name_ct"))
 			{
@@ -1062,10 +1124,13 @@ public int MenuHandlerTeam(Menu menu, MenuAction action, int client, int choice)
 }
 
 
-public void OpenMenuTeamNameList(int client)
+public void OpenMenuTeamNameList(int client, char type[8])
 {
 	//tagCount = GetClientCount(true);
-	Menu menu = new Menu(MenuHandlerTeamMenuList);
+	
+	Menu menu
+	if (StrEqual(type, "perm"))	menu = new Menu(MenuHandlerTeamMenuList);
+	else if (StrEqual(type, "match")) menu = new Menu(MenuHandlerTeamMenuList_Match);	
 
 	if(teamIndicator == 2)
 	{
@@ -1107,7 +1172,6 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 		{
 			if(teamIndicator == 2)
 			{
-				
 				menu.GetItem(choice, tagName, sizeof(tagName));
 				custom_name_t = tagName;
 				UpdateConfig("Match Settings", "soccer_mod_teamnamet", custom_name_t);
@@ -1125,6 +1189,37 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 		}
 
 		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuTeamName(client);
+		else if (action == MenuAction_End)					  menu.Close();
+		tagindex = 1;
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Can't change the settings during a match.", prefixcolor, prefix, textcolor);
+}
+
+public int MenuHandlerTeamMenuList_Match(Menu menu, MenuAction action, int client, int choice)
+{
+	if(!matchStarted)
+	{
+		if (action == MenuAction_Select)
+		{
+			if(teamIndicator == 2)
+			{
+				default_name_t = custom_name_t;
+				menu.GetItem(choice, tagName, sizeof(tagName));
+				custom_name_t = tagName;
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists for this match to %s", prefixcolor, prefix, textcolor, client, tagName);
+				OpenMenuNameSettings(client);
+			}
+			else if(teamIndicator == 3)
+			{
+				default_name_ct = custom_name_ct;
+				menu.GetItem(choice, tagName, sizeof(tagName));
+				custom_name_ct = tagName;
+				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Counter-Terrorists for this match to %s", prefixcolor, prefix, textcolor, client, tagName);
+				OpenMenuNameSettings(client);
+			}
+		}
+
+		else if (action == MenuAction_Cancel && choice == -6)   OpenMenuNameSettings(client);
 		else if (action == MenuAction_End)					  menu.Close();
 		tagindex = 1;
 	}
@@ -1606,8 +1701,18 @@ public Action MatchPeriodBreakTimer(Handle timer, any time)
 {
 	char matchTimerMessage[32] = "";
 
-	if (matchPeriods > 2) matchTimerMessage = "Period break: ";
-	else matchTimerMessage = "Half time: ";
+	if (matchPeriods > 2) 
+	{
+		matchTimerMessage = "Period break: ";
+		HostName_Change_Status("Periodbreak");
+	}
+	else 
+	{
+		matchTimerMessage = "Half time: ";
+		HostName_Change_Status("Halftime");
+	}
+	
+	HostName_Change_Status("Halftime");
 
 	char timeString[16];
 	getTimeString(timeString, time);
@@ -1620,6 +1725,8 @@ public Action MatchPeriodBreakTimer(Handle timer, any time)
 
 		ServerCommand("mp_restartgame 1");
 		KillMatchTimer();
+		
+		HostName_Change_Status("Match");
 
 		if (matchToss == 2) matchToss = 3;
 		else matchToss = 2;
@@ -1633,7 +1740,9 @@ public Action MatchGoldenGoalTimer(Handle timer, any time)
 
 	char timeString[16];
 	getTimeString(timeString, time);
-
+	
+	HostName_Change_Status("Match");
+	
 	for (int player = 1; player <= MaxClients; player++)
 	{
 		if (IsClientInGame(player) && IsClientConnected(player))
@@ -1690,6 +1799,8 @@ public Action DelayMatchEnd(Handle timer)
 	char timeString[16];
 	getTimeString(timeString, matchTime);
 	
+	HostName_Change_Status("Reset");
+	
 	PlaySound("soccermod/endmatch.wav");
 
 	for (int player = 1; player <= MaxClients; player++)
@@ -1705,6 +1816,7 @@ public Action DelayMatchEnd(Handle timer)
 
 	ShowManOfTheMatch();
 	MatchReset();
+	NameReset();
 	ForfeitReset();
 	ServerCommand("mp_restartgame 5");
 }
@@ -1731,7 +1843,28 @@ public void MatchReset()
 
 	matchScoreT = 0;
 	matchScoreCT = 0;
+}
+
+public void NameReset()
+{
+	HostName_Change_Status("Reset");
 	
+	if (!(StrEqual(default_name_ct, custom_name_ct))) 	
+	{
+		if(!(StrEqual(default_name_ct, "")))
+		{
+			custom_name_ct = default_name_ct;
+			default_name_ct = "";
+		}
+	}
+	if (!(StrEqual(default_name_t, custom_name_t)))		
+	{
+		if(!(StrEqual(default_name_t, "")))
+		{
+			custom_name_t = default_name_t;	
+			default_name_t = "";
+		}
+	}
 }
 
 public void MatchStart(int client)
@@ -1756,7 +1889,7 @@ public void MatchStart(int client)
 
 		if (matchPeriodLength != 900) cdTime = float(matchPeriodLength/2);
 		if (ForfeitRRCheck == true) ffRRCheckTimer = CreateTimer(120.0, RRCheckTimer);
-		
+				
 		for (int player = 1; player <= MaxClients; player++)
 		{
 			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has started a match", prefixcolor, prefix, textcolor, client);
@@ -1797,6 +1930,8 @@ public void MatchStart(int client)
 				CreateMatchLog(custom_name_ct, custom_name_t);
 			}
 		}
+		
+		HostName_Change_Status("Match");
 
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -1897,6 +2032,7 @@ public void MatchStop(int client)
 			showPanel = false;
 		}
 		MatchReset();
+		NameReset();
 		UnfreezeAll();
 
 		for (int player = 1; player <= MaxClients; player++)
@@ -1970,6 +2106,8 @@ public void EndStoppageTime()
 				PlaySound("soccermod/halftime.wav");
 
 				FreezeAll();
+				
+				HostName_Change_Status("Golden");
 
 				for (int player = 1; player <= MaxClients; player++)
 				{
@@ -1995,6 +2133,7 @@ public void EndStoppageTime()
 
 				ShowManOfTheMatch();
 				MatchReset();
+				NameReset();
 				ForfeitReset();
 				ServerCommand("mp_restartgame 5");
 			}
