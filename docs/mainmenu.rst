@@ -23,7 +23,7 @@ Alot of settings and features of SoMoE-19 are accessible from its included menu.
  - **bold** sections require rcon sourcemod admin privileges.
  - sections marked with an "^" require an external plugin to be running on the server to appear.
 
-	.. admonition:: !menu
+	.. code-block:: none
 		
 		!menu
 		├─ *Admins*

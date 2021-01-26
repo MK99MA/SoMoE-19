@@ -143,8 +143,7 @@ As the name suggests, this section features settings related to the match info m
 		"soccer_mod_matchlog_info"      "0"
 
 	.. attention:: Every key in this section is changeable ingame, so there is no need to edit them manually.
-	Each value can either be 0 - Off or 1 - On.
-
+		Each value can either be 0 - Off or 1 - On.
 
  - **soccer_mod_period_info** controls the display of the period length in the message.
  - **soccer_mod_break_info** controls the display of the break length in the message.

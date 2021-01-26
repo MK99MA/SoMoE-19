@@ -37,6 +37,7 @@ Hence it is better to only add relevant folders to the list, like this:
 With the above setup a skin which is located in
 
 	.. code-block:: none
+	
 		models\player\tusharsl
 		materials\models\player\tusharsl
 		
