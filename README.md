@@ -23,7 +23,7 @@ I incorporated parts of the following plugins and only modified them partially t
   
 ## If you come across any problems or questions check out the  
 
-[>>DOCUMENTATION<<](https://somoe-19.readthedocs.io/en/latest/index.html).
+## [>>DOCUMENTATION<<](https://somoe-19.readthedocs.io/en/latest/index.html).
 
 If the problem / question remains feel free to create an issue [here](https://github.com/MK99MA/soccermod-2019edit/issues)  
   
