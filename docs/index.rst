@@ -4,7 +4,7 @@
 
 .. _main:
 
-Welcome to the SoMoE-19 documentation!
+Welcome to the `SoMoE-19 <https://github.com/MK99MA/SoMoE-19>`_ documentation!
 ======================================
 
 .. toctree::
