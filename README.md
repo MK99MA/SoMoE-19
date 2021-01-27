@@ -1,9 +1,8 @@
-# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.2.6)  
+# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.2.7)  
 
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
-
-## [>>DOWNLOAD<< Please still read all the information below](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#installation)  
+  
   
 ## Credits:
 I incorporated parts of the following plugins and only modified them partially to my needs or in a way so they would fit all into one plugin file. Therefore almost all credit should go to:  
@@ -15,178 +14,12 @@ I incorporated parts of the following plugins and only modified them partially t
   Not included in soccer_mod.smx but relied on:  
   ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095  
   
-## Example Changes
-### New:
-#### Centralized and generated config files in cfg/sm_soccermod:  
-  ● logs - Location for old soccer_mod_last_match.txt; Renamed to: match_CTName_vs_TName_Date.txt  
-  ● soccer_mod.cfg - Main Config updates with ingame changes  
-  ● soccer_mod_admins.cfg - SoccerMod Admin File, add and remove player ingame  
-  ● soccer_mod_allowed_maps.cfg - Allowed maps, addable ingame  
-  ● soccer_mod_cap_positions.txt  
-  ● soccer_mod_downloads.cfg - Add the directories player should download in here  
-  ● soccer_mod_GKAreas.cfg - Coords for the area in which players should get additional pts for saves  
-  ● soccer_mod_last_match.txt - Transcript of the last match (Time, Scorer, Assist) if enabled  
-  ● soccer_mod_skins.cfg - List of models, changeable ingame. You have to add them to the file manually!  
-    
-#### Admin Management:  
-![AdminManagementImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/adminmgmt.png)   
- ● Admin Lists for Sourcemod (admins.cfg(recommended) and admins_simple.ini) and Soccermod Admins  
- ● Online List, showing everyone who can access the admin portion of the menu  
- ● Add or remove Soccermod only Admins, granting only access to the adminmenu  
- ● Creates a Backup of your original admins.cfg upon first start, as well as copying existing Admins to the new file    
- ● Add Sourcemod Admins ingame (Full Admin = 99:z flags, Custom Admin allows manual input; b Flag is still required for Soccermod)  
- ● Promote a Soccermod Admin to a Sourcemod Admin ingame  
   
-#### Chat Settings:  
-![ChatSetImage](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/chatsettings.png)  
- ● Toggleable DeadChat, with different visibility settings  
- ● Customizable Chat messages (Prefix, Prefixcolor, Textcolor)  
-  
-#### Match Menu:  
-![MatchSet](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchmenu.png)  
- ● Match menu reworked + added display of certain settings  
- ● Match Log: Contents of "soccer_mod_last_match.txt" viewable in a menu (if Match Log is enabled)  
- ● Match settings changeable ingame (Image of the menu below)    
- ● Possibility to rename the teams (custom, default, clantag of a player)
-  
-#### Misc:
- ● Added toggleable duckjump block script  
- ● Added toggleable password change after starting a cap and hitting a set threshold (Image of the menu below)  
- ● While the serverlock is enabled a simple AFK Kicker is enabled (Configurable times)  
- ● Switchable modes - Public menu, public cap/match, admins only (Image of the menu below)  
- ● New entries in settings menu + added display of certain settings (Image of the menu below)   
- ● Rearranged a few menu options    
-
-#### Misc Commands:
- ● (RCONFLAG ADMIN ONLY) !addadmin <steamid> <flags> <name> - adds an entry with the specified values to the admins_simple.ini  
- ● (RCONFLAG ADMIN ONLY) !pass <password> - Set the current sv password  
- ● !admins - Shows a list of online admins  
- ● !maprr - Simply reload the current map
-  
-#### MatchLog aka "soccer_mod_last_match.txt":  
- ● Toggleable (On, Off, Time-Based)  
- ● Time-Based mode to enable the log only for certain days or a certain time window   
- ● Teamnames are listed at the top  
- ● Goals are saved to a textfile with a timestamp, the scorer & assister names (in case of an owngoal the assistername will be set to "Owngoal")  
- ● Goals added by a referee will say "Added by referee" for its scorername  
- ● Removed goals will be deleted IF they are removed immediately / before a new score is added  
- ● Given Cards will be listed separately with a timestamp, the target and the type of card  
- ● A per player match overview is also added, showing a players stats for that specific match (Goals, Assists, Owngoals)  
- ● Even though players should not change their name during an (official) match, the log will keep track of changes up to a certain point  
- ● [Example Output](https://github.com/MK99MA/soccermod-2019edit/blob/master/README.md#example-matchlog-file)  
- 
-#### Map:  
- ● I added a recompiled version of ka_soccer_xsl_stadium_b1, so expect differences in the ball behaviour  
- 
-### Modified:
- ● Toggleable MVP stars & messages  
- ● Replaced "Hold-shift" Sprint with walmars ShortSprint  
- ● Reduced restart time when a match starts from 5 secs to 1 sec  
- ● Unpausing countdown will also display as centertext  
- ● Every mod chat message will use the set chat settings  
-  
-### Removed:
- ● Code to auto-spectate players during a match if they would exceed a set threshold  
- 
-## MISC  
-
-![lockimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/lockmenu.png)
-![pubimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/pubmode.png)
-![setimg](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/settingsmenu.png)
-![matchset](https://github.com/MK99MA/soccermod-2019edit/blob/master/images/matchsettings.png)  
-
-#### Example MatchLog file:  
-```
-"Match Log"
-{
-	"CT_vs_» Phoenix |"
-	{
-		"CT"		"CT"
-		"T"		"» Phoenix |"
-	}
-	"Scoresheet"
-	{
-		"0:1"
-		{
-			"Time:"		"00:01"
-			"Scorer:"		"🎀 Kurisu 🌸 [U:X:XXXXXXXX]"
-		}
-		"0:2"
-		{
-			"Time:"		"00:04"
-			"Scorer:"		"🎀 Kurisuu 🌸 [U:X:XXXXXXXX]"
-		}
-		"0:3"
-		{
-			"Time:"		"00:19"
-			"Scorer:"		"🎀 Kurisuu 🌸 [U:X:XXXXXXXX]"
-		}
-		"0:4"
-		{
-			"Time:"		"00:51"
-			"Scorer:"		"🎀 Kurisu 🌸 [U:X:XXXXXXXX]"
-		}
-	}
-	"Playerstats"
-	{
-		"[U:X:XXXXXXXX]"
-		{
-			"Name:"		"🎀 Kurisu 🌸"
-			"Goals:"		"4"
-			"Assists:"		"0"
-			"Owngoals:"		"0"
-			"Other Names:"		"🎀 Kurisu 🌸 | 🎀 Kurisuu 🌸"
-		}
-	}
-	"Cards"
-	{
-		"00:14"
-		{
-			"Card:"		"Yellow Card"
-			"Player:"		"🎀 Kurisuu 🌸"
-		}
-	}
-}
-
-```  
-  
-## Installation
-### 1. Download the required plugins
-Click the links and select the correct download for your server (Linux or Windows). Save the zip files in the same location, for example on your desktop.  
-
-To run Soccer Mod on your server you need the following plugins:  
- ● Metamod:Source 1.10 or higher  
-http://www.sourcemm.net/downloads.php?branch=stable  
-  
- ● SourceMod 1.10 or higher  
-https://www.sourcemod.net/downloads.php?branch=stable  
-  
- ● (OPTIONAL BUT RECOMMENDED) Updater.smx  
-Adding this to your server will allow you to automatically update the plugin whenever a new version is uploaded. For more information check the [alliedmodders thread](https://forums.alliedmods.net/showthread.php?p=1570806).  
-[Steamworks](http://users.alliedmods.net/~kyles/builds/SteamWorks/)  
-[Updater](https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx)  
-  
- ● Soccer Mod (2019 Edit)  
-https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.5 
+## [>>DOWNLOAD (Archive) <<](https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.7)  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
 [>>Previous Versions<< In case of any major issues](https://github.com/MK99MA/soccermod-2019edit/blob/master/addons/sourcemod/plugins/old/)  
-### New and Upcoming changes, as well as possible additions can be found (and requested) [here](https://github.com/MK99MA/soccermod-2019edit/issues/1)  
+
+## [>>INSTALL INSTRUCTIONS<<](https://somoe-19.readthedocs.io/en/latest/install.html)  
   
- ● (OPTIONAL) Download soccer skins  
- [>>Default skins download<< if you need them](https://github.com/MK99MA/soccermod-2019edit/raw/master/skins/termi/termi_models.zip)  
- [>Alternate skins download<](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins#alternative-skins-screenshots-below)  
-### If you are using alternate skins make sure to edit cfg/sm_soccermod/soccer_mod_skins.cfg AND cfg/sm_soccermod/soccer_mod_downloads.cfg!! Follow [this](https://github.com/MK99MA/soccermod-2019edit/tree/master/skins/EXAMPLE_soccer_mod_skins.cfg) and [this](https://github.com/MK99MA/soccermod-2019edit/blob/master/skins/EXAMPLE_soccer_mod_downloads.cfg) for example files.  
+## If you come across any problems or questions check out the [>>DOCUMENTATION<<](https://somoe-19.readthedocs.io/en/latest/index.html), If the problem / question remains feel free to create an issue [here](https://github.com/MK99MA/soccermod-2019edit/issues)  
   
-### 2. Extract the zip files
-Right click on each zip file and select "Extract Here". After extracting the zip files you should have 4 folders on your desktop:  
- ● addons  
- ● cfg  
- ● materials  
- ● models  
-  
-### 3. Copy or upload the folders
-Copy or upload the folders to your server's "cstrike" folder, for example:  
- ● D:\Servers\Counter-Strike Source\cstrike (local server)  
- ● /home/cstrike (hosted server)  
-  
-Soccer Mod is now fully installed and will be loaded automatically when the server is restarted.

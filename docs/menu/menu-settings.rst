@@ -119,6 +119,16 @@ This menu provides a quick and separated overview over your admins. It is divide
 
 ----
 
+.. _online-list:
+
+***********
+Online List
+***********
+
+This menu provides a quick overview over the admins currently on the server.
+
+----
+
 .. _allowed-maps:
 
 ------------
