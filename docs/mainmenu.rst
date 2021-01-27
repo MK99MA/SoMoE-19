@@ -154,7 +154,7 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 ├─ Positions
 		 ├─ Help
 		 │  ├─ Chat Commands
-		 │  │  ├─ *Admin Commands*
+		 │  │  ├─ Admin Commands (*)
 		 │  │  └─ Public Command List
 		 │  │
 		 │  └─ Guide
@@ -165,5 +165,5 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     └─ Timer Color Settings
 		 │        └─ Timer Color
 		 │
-		 ├─ Shouts^
+		 ├─ Shouts (#)
 		 └─ Credits
