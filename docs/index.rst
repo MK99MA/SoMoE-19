@@ -8,7 +8,7 @@ Welcome to the SoMoE-19 documentation!
 ======================================
 
 .. toctree::
-    :caption: Credits:
+    :caption: Current Version: 1.2.7:
     
     credits
     features
@@ -47,6 +47,7 @@ Welcome to the SoMoE-19 documentation!
 
     mainmenu
     menu/menu-admin
+	menu/menu-settings
     menu/menu-ranking
     menu/menu-statistics
     menu/menu-positions

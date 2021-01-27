@@ -249,7 +249,13 @@ General commands
 	.. code-block:: none
 	
 		Re-opens the Readycheck panel if its enabled and the game was paused	
-		
+
+**sm_lc / !lc**
+
+	.. code-block:: none
+	
+		Displays an accurate numbered list of players. People leaving will only be completely removed from their position after being away for a specified timeframe. If a player leaves he won't be visible on the list and only reappear if he rejoins.
+
 **sm_rank / !rank**
 
 	.. code-block:: none

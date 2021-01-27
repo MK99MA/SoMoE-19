@@ -11,6 +11,8 @@ An area that is too small could prevent the goalkeepers from receiving deserved 
 	.. attention:: Except for the 2 generated entries you have to manually add the entries for any map you intend to use. It is possible that different maps will use he coordinates if the creators used the same position and orientation. 
 	
 		You can use *cl_drawpos 1* to display the coordinates of your current position.
+		
+	.. note:: This file might become obsolete in the future. At least it is planned to add an auto-detection system based on the trigger_once entity used in goals...
 	
 The file, in case it wasn't generated properly should look like this:
 
@@ -34,6 +36,29 @@ The file, in case it wasn't generated properly should look like this:
 				"t_max_z"       "120"
 			}
 			"ka_soccer_avalon_v8"
+			{
+				"ct_min_x"      "-313"
+				"ct_max_x"      "313"
+				"ct_min_y"      "-1379"
+				"ct_max_y"      "-1188"
+				"ct_min_z"      "0"
+				"ct_max_z"      "120"
+				"t_min_x"       "-313"
+				"t_max_x"       "313"
+				"t_min_y"       "1188"
+				"t_max_y"       "1379"
+				"t_min_z"       "0"
+				"t_max_z"       "120"
+			}
+		}
+		
+Other known setups:
+
+	.. code-block:: none
+	
+		"gk_areas"
+		{
+			"ka_soccer_comp_2020_final_v1_fix"
 			{
 				"ct_min_x"      "-313"
 				"ct_max_x"      "313"
