@@ -6,7 +6,7 @@ soccer_mod_downloads.cfg
 
 **soccer_mod_downloads.cfg** is a config determining which subdirectories and files a client should download when joining the server. Usually you want to add every skin / model you intend to use in here but also sounds or other materials.
 
-	.. attention:: You have to manually edit this file!
+.. attention:: You have to manually edit this file!
 	
 Each line of the file has to start with **soccer_mod_downloads_add_dir** followed by a path.
 The easiest setup regarding skins would be:

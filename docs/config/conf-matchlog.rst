@@ -6,7 +6,7 @@ soccer_mod_matchlogsettings.cfg
 
 **soccer_mod_matchlogsettings.cfg** is a config storing settings to determine when SoMoE-19 should automatically turn on its matchlog feature.
 
-	.. attention:: These settings can be changed ingame. Editing them manually should be fine too.
+.. attention:: These settings can be changed ingame. Editing them manually should be fine too.
 	
 The structure of the file looks like this:
 

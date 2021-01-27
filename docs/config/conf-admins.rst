@@ -6,7 +6,7 @@ soccer_mod_admins.cfg
 
 **soccer_mod_admins.cfg** is the config storing so-called "SoccerMod Admins". SoMoE-19 uses both, Sourcemod admins as well as it's own admin file to determine which player can access which aspects of the plugin.
 
-	.. attention:: SoccerMod Admins are supposed to be added ingame. It is possible to edit the file manually, but theres no real need to do so.
+.. attention:: SoccerMod Admins are supposed to be added ingame. It is possible to edit the file manually, but theres no real need to do so.
 
 The structure of the file looks like this:
 

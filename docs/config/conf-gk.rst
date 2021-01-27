@@ -8,7 +8,7 @@ soccer_mod_GKAreas.cfg
 
 An area that is too small could prevent the goalkeepers from receiving deserved saves, an area that is too big could reward defensive players with saves for regular interceptions. The coordinates provided in the generated configuration file are the same size as the 5m-boxes / 6yd-boxes in front of the goals and as high as the goals..
 
-	.. attention:: Except for the 2 generated entries you have to manually add the entries for any map you intend to use. It is possible that different maps will use he coordinates if the creators used the same position and orientation. 
+.. attention:: Except for the 2 generated entries you have to manually add the entries for any map you intend to use. It is possible that different maps will use he coordinates if the creators used the same position and orientation. 
 	
 		You can use *cl_drawpos 1* to display the coordinates of your current position.
 		

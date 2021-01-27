@@ -6,7 +6,7 @@ soccer_mod_mapdefaults.cfg
 
 **soccer_mod_mapdefaults.cfg** is the config storing your per-map default values.
 
-	.. attention:: Except for the generated entry you have to manually add the entries for any map you intend to use. 
+.. attention:: Except for the generated entry you have to manually add the entries for any map you intend to use. 
 	
 At the time of writing this documentation there are 3 supported values:
 

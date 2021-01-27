@@ -6,7 +6,7 @@ soccer_mod_skins.cfg
 
 **soccer_mod_skins.cfg** is the config storing every skin you want to use ingame. While only 2 skins per team (normal + gk) can be active at a time, you can freely switch between any skins declared inside this file.
 
-	.. attention:: This has to be done manually for every skin you intend to use!
+.. attention:: This has to be done manually for every skin you intend to use!
 	
 The generated file comes with support for Termi's skins, which are considered the default soccer skins.
 
