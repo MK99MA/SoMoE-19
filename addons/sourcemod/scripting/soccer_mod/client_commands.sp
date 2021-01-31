@@ -35,9 +35,11 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "[RCONFLAG]Reset the sv password");
 	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "[RCONFLAG]Forces Ready state for every player");
 	RegAdminCmd("sm_forceunp", Command_ForceUnpause, ADMFLAG_RCON, "[RCONFLAG]Forces the match to unpause");
+	RegAdminCmd("sm_gksetup", Command_GKSetup, ADMFLAG_RCON, "[RCONFLAG]Menu to setup gk areas.");
 	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "[RCONFLAG]Set the sv password");
 	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "[RCONFLAG]Set a random server password");
 	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "[GENERICFLAG]Shortcut to the Settings menu");
+	RegAdminCmd("sm_spray", Command_RemoveSpray, ADMFLAG_GENERIC, "[GENERICFLAG] Remove the spray you're looking at");
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG]Prints your current clantag - Test");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
 	RegAdminCmd("sm_wiperanks", Command_WipeRanks, ADMFLAG_RCON, "[RCONFLAG]Wipes the given ranking table");
@@ -282,6 +284,8 @@ public Action MatchRRCommand(int client, int args)
 						CreateMatchLog(custom_name_ct, custom_name_t);
 					}
 				}
+				
+				HostName_Change_Status("Match");
 			}
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
@@ -529,6 +533,14 @@ public Action CreditsCommand(int client, int args)
 // *******************************************************************************************************************
 // ************************************************ ADMIN COMMANDS ***************************************************
 // ******************************************************************************************************************* 
+
+public Action Command_GKSetup(int client, int args)
+{
+	OpenGKAreaPanel(client);
+	
+	return Plugin_Handled;
+}
+
 public Action Command_WipeRanks(int client, int args)
 {
 	if(args < 1)
@@ -714,7 +726,7 @@ public Action Command_Pass(int client, int args)
 	if (args < 1)
 	{
 		FakeClientCommandEx(client, "sm_cvar sv_password");
-		CPrintToChat(client, "{%s}[%s]Check your console for the current password", prefixcolor, prefix);
+		CPrintToChat(client, "{%s}[%s] Check your console for the current password", prefixcolor, prefix);
 	}
 	
 	return Plugin_Handled;
@@ -728,17 +740,118 @@ public Action Command_TimeTest(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Command_Test(int client, int args)
+public Action Command_RemoveSpray(int client, int args) 
 {
-	SetEntityMoveType(client, MOVETYPE_NONE);
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	float vecPos[3];
+
+	if (GetClientEyeEndLocation(client, vecPos)) 
+	{
+		float remPos[3];
+		char szAdminName[32];
+		GetClientName(client, szAdminName, 31);
+		
+		GetClientAbsOrigin(client, remPos);
+
+	 	for (int i = 1; i <= MaxClients; i++) 
+		{
+			if (GetVectorDistance(remPos, vecPos) <= 400.0)//sprayVector[i]) <= 300.0) 
+			{
+				float vecEndPos[3];
+				
+				vecEndPos[0] = remPos[0];
+				vecEndPos[1] = remPos[1];
+				vecEndPos[2] = remPos[2]-100.0;
+
+				SprayDecal(i, 0, vecEndPos);
+
+				sprayVector[i][0] = 0.0;
+				sprayVector[i][1] = 0.0;
+				sprayVector[i][2] = 0.0;
+
+				CPrintToChat(client, "{%s}[%s] Spray By %s (%s) removed.", prefixcolor, prefix, sprayName[i], sprayID[i]);
+
+				return Plugin_Handled;
+			}
+		}
+	}
+	
+	CPrintToChat(client, "{%s}[%s] No Spray found", prefixcolor, prefix);
+
 	return Plugin_Handled;
 }
+
+/*public Action Command_Test(int client, int args)
+{
+	
+	OpenGKAreaPanel(client);
+	if(xorientation) PrintToChatAll("X");
+	else PrintToChatAll("Y");
+	
+	if(lcPanelArray.FindValue(client) != -1)		
+	{
+		PrintToChatAll("in list");
+	}
+	AdvMOTD_ShowMOTDPanel(client, "SoMoE-19 Documentation", "https://somoe-19.readthedocs.io/en/latest/index.html", MOTDPANEL_TYPE_URL, true, true, true, OnMOTDFailure)
+	
+	CapStartFight(client);
+	
+	return Plugin_Handled;
+}*/
 
 // *******************************************************************************************************************
 // *********************************************** UTILITY FUNCTIONS *************************************************
 // *******************************************************************************************************************
 
-// *********************************************** FORFEIT FUNCTIONS *************************************************
+// ************************************************ SPRAY FUNCTIONS *************************************************
+public void SprayDecal(int client, int entIndex, float vecPos[3]) 
+{
+	if (!IsValidClient(client))
+		return;
+
+	TE_Start("Player Decal");
+	TE_WriteVector("m_vecOrigin", vecPos);
+	TE_WriteNum("m_nEntity", entIndex);
+	TE_WriteNum("m_nPlayer", client);
+	TE_SendToAll();
+}
+
+public bool ValidSpray(int entity, int contentsMask)
+{
+	return entity > MaxClients;
+}
+
+public bool GetClientEyeEndLocation(int client, float vector[3])
+{
+	if(!IsValidClient(client))
+	{
+		return false;
+	}
+	
+	float vOrigin[3];
+	float vAngles[3];
+
+	GetClientEyePosition(client, vOrigin);
+	GetClientEyeAngles(client, vAngles);
+
+	Handle hTraceRay = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_SHOT, RayType_Infinite, ValidSpray);
+
+	if(TR_DidHit(hTraceRay))
+	{
+		TR_GetEndPosition(vector, hTraceRay);
+		//DrawLaser("gk_area_beam", vOrigin[0], vOrigin[1], vOrigin[2], vector[0], vector[1], vector[2], "255 255 255");
+		CloseHandle(hTraceRay);
+		
+		return true;
+	}
+
+	CloseHandle(hTraceRay);
+	
+	return false;
+}
+
 // CD Timer
 public Action ForfeitCDTimer(Handle timer)
 {

@@ -210,6 +210,7 @@ This section features miscellaneous settings that do not fit into any of the oth
 			"soccer_mod_hostname"           "1"
 			"soccer_mod_rrchecktime"        "90.0"
 			"soccer_mod_loaddefaults"       "1"
+			"soccer_mod_killfeed"           "0"
 		}
 		
 .. attention:: Most keys in this section are changeable ingame. Exceptions are *soccer_mod_health_godmode* and *soccer_mod_respawn_delay* which usually should not be changed at all.
@@ -298,7 +299,7 @@ As the name suggests, this section features settings related to the stats system
 			"soccer_mod_ranking_points_pass"          "5"
 			"soccer_mod_ranking_points_interception"  "3"
 			"soccer_mod_ranking_points_ball_loss"     "-3"
-			"soccer_mod_ranking_points_save"          "8"
+			"soccer_mod_ranking_points_save"          "6"
 			"soccer_mod_ranking_points_round_won"     "10"
 			"soccer_mod_ranking_points_round_lost"    "-10"
 			"soccer_mod_ranking_points_mvp"           "15"

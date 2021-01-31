@@ -154,6 +154,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_hostname", 						hostnameToggle);
 	kvConfig.SetFloat("soccer_mod_rrchecktime",					rrchecktime);
 	kvConfig.SetNum("soccer_mod_loaddefaults",					defaultSet);
+	kvConfig.SetNum("soccer_mod_killfeed",						killfeedSet);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -506,6 +507,7 @@ public void ReadFromConfig()
 	hostnameToggle			= kvConfig.GetNum("soccer_mod_hostname", 1);
 	rrchecktime				= kvConfig.GetFloat("soccer_mod_rrchecktime",	90.0);
 	defaultSet				= kvConfig.GetNum("soccer_mod_loaddefaults", 1);
+	killfeedSet				= kvConfig.GetNum("soccer_mod_killfeed", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -535,7 +537,7 @@ public void ReadFromConfig()
 	rankingPointsForPass			= kvConfig.GetNum("soccer_mod_ranking_points_pass", 5);
 	rankingPointsForInterception	= kvConfig.GetNum("soccer_mod_ranking_points_interception",3);
 	rankingPointsForBallLoss		= kvConfig.GetNum("soccer_mod_ranking_points_ball_loss", -3);
-	rankingPointsForSave			= kvConfig.GetNum("soccer_mod_ranking_points_save", 8);
+	rankingPointsForSave			= kvConfig.GetNum("soccer_mod_ranking_points_save", 6);
 	rankingPointsForRoundWon		= kvConfig.GetNum("soccer_mod_ranking_points_round_won", 10);
 	rankingPointsForRoundLost		= kvConfig.GetNum("soccer_mod_ranking_points_round_lost", -10);
 	rankingPointsForMVP				= kvConfig.GetNum("soccer_mod_ranking_points_mvp", 15);

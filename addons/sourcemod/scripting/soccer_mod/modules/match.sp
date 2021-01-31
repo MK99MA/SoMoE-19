@@ -1668,8 +1668,24 @@ public Action MatchPeriodTimer(Handle timer, any time)
 			if (!IsModelPrecached("models/props/cs_office/vending_machine.mdl")) PrecacheModel("models/props/cs_office/vending_machine.mdl");
 			SetEntityModel(index, "models/props/cs_office/vending_machine.mdl");
 
-			float minbounds[3] = {-2000.0, -1.0, -10.0};
-			float maxbounds[3] = {2000.0, 1.0, 5000.0};
+			float minbounds[3]
+			float maxbounds[3]
+			if(xorientation)
+			{
+				float xminbounds[3] = {-2000.0, -1.0, -10.0};
+				float xmaxbounds[3] = {2000.0, 1.0, 5000.0};
+				
+				minbounds = xminbounds;
+				maxbounds = xmaxbounds;
+			}
+			else
+			{
+				float yminbounds[3] = {-1.0, -2000.0, -10.0};
+				float ymaxbounds[3] = {1.0, 2000.0, 5000.0};
+				
+				minbounds = yminbounds;
+				maxbounds = ymaxbounds;
+			}
 			SetEntPropVector(index, Prop_Send, "m_vecMins", minbounds);
 			SetEntPropVector(index, Prop_Send, "m_vecMaxs", maxbounds);
 

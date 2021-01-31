@@ -46,8 +46,11 @@ public void StatsOnTakeDamage(int ball, int client)
 
 	float ballPosition[3];
 	GetEntPropVector(ball, Prop_Send, "m_vecOrigin", ballPosition);
+	
+	int prevhitteam;
+	if (statsLastHitId) prevhitteam = GetClientTeam(statsLastHitId);
 
-	if (statsSaver)
+	if (statsSaver) //CHECK LASTHIT = ENEMYTEAM
 	{
 		if (IsClientConnected(statsSaver))
 		{
@@ -87,13 +90,13 @@ public void StatsOnTakeDamage(int ball, int client)
 
 		statsSaver = 0;
 	}
-
+	// vorheriger hit von einem gegner?
 	if (team == 3 && 
 		statsCTGKAreaMinX <= ballPosition[0] <= statsCTGKAreaMaxX && 
 		statsCTGKAreaMinY <= ballPosition[1] <= statsCTGKAreaMaxY && 
 		statsCTGKAreaMinZ <= ballPosition[2] <= statsCTGKAreaMaxZ)
 	{
-		statsSaver = client;
+		if (prevhitteam == 2) statsSaver = client;
 		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the CT gk area", prefixcolor, prefix, textcolor, client);
 	}
 	else if (team == 2 && 
@@ -101,7 +104,7 @@ public void StatsOnTakeDamage(int ball, int client)
 		statsTGKAreaMinY <= ballPosition[1] <= statsTGKAreaMaxY && 
 		statsTGKAreaMinZ <= ballPosition[2] <= statsTGKAreaMaxZ)
 	{
-		statsSaver = client;
+		if (prevhitteam == 3) statsSaver = client;
 		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the T gk area", prefixcolor, prefix, textcolor, client);
 	}
 
@@ -322,6 +325,8 @@ public void StatsOnTakeDamage(int ball, int client)
 
 	statsKeygroupRound.Rewind();
 	statsKeygroupMatch.Rewind();
+	
+	statsLastHitId = client;
 
 	// keygroupRound.ExportToFile(statsKeygroupRound);
 	// keygroupMatch.ExportToFile(statsKeygroupMatch);
@@ -394,7 +399,7 @@ public void StatsEventRoundStart(Event event)
 
 	kvGKArea.Close();
 
-	if (statsCTGKAreaMinX != 0 && statsCTGKAreaMinY != 0 && statsCTGKAreaMinZ != 0 && statsCTGKAreaMaxX != 0 && statsCTGKAreaMaxY != 0 && statsCTGKAreaMaxZ != 0 && 
+	/*if (statsCTGKAreaMinX != 0 && statsCTGKAreaMinY != 0 && statsCTGKAreaMinZ != 0 && statsCTGKAreaMaxX != 0 && statsCTGKAreaMaxY != 0 && statsCTGKAreaMaxZ != 0 && 
 		statsTGKAreaMinX != 0 && statsTGKAreaMinY != 0 && statsTGKAreaMinZ != 0 && statsTGKAreaMaxX != 0 && statsTGKAreaMaxY != 0 && statsTGKAreaMaxZ != 0)
 	{
 		DrawLaser("gk_area_beam", statsCTGKAreaMinX, statsCTGKAreaMinY, statsCTGKAreaMinZ, statsCTGKAreaMaxX, statsCTGKAreaMinY, statsCTGKAreaMinZ, "0 0 255");
@@ -422,7 +427,7 @@ public void StatsEventRoundStart(Event event)
 		DrawLaser("gk_area_beam", statsTGKAreaMaxX, statsTGKAreaMinY, statsTGKAreaMinZ, statsTGKAreaMaxX, statsTGKAreaMinY, statsTGKAreaMaxZ, "255 0 0");
 		DrawLaser("gk_area_beam", statsTGKAreaMinX, statsTGKAreaMaxY, statsTGKAreaMinZ, statsTGKAreaMinX, statsTGKAreaMaxY, statsTGKAreaMaxZ, "255 0 0");
 		DrawLaser("gk_area_beam", statsTGKAreaMaxX, statsTGKAreaMaxY, statsTGKAreaMinZ, statsTGKAreaMaxX, statsTGKAreaMaxY, statsTGKAreaMaxZ, "255 0 0");
-	}
+	}*/
 }
 
 public void StatsEventRoundEnd(Event event)

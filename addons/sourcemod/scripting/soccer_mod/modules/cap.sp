@@ -451,7 +451,7 @@ public void CapStartFight(int client)
 					int rw = keygroup.GetNum("rw", 0);
 					int spec = keygroup.GetNum("spec", 0);
 
-					if (!(gk || lb || rb || mf || lw || rw > 0) || spec > 0)
+					if (spec > 0 || !(gk || lb || rb || mf || lw || rw > 0))
 					{
 						OpenCapPositionMenu(player);
 						noPos = true;

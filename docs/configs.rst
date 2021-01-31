@@ -45,7 +45,7 @@ List of generated files
 | *MANUAL CONFIG* - Determines which files are downloaded to the clients when joining.
 
 | :ref:`conf-gk`
-| *MANUAL CONFIG* - Determines the areas around a goal needed to allow tracking of saves.
+| Determines the areas around a goal needed to allow tracking of saves. Setable from within the game.
 
 | :ref:`conf-last-match`
 | *NO CONFIG* - Storage for matchlogs (if activated). Old logs will be moved to /sm_soccermod/logs.

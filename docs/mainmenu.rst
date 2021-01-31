@@ -107,7 +107,8 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ Hostname Updater Toggle
 		 │     │  ├─ !rank Cooldown Setting
 		 │     │  ├─ Readycheck Toggle
-		 │     │  └─ Damage Sound Toggle
+		 │     │  ├─ Damage Sound Toggle
+		 │     │  └─ Killfeed Toggle
 		 │     │  
 		 │     ├─ Skin Settings (^)
 		 │     │  ├─ CT Skin

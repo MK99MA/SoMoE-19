@@ -91,7 +91,7 @@ public void OpenMenuMiscSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Misc");
 
-	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32]; //, DebugString[32];
+	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32]; //, DebugString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -115,6 +115,9 @@ public void OpenMenuMiscSettings(int client)
 	if(defaultSet == 0)					DefaultString = "Load Map Defaults: OFF";
 	else if (defaultSet == 1)			DefaultString = "Load Map Defaults: ON";
 	
+	if(killfeedSet == 0)				FeedString = "Killfeed: OFF";
+	else if (killfeedSet == 1)			FeedString = "Killfeed: ON";
+	
 	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
 	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
 	
@@ -128,6 +131,7 @@ public void OpenMenuMiscSettings(int client)
 	menu.AddItem("rankspam", RankString);
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
+	menu.AddItem("killfeed", FeedString);
 	/*if (debuggingEnabled == 1 && CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gk_areas", "Set gk areas");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("debugset", DebugString);*/
 
@@ -255,6 +259,21 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				defaultSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_loaddefaults", defaultSet);
+				OpenMenuMiscSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "killfeed"))
+		{
+			if(killfeedSet == 0)
+			{
+				killfeedSet = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_killfeed", killfeedSet);
+				OpenMenuMiscSettings(client);
+			}
+			else if(killfeedSet == 1)
+			{
+				killfeedSet = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_killfeed", killfeedSet);
 				OpenMenuMiscSettings(client);
 			}
 		}

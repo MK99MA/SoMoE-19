@@ -4,4 +4,4 @@
 Credits
 =======
 
-This submenu displays a list of basic credits and the plugin version. Please refer to `credits` for more information.
+This submenu displays provides a display of the plugin version and shortcut to view the credits. Please refer to `credits` for more information.

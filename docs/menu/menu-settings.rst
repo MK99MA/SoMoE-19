@@ -188,6 +188,7 @@ The following features are toggleable or changeable:
  - **!rank cooldown** - *Value* - Change the cooldown between !rank usages - 0 to disable.
  - **Ready Check** - *Toggle* - Select 1 of 3 modes of unpause handling (Default / Auto-Unpause if everyone ready / Block unpause unless everyone is ready).
  - **Damage Sounds** - *Toggle* - Enable or Disable hurt-sounds when being hit by the ball.
+ - **Killfeed** - *Toggle* - Enable or Disable the killfeed in the upper right corner.
  
 ----
 

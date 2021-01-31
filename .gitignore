@@ -27,15 +27,18 @@
 !/addons/sourcemod/scripting/soccer_mod
 !/addons/sourcemod/scripting/soccer_mod/*
 
-/addons/sourcemod/translations/
-/addons/sourcemod/scripting/WIP/
-/addons/sourcemod/scripting/WIP/*
-
-/addons/sourcemod/scripting/include/
-/addons/sourcemod/scripting/include/*
+!/addons/sourcemod/scripting/include/advanced_motd.inc
 !/addons/sourcemod/scripting/include/SteamWorks.inc
 !/addons/sourcemod/scripting/include/morecolors.inc
 !/addons/sourcemod/scripting/include/updater.inc
+
+/addons/sourcemod/scripting/include/
+/addons/sourcemod/scripting/include/*
+
+
+/addons/sourcemod/translations/
+/addons/sourcemod/scripting/WIP/
+/addons/sourcemod/scripting/WIP/*
 
 /skins
 /skins/*

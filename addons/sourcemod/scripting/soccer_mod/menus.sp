@@ -334,12 +334,11 @@ public void OpenMenuHelp(int client)
 
 	menu.AddItem("commands", "Chat Commands");
 
-	//Format(langString, sizeof(langString), "%T", "bind <key> say !sprint or +use key (default E) to sprint", client);
-	menu.AddItem("sprint","bind <key> say !sprint or +use key (default E) to sprint", ITEMDRAW_DISABLED);
+	menu.AddItem("docs", "Open Documentation");
+	
+	menu.AddItem("dl", "Print Git URL in console");
 
-	menu.AddItem("guide", "Guide");
-
-	menu.AddItem("docs", "Documentation");
+	menu.AddItem("docs2", "Print Docs URL in console");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -354,14 +353,29 @@ public int MenuHandlerHelp(Menu menu, MenuAction action, int client, int choice)
 
 		if (StrEqual(menuItem, "commands"))				 OpenMenuCommands(client);
 		else if (StrEqual(menuItem, "sprint"))			  OpenMenuHelp(client);
-		else if (StrEqual(menuItem, "guide"))
+		else if (StrEqual(menuItem, "dl"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/sharedfiles/filedetails/?id=267151106", prefixcolor, prefix, textcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}Check your console for the url.", prefixcolor, prefix, textcolor);
+			PrintToConsole(client, " ");
+			PrintToConsole(client, "----------------------------------");
+			PrintToConsole(client, "https://github.com/MK99MA/SoMoE-19");
+			PrintToConsole(client, "-----------------------------------");
+			
 			OpenMenuHelp(client);
 		}
 		else if (StrEqual(menuItem, "docs"))
 		{
-			CPrintToChat(client, "{%s}[%s] {%s}https://somoe-19.readthedocs.io/en/latest/index.html", prefixcolor, prefix, textcolor);
+			AdvMOTD_ShowMOTDPanel(client, "SoMoE-19 Documentation", "https://somoe-19.readthedocs.io/en/latest/index.html", MOTDPANEL_TYPE_URL, true, true, true, OnMOTDFailure)
+			OpenMenuHelp(client);
+		}
+		else if (StrEqual(menuItem, "docs2"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Check your console for the url.", prefixcolor, prefix, textcolor);
+			PrintToConsole(client, " ");
+			PrintToConsole(client, "----------------------------------------------------");
+			PrintToConsole(client, "https://somoe-19.readthedocs.io/en/latest/index.html");
+			PrintToConsole(client, "----------------------------------------------------");
+			
 			OpenMenuHelp(client);
 		}
 	}
@@ -458,8 +472,10 @@ public void OpenMenuCommandsAdmin(int client)
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("addadmin", "[RCON] !addadmin <SteamID>");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) menu.AddItem("rr", "[GENERIC / MATCH] !rr");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("settingscmd", "[GENERIC] !soccerset");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("spray", "[GENERIC] !spray");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forcerdycmd", "[RCON] !forcerdy");	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forceunpcmd", "[RCON] !forceunp");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gksetup", "[RCON] !gksetup");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "[RCON] !dpass");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "[RCON] !pass <PW>");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");
@@ -484,9 +500,11 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "forcerdycmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the state of everyone to ready during a readycheck.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "forceunpcmd"))	CPrintToChat(client, "{%s}[%s] {%s}Forces the match to unpause in case of a readycheck.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "settingscmd"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the settings menu.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "gksetup"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the panel to set or change gk area coordinates.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "spray"))	CPrintToChat(client, "{%s}[%s] {%s}Removes the spraylogo you're looking at.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "rankwipe"))	CPrintToChat(client, "{%s}[%s] {%s}Wipes the given ranking table. {%s}THIS IS NOT REVERSIBLE!!", prefixcolor, prefix, textcolor, "crimson");	
 
-		OpenMenuCommands(client);
+		OpenMenuCommandsAdmin(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuCommands(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -501,18 +519,13 @@ public void OpenMenuCredits(int client)
 
 	menu.SetTitle("Soccer Mod - Credits");
 
-	menu.AddItem("marco", "Marco Boogers (Script)");
-	
-	menu.AddItem("arturo", "Arturo (Script edits)");
-
-	menu.AddItem("termi", "Termiii (Player models)");
-
-	menu.AddItem("walmar", "Walmar (Shortsprint)");
-	
-	menu.AddItem("group", "Soccer Mod group");
 	char version[32]
 	Format(version, sizeof(version), "Soccer Mod version: %s", PLUGIN_VERSION);
 	menu.AddItem("group", version, ITEMDRAW_DISABLED);
+	
+	menu.AddItem("group", "Soccer Mod group");
+	
+	menu.AddItem("viewcreds", "View Credits");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -525,14 +538,24 @@ public int MenuHandlerCredits(Menu menu, MenuAction action, int client, int choi
 		char menuItem[32];
 		menu.GetItem(choice, menuItem, sizeof(menuItem));
 
-		if (StrEqual(menuItem, "marco"))		CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/id/fcd_marco/", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "arturo"))	CPrintToChat(client, "{%s}[%s] {%s}https://github.com/MK99MA/soccermod-2019edit", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "termi"))   CPrintToChat(client, "{%s}[%s] {%s}https://steamcommunity.com/id/Termiii/", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "walmar"))  CPrintToChat(client, "{%s}[%s] {%s}(c) 2009-2013 walmar - walmar.postbox@gmail.com - http://github.com/walmar", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "group"))   CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/groups/soccer_mod", prefixcolor, prefix, textcolor);
+		if (StrEqual(menuItem, "group"))   CPrintToChat(client, "{%s}[%s] {%s}http://steamcommunity.com/groups/soccer_mod", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "viewcreds")) AdvMOTD_ShowMOTDPanel(client, "SoMoE-19 Documentation", "https://somoe-19.readthedocs.io/en/latest/credits.html", MOTDPANEL_TYPE_URL, true, true, true, OnMOTDFailure)
 
 		OpenMenuCredits(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSoccer(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
+
+
+public void OnMOTDFailure(int client, MOTDFailureReason reason) {
+    if(reason == MOTDFailure_Disabled) {
+        PrintToChat(client, "[SM] You have HTML MOTDs disabled.");
+    } else if(reason == MOTDFailure_Matchmaking) {
+        PrintToChat(client, "[SM] You cannot view HTML MOTDs because you joined via Quickplay.");
+    } else if(reason == MOTDFailure_QueryFailed) {
+        PrintToChat(client, "[SM] Unable to verify that you can view HTML MOTDs.");
+    } else {
+        PrintToChat(client, "[SM] Unable to verify that you can view HTML MOTDs for an unknown reason.");
+    }
+} 

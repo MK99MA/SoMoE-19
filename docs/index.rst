@@ -56,6 +56,11 @@ Welcome to the `SoMoE-19 <https://github.com/MK99MA/SoMoE-19>`_ documentation!
     menu/menu-shouts
     menu/menu-credits
 
+.. toctree::
+    :maxdepth: 2
+    :caption: Changelogs:
+
+    changelogs/changes
 
 Indices and tables
 ==================

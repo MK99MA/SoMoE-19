@@ -15,6 +15,7 @@
 #include <cstrike>
 #include <regex>
 #include <morecolors>
+#include <advanced_motd>
 #include <clientprefs>
 #undef REQUIRE_PLUGIN
 #include <updater>
@@ -54,6 +55,7 @@
 #include "soccer_mod\modules\serverinfo.sp"
 #include "soccer_mod\modules\joinlist.sp"
 #include "soccer_mod\modules\mapdefaults.sp"
+#include "soccer_mod\modules\gkareas.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -108,11 +110,14 @@ public void OnPluginStart()
 
 	HookEvent("cs_win_panel_match",	 EventCSWinPanelMatch);
 	HookEvent("player_death",		   EventPlayerDeath);
+	HookEvent("player_death",			Event_PlayerDeath_Pre, EventHookMode_Pre);
 	HookEvent("player_hurt",			EventPlayerHurt);
 	HookEvent("player_spawn",		   EventPlayerSpawn);
 	HookEvent("player_team",			EventPlayerTeam);
 	HookEvent("round_start",			EventRoundStart);
 	HookEvent("round_end",			  EventRoundEnd);
+	
+	AddTempEntHook("Player Decal", Player_Decal);
 
 	HookUserMessage(GetUserMessageId("VGUIMenu"), HookMsg, true);
 	//LoadTranslations("soccer_mod.phrases.txt");
@@ -401,6 +406,8 @@ public void OnConfigsExecuted()
 	//After every Config was executed change the tags to include soccer tags
 	//AddSoccerTags();
 	
+	GetFieldOrientation();	
+	
 	// Set Defaults if existing
 	if(defaultSet == 1) SetDefaultValues();
 	
@@ -645,6 +652,14 @@ public Action EventPlayerHurt(Event event, const char[] name, bool dontBroadcast
 	}
 }
 
+public Action Event_PlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast) 
+{
+	if (killfeedSet == 0 && !capFightStarted)	event.BroadcastDisabled = true;
+	
+	return Plugin_Continue;
+} 
+
+
 public Action EventPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	if (currentMapAllowed)
@@ -701,6 +716,17 @@ public Action EventRoundEnd(Event event, const char[] name, bool dontBroadcast)
 	}
 }
 
+public Action Player_Decal(const char[] name, const int[] clients, int count, float delay)
+{
+	int client = TE_ReadNum("m_nPlayer");
+	
+	TE_ReadVector("m_vecOrigin", sprayVector[client]);
+	
+	GetClientName(client, sprayName[client], 64);
+	GetClientAuthId(client, AuthId_Engine, sprayID[client], 32);
+	
+	//PrintToChatAll("Spray by %s (%s)", sprayName[client], sprayID[client]);
+}
 
 // ******************************************************************************************************************
 // ************************************************** ALLOWED MAPS **************************************************

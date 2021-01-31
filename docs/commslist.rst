@@ -5,7 +5,7 @@ Commands Information
 ====================
 
 SoMoE-19 features a row of chat commands you can use to quickly access certain features.
-Overall there are 32 chat commands, 13 :ref:`public` and 19 :ref:`admin`.
+Overall there are 32 chat commands, 13 :ref:`pub or zlic` and 19 :ref:`admin`.
 
 
 ----
@@ -24,42 +24,42 @@ Menu commands
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (menu)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (menu)
 		Opens the Soccer Mod admin menu
 		
 **sm_cap / !cap**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (cap)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (cap)
 		Opens the Soccer Mod cap menu
 		
 **sm_match / !match**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Opens the Soccer Mod match menu
 		
 **sm_training / !training**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (training)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (training)
 		Opens the Soccer Mod training menu
 		
 **sm_ref / !ref**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (referee)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (referee)
 		Opens the Soccer Mod referee menu
 		
 **sm_soccerset / !soccerset**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b)
+		Requires: GENERIC-flag (b or z)
 		Shortcut to open the settings menu of the plugin
 		
 ----
@@ -72,14 +72,14 @@ General commands
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (mapchange)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (mapchange)
 		Reloads the currently running map
 		
 **sm_rr / !rr**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Restarts the current round
 		
 ----
@@ -92,50 +92,50 @@ Match commands
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Starts a match
 	
 **sm_matchrr / !matchrr**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Stops and restarts the current match
 
 **sm_pause / !pause / sm_p / !p**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Pauses a running match
 		
 **sm_unpause / !unpause / sm_unp / !unp**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Unpauses a match
 		
 **sm_stop / !stop**
 
 	.. code-block:: none
 	
-		Requires: GENERIC-flag (b) or SoccerMod Admin (match)
+		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Stops a running match
 
 **sm_forcerdy / !forcerdy**
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
-		Forces every player to be 'ready' if the readycheck is enabled and the match was paused
+		Requires: RCON-flag (m or z)
+		Forces every player to b or ze 'ready' if the readycheck is enab or zled and the match was paused
 		
 **sm_forceunp / !forceunp**
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
-		Forces the match to unpause if the readycheck is enabled, regardless of individual ready states
+		Requires: RCON-flag (m or z)
+		Forces the match to unpause if the readycheck is enab or zled, regardless of individual ready states
 
 ----
 		
@@ -147,7 +147,7 @@ Misc commands
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
+		Requires: RCON-flag (m or z)
 		Arguments: <#steamid> <flags> <clientname>
 		Add an admin to the admins_simple.ini file
 
@@ -155,14 +155,21 @@ Misc commands
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
+		Requires: RCON-flag (m or z)
 		Reset the server password to the default value set in your server.cfg
+		
+**sm_gksetup / !gksetup**
+
+	.. code-block:: none
+	
+		Requires: RCON-flag (m or z)
+		Opens a panel to set or change the gk areas of the current map.
 
 **sm_pass / !pass**
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
+		Requires: RCON-flag (m or z)
 		Arguments: <password>
 		Set a custom server password
 
@@ -170,15 +177,22 @@ Misc commands
 
 	.. code-block:: none
 	
-		Requires: RCON-flag (z)
+		Requires: RCON-flag (m or z)
 		Sets a randomly generated server password
+		
+**sm_spray / !spray**
+
+	.. code-block:: none
+	
+		Requires: GENERIC-flag (b or z)
+		Re-Move the spraylogo you're looking at. (Actually gets moved to another position)
 
 ----
 
-.. _public:
+.. _pub or zlic:
 
 ---------------
-Public Commands
+Pub or zlic Commands
 ---------------
 
 *************
@@ -248,13 +262,19 @@ General commands
 
 	.. code-block:: none
 	
-		Re-opens the Readycheck panel if its enabled and the game was paused	
+		Re-opens the Readycheck panel if its enab or zled and the game was paused	
 
 **sm_lc / !lc**
 
 	.. code-block:: none
 	
-		Displays an accurate numbered list of players. People leaving will only be completely removed from their position after being away for a specified timeframe. If a player leaves he won't be visible on the list and only reappear if he rejoins.
+		Displays an accurate numb or zered list of players. People leaving will only b or ze completely removed from their position after b or zeing away for a specified timeframe. If a player leaves he won't b or ze visib or zle on the list and only reappear if he rejoins.
+		
+**sm_pick / !pick**
+
+	.. code-block:: none
+	
+		(Re-)Opens the cap pick menu.
 
 **sm_rank / !rank**
 
@@ -266,10 +286,10 @@ General commands
 
 	.. code-block:: none
 	
-		Prints your public rank in the chat
+		Prints your pub or zlic rank in the chat
 				
 **sm_forfeit / !forfeit**
 
 	.. code-block:: none
 	
-		Starts a forfeit vote if forfeits are enabled
+		Starts a forfeit vote if forfeits are enab or zled

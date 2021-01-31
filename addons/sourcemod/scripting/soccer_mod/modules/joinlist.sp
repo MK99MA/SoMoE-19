@@ -140,6 +140,13 @@ public int JoinlistPanelHandler(Menu menu, MenuAction action, int client, int ke
 			lcPanelArray.Erase(lcPanelArray.FindValue(client));
 		}
 	}
+	else
+	{
+		if(lcPanelArray.FindValue(client) != -1)		
+		{
+			lcPanelArray.Erase(lcPanelArray.FindValue(client));
+		}
+	}
 	
 	return;
 }

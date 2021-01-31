@@ -43,12 +43,17 @@ bool currentMapAllowed			= false;
 bool goalScored					= false;
 bool menuaccessed[MAXPLAYERS+1];
 bool roundEnded					= false;
+bool xorientation				= true;
 
 // FLOATS
 float phys_timescale			= 1.0;
 float respawnDelay 				= 10.0;
 float playerMaxHeight[66];
 float rrchecktime				= 90.0;
+float mapBallStartPosition[3];
+float vec_tgoal_origin[3];
+float vec_ctgoal_origin[3];
+float sprayVector[MAXPLAYERS+1][3];
 
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
@@ -71,6 +76,7 @@ int healthAmount				= 250;
 int dissolveSet					= 2;
 int joinclassSet				= 0;
 int defaultSet					= 1;
+int killfeedSet					= 0;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -78,6 +84,8 @@ char gamevar[8]					= "cstrike";
 char databaseConfig[64]			= "storage-local";
 char cardReceiver[MAX_NAME_LENGTH];
 char cardString[32];
+char sprayName[MAXPLAYERS + 1][64];
+char sprayID[MAXPLAYERS + 1][32];
 
 // **************************************************** ADMIN ***************************************************
 
@@ -286,7 +294,7 @@ int rankingPointsForHit				= 1;
 int rankingPointsForPass			= 5;
 int rankingPointsForInterception	= 3;
 int rankingPointsForBallLoss		= -3;
-int rankingPointsForSave			= 8;
+int rankingPointsForSave			= 6;
 int rankingPointsForRoundWon		= 10;
 int rankingPointsForRoundLost		= -10;
 int rankingPointsForMVP				= 15;
@@ -455,6 +463,7 @@ int statsAssisterTeam		= 0;
 int statsSaver				= 0;
 int statsScorerClientid		= 0;
 int statsScorerTeam			= 0;
+int statsLastHitId			= 0;
 
 int statsGoalsCT			= 0;
 int statsGoalsT				= 0;
