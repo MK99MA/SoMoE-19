@@ -17,7 +17,7 @@
 		"Notes" "Reworked credits menu"
 		"Notes" "Reworked help menu"
 		"Notes" "Fixed hostname status not being applied after !matchrr usage"
-		"Notes" "Fixed stoppage time not working properly on maps rotated by 90°"
+		"Notes" "Fixed stoppage time not working properly on maps rotated by 90"
 		"Notes" "Fixed !pos menu being displayed everytime a cap is started"
 	}
 	
