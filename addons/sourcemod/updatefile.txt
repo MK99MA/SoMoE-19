@@ -8,7 +8,7 @@
 			"Previous"	"1.2.7"
 		}
 		
-		"Notes"	"Added option to the help menu to print the url of the documentation and the github project in console"
+		"Notes"	"Added option to the help menu to print helpful urls to console"
 		"Notes" "Added option to the help menu to open the documentation in the motd"
 		"Notes" "Added command to adjust GK areas ingame (!gksetup; requires RCON-flag)"
 		"Notes" "Added option to disable the killfeed (Always enabled during capfights)"
@@ -18,7 +18,7 @@
 		"Notes" "Reworked help menu"
 		"Notes" "Fixed hostname status not being applied after !matchrr usage"
 		"Notes" "Fixed stoppage time not working properly on maps rotated by 90°"
-		"Notes" "Fixed !pos menu being displayed everytime a cap is started instead of only if no position or "Spec only" is set"
+		"Notes" "Fixed !pos menu being displayed everytime a cap is started"
 	}
 	
 	"Files"
