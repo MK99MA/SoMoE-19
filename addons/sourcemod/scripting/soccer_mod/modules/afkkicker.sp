@@ -105,13 +105,6 @@ public void NukeClient(int client, bool bLog, int iMatches, const char[] sLog)
 	}
 }
 
-// *********************************************** VALIDATION ********************************************************
-
-stock bool IsValidClient(int client, bool bAlive = false)
-{
-	return (client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client));
-}
-
 // ************************************************ COMPARE **********************************************************
 
 stock bool bVectorsEqual(float[3] v1, float[3] v2)

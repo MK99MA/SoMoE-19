@@ -15,16 +15,20 @@ public void GetFieldOrientation()
 	{
 		soccerball_id = GetEntityIndexByName("ballon", "func_physbox");
 	}
+	if (soccerball_id == -1) 
+	{
+		soccerball_id = GetEntityIndexByName("ballon", "prop_physics");
+	}
 	if (soccerball_id != -1) GetEntPropVector(soccerball_id, Prop_Send, "m_vecOrigin", mapBallStartPosition);
 	
 	// Error if an entity is not found
-	if(t_trigger_id <= 0 || ct_trigger_id <= 0 || soccerball_id <= 0)
+	/*if(t_trigger_id <= 0 || ct_trigger_id <= 0 || soccerball_id <= 0)
 	{
 		LogError("Entity not found (BL %i, TG %i, CTG %i)",
              soccerball_id, t_trigger_id, ct_trigger_id);
 		
 		return;
-	}
+	}*/
 
 	// calculate fieldsize
 	int goaltrig_t_ref = EntIndexToEntRef(t_trigger_id);

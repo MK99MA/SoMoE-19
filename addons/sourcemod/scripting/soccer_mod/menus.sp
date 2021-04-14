@@ -397,7 +397,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("start", "!start");
 	menu.AddItem("pause", "!pause, !p");
 	menu.AddItem("matchrr", "!matchrr");
-	menu.AddItem("unpause", "!unpause, !unp");
+	menu.AddItem("unpause", "!unpause, !unp, !up");
 	menu.AddItem("stop", "!stop");
 	menu.AddItem("rdy", "!rdy");
 	menu.AddItem("maprr", "!maprr");
@@ -410,7 +410,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("rank", "!rank");
 	menu.AddItem("prank", "!prank");
 	menu.AddItem("adminlist", "!admins");
-	menu.AddItem("lc", "!lc");
+	menu.AddItem("lc", "!lc, !late");
 	menu.AddItem("help", "!help");
 	menu.AddItem("credits", "!credits");
 
@@ -473,13 +473,15 @@ public void OpenMenuCommandsAdmin(int client)
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) menu.AddItem("rr", "[GENERIC / MATCH] !rr");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("settingscmd", "[GENERIC] !soccerset");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("spray", "[GENERIC] !spray");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("ungk", "[GENERIC] !ungk <target>");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forcerdycmd", "[RCON] !forcerdy");	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("forceunpcmd", "[RCON] !forceunp");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gksetup", "[RCON] !gksetup");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("dpasswordcmd", "[RCON] !dpass");		
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("passwordcmd", "[RCON] !pass <PW>");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rankwipe", "[RCON] !wiperanks <table> ");		
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rankwipe", "[RCON] !wiperanks <table> ");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_ROOT, true)) menu.AddItem("jumptime", "[ROOT] !jumptime <float>");	
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -502,7 +504,9 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "settingscmd"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the settings menu.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "gksetup"))	CPrintToChat(client, "{%s}[%s] {%s}Opens the panel to set or change gk area coordinates.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "spray"))	CPrintToChat(client, "{%s}[%s] {%s}Removes the spraylogo you're looking at.", prefixcolor, prefix, textcolor);	
+		else if (StrEqual(menuItem, "ungk"))	CPrintToChat(client, "{%s}[%s] {%s}Removes the gk skin of your target.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "rankwipe"))	CPrintToChat(client, "{%s}[%s] {%s}Wipes the given ranking table. {%s}THIS IS NOT REVERSIBLE!!", prefixcolor, prefix, textcolor, "crimson");	
+		else if (StrEqual(menuItem, "jumptime"))	CPrintToChat(client, "{%s}[%s] {%s}Set the time before ducking after a jump is blocked. (Default: 0.45)", prefixcolor, prefix, textcolor);
 
 		OpenMenuCommandsAdmin(client);
 	}
@@ -548,14 +552,22 @@ public int MenuHandlerCredits(Menu menu, MenuAction action, int client, int choi
 }
 
 
-public void OnMOTDFailure(int client, MOTDFailureReason reason) {
-    if(reason == MOTDFailure_Disabled) {
-        PrintToChat(client, "[SM] You have HTML MOTDs disabled.");
-    } else if(reason == MOTDFailure_Matchmaking) {
-        PrintToChat(client, "[SM] You cannot view HTML MOTDs because you joined via Quickplay.");
-    } else if(reason == MOTDFailure_QueryFailed) {
-        PrintToChat(client, "[SM] Unable to verify that you can view HTML MOTDs.");
-    } else {
-        PrintToChat(client, "[SM] Unable to verify that you can view HTML MOTDs for an unknown reason.");
+public void OnMOTDFailure(int client, MOTDFailureReason reason) 
+{
+	if(reason == MOTDFailure_Disabled) 
+	{
+		CPrintToChat(client, "{%s}[%s] You have HTML MOTDs disabled.", prefixcolor, prefix);
+	} 
+	else if(reason == MOTDFailure_Matchmaking) 
+	{
+		CPrintToChat(client, "{%s}[%s] You cannot view HTML MOTDs because you joined via Quickplay.", prefixcolor, prefix);
+	} 
+	else if(reason == MOTDFailure_QueryFailed) 
+	{
+		CPrintToChat(client, "{%s}[%s] Unable to verify that you can view HTML MOTDs.", prefixcolor, prefix);
+	} 
+	else 
+	{
+		CPrintToChat(client, "{%s}[%s] Unable to verify that you can view HTML MOTDs for an unknown reason.", prefixcolor, prefix);
     }
 } 

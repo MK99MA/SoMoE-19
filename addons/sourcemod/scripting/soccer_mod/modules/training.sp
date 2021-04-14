@@ -493,6 +493,10 @@ public void TrainingCannonOn(int client)
 		if (index2 == -1) {
 			index2 = GetEntityIndexByName("ballon", "func_physbox");
 		}
+		if (index2 == -1) 
+		{
+			index2 = GetEntityIndexByName("ballon", "prop_physics");
+		}
 		if (index2 != -1) trainingCannonBallIndex = index2;
 
 		if (!IsValidEntity(trainingCannonBallIndex))

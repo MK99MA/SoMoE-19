@@ -5,7 +5,7 @@ Commands Information
 ====================
 
 SoMoE-19 features a row of chat commands you can use to quickly access certain features.
-Overall there are 32 chat commands, 13 :ref:`pub or zlic` and 19 :ref:`admin`.
+Overall there are 38 chat commands, 15 :ref:`public` and 23 :ref:`admin`.
 
 
 ----
@@ -102,14 +102,14 @@ Match commands
 		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Stops and restarts the current match
 
-**sm_pause / !pause / sm_p / !p**
+**sm_pause / !pause | sm_p / !p**
 
 	.. code-block:: none
 	
 		Requires: GENERIC-flag (b or z) or SoccerMod Admin (match)
 		Pauses a running match
 		
-**sm_unpause / !unpause / sm_unp / !unp**
+**sm_unpause / !unpause | sm_unp / !unp | sm_up / !up**
 
 	.. code-block:: none
 	
@@ -128,14 +128,14 @@ Match commands
 	.. code-block:: none
 	
 		Requires: RCON-flag (m or z)
-		Forces every player to b or ze 'ready' if the readycheck is enab or zled and the match was paused
+		Forces every player to be 'ready' if the readycheck is enabled and the match was paused
 		
 **sm_forceunp / !forceunp**
 
 	.. code-block:: none
 	
 		Requires: RCON-flag (m or z)
-		Forces the match to unpause if the readycheck is enab or zled, regardless of individual ready states
+		Forces the match to unpause if the readycheck is enabled, regardless of individual ready states
 
 ----
 		
@@ -186,13 +186,36 @@ Misc commands
 	
 		Requires: GENERIC-flag (b or z)
 		Re-Move the spraylogo you're looking at. (Actually gets moved to another position)
+		
+**sm_ungk / !ungk**
+
+	.. code-block:: none
+	
+		Requires: GENERIC-flag (b or z)
+		Arguments: <target>
+		Remove the gk skin of your target. DOES NOT set the gk skin on a target that is not using a skin.
+		
+**sm_wiperanks / !wiperanks**
+
+	.. code-block:: none
+	
+		Requires: RCON-flag (m or z)
+		Sets every value in the stats database for every entry to 0. THIS IS NOT REVERSIBLE! USE WITH CAUTION OR MAKE A BACKUP FIRST!
+
+**sm_jumptime / !jumptime**
+
+	.. code-block:: none
+	
+		Requires: ROOT-flag (z)
+		Arguments: <time>
+		Set the time before you can use +duck after jumping again. Default: 0.45.
 
 ----
 
-.. _pub or zlic:
+.. _public:
 
 ---------------
-Pub or zlic Commands
+Public Commands
 ---------------
 
 *************
@@ -262,13 +285,13 @@ General commands
 
 	.. code-block:: none
 	
-		Re-opens the Readycheck panel if its enab or zled and the game was paused	
+		Re-opens the Readycheck panel if its enabled and the game was paused	
 
-**sm_lc / !lc**
+**sm_lc / !lc | sm_late / !late**
 
 	.. code-block:: none
 	
-		Displays an accurate numb or zered list of players. People leaving will only b or ze completely removed from their position after b or zeing away for a specified timeframe. If a player leaves he won't b or ze visib or zle on the list and only reappear if he rejoins.
+		Displays an accurate numbered list of players. People leaving will only be completely removed from their position after being away for a specified timeframe. If a player leaves he won't be visible on the list and only reappear if he rejoins.
 		
 **sm_pick / !pick**
 
@@ -286,10 +309,10 @@ General commands
 
 	.. code-block:: none
 	
-		Prints your pub or zlic rank in the chat
+		Prints your public rank in the chat
 				
 **sm_forfeit / !forfeit**
 
 	.. code-block:: none
 	
-		Starts a forfeit vote if forfeits are enab or zled
+		Starts a forfeit vote if forfeits are enabled

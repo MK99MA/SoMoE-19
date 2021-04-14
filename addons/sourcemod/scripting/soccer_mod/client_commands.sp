@@ -13,6 +13,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_help", HelpCommand, "Opens the Soccer Mod help menu");
 	RegConsoleCmd("sm_info", CreditsCommand, "Opens the Soccer Mod credits menu");
 	RegConsoleCmd("sm_lc", JoinlistCommand, "Opens the Soccer Mod joinlist");
+	RegConsoleCmd("sm_late", JoinlistCommand, "Opens the Soccer Mod joinlist");
 	RegConsoleCmd("sm_maprr", MaprrCommand, "Quickly rr the map");
 	RegConsoleCmd("sm_match", MatchCommand, "Opens the Soccer Mod match menu");
 	RegConsoleCmd("sm_matchrr", MatchRRCommand, "Restart the match");
@@ -29,6 +30,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_stop", StopCommand, "Stops a match");
 	RegConsoleCmd("sm_training", TrainingCommand, "Opens the Soccer Mod training menu");
 	RegConsoleCmd("sm_unp", UnpauseCommand, "Unpauses a match");
+	RegConsoleCmd("sm_up", UnpauseCommand, "Unpauses a match");
 	RegConsoleCmd("sm_unpause", UnpauseCommand, "Unpauses a match");
 
 	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "[RCONFLAG]Adds an admin to admins_simple.ini");
@@ -36,11 +38,13 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "[RCONFLAG]Forces Ready state for every player");
 	RegAdminCmd("sm_forceunp", Command_ForceUnpause, ADMFLAG_RCON, "[RCONFLAG]Forces the match to unpause");
 	RegAdminCmd("sm_gksetup", Command_GKSetup, ADMFLAG_RCON, "[RCONFLAG]Menu to setup gk areas.");
+	RegAdminCmd("sm_jumptime", Command_JumpTime, ADMFLAG_ROOT, "[RCONFLAG]Change time for how long ducking is blocked after jumping.");
 	RegAdminCmd("sm_pass", Command_Pass, ADMFLAG_RCON, "[RCONFLAG]Set the sv password");
 	RegAdminCmd("sm_rpass", Command_RandPass, ADMFLAG_RCON, "[RCONFLAG]Set a random server password");
 	RegAdminCmd("sm_soccerset", Command_SoccerSet, ADMFLAG_GENERIC, "[GENERICFLAG]Shortcut to the Settings menu");
-	RegAdminCmd("sm_spray", Command_RemoveSpray, ADMFLAG_GENERIC, "[GENERICFLAG] Remove the spray you're looking at");
-	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG]Prints your current clantag - Test");
+	RegAdminCmd("sm_spray", Command_RemoveSpray, ADMFLAG_GENERIC, "[GENERICFLAG]Remove the spray you're looking at");
+	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG] Prints your current clantag - Test");
+	RegAdminCmd("sm_ungk", Command_UnGK, ADMFLAG_GENERIC, "[GENERICFLAG]Remove the gk skin from your target");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
 	RegAdminCmd("sm_wiperanks", Command_WipeRanks, ADMFLAG_RCON, "[RCONFLAG]Wipes the given ranking table");
 	
@@ -740,6 +744,22 @@ public Action Command_TimeTest(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action Command_JumpTime(int client, int args)
+{
+	char arg[64];
+	GetCmdArg(1, arg, sizeof(arg));
+	
+	if (StringToFloat(arg) > 0.0)
+	{
+		fJUMP_TIMER = StringToFloat(arg)
+		UpdateConfigFloat("Misc Settings", "soccer_mod_blockdj_time", fJUMP_TIMER);
+		PrintToChat(client, "Jumptimer set to %1.f", fJUMP_TIMER);
+	}
+	else PrintToChat(client, "Not a valid value.");
+	
+	return Plugin_Handled;
+}
+
 public Action Command_RemoveSpray(int client, int args) 
 {
 	if (!IsValidClient(client))
@@ -750,14 +770,21 @@ public Action Command_RemoveSpray(int client, int args)
 	if (GetClientEyeEndLocation(client, vecPos)) 
 	{
 		float remPos[3];
-		char szAdminName[32];
-		GetClientName(client, szAdminName, 31);
+		//char szAdminName[32];
+		//GetClientName(client, szAdminName, 31);
 		
 		GetClientAbsOrigin(client, remPos);
 
 	 	for (int i = 1; i <= MaxClients; i++) 
 		{
-			if (GetVectorDistance(remPos, vecPos) <= 400.0)//sprayVector[i]) <= 300.0) 
+			if (GetVectorDistance(mapBallStartPosition, sprayVector[i]) <= 10.0)
+			{
+				remPos[0] = mapBallStartPosition[0];
+				remPos[1] = mapBallStartPosition[1];
+				remPos[2] = mapBallStartPosition[2];
+			}
+		
+			if (GetVectorDistance(remPos, sprayVector[i]) <= 200.0)//vecPos <= 300.0) 
 			{
 				float vecEndPos[3];
 				
@@ -767,11 +794,12 @@ public Action Command_RemoveSpray(int client, int args)
 
 				SprayDecal(i, 0, vecEndPos);
 
-				sprayVector[i][0] = 0.0;
-				sprayVector[i][1] = 0.0;
-				sprayVector[i][2] = 0.0;
+				sprayVector[i][0] = remPos[0];
+				sprayVector[i][1] = remPos[1]+500.0;
+				sprayVector[i][2] = remPos[2]-500.0;
 
-				CPrintToChat(client, "{%s}[%s] Spray By %s (%s) removed.", prefixcolor, prefix, sprayName[i], sprayID[i]);
+				if (IsValidClient(i)) CPrintToChat(client, "{%s}[%s] Spray By %s (%s) removed.", prefixcolor, prefix, sprayName[i], sprayID[i]);
+				else CPrintToChat(client, "{%s}[%s] Owner of the spray already left.", prefixcolor, prefix);
 
 				return Plugin_Handled;
 			}
@@ -782,6 +810,101 @@ public Action Command_RemoveSpray(int client, int args)
 
 	return Plugin_Handled;
 }
+
+public Action Command_UnGK(int client, int args)
+{	
+	if (currentMapAllowed)
+	{
+		if (args < 1)
+		{
+			ReplyToCommand(client, "[SM] Usage: sm_ungk <#userid|name>");
+			return Plugin_Handled;
+		}
+		
+		char arg1[32];
+		
+		GetCmdArg(1, arg1, sizeof(arg1));
+		
+		if (StrEqual(arg1, "t") || StrEqual(arg1, "ct"))
+		{
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (IsValidClient(i)) 
+				{
+					int team = GetClientTeam(i);
+					int argteam;
+					if (StrEqual(arg1, "t"))	argteam = 2;
+					else if (StrEqual(arg1, "ct")) argteam = 3;
+					
+					if (argteam == team)
+					{
+						if (skinsIsGoalkeeper[i] == 1)
+						{
+							skinsIsGoalkeeper[i] = 0;
+							if (argteam == 2)
+							{
+								SetEntityModel(i, skinsModelT);
+								bTGoalkeeper = false;
+							}
+							else if (argteam == 3)
+							{
+								SetEntityModel(i, skinsModelCT);
+								bCTGoalkeeper = false;
+							}
+							
+							CPrintToChat(i, "{%s}[%s] {%s}Your gk skin was removed by an admin.", prefixcolor, prefix, textcolor);
+							CPrintToChat(client, "{%s}[%s] {%s}GK skin of %N removed.", prefixcolor, prefix, textcolor, i);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			int target = FindTarget(client, arg1);
+			if (!(StrEqual(arg1, "t")) && !(StrEqual(arg1, "ct")))
+			{
+				if (target == -1)
+				{
+					CPrintToChat(client, "{%s}[%s] {%s}Target not found.", prefixcolor, prefix, textcolor);
+					return Plugin_Handled;
+				}
+			}
+		
+			char name[MAX_NAME_LENGTH];
+			GetClientName(target, name, sizeof(name));
+			
+			int team = GetClientTeam(target);
+
+			if (skinsIsGoalkeeper[target])
+			{
+				skinsIsGoalkeeper[target] = 0;
+
+				if (team == 2 && FileExists(skinsModelT, true))
+				{
+					SetEntityModel(target, skinsModelT);
+					bTGoalkeeper = false;
+				}
+				else if (team == 3 && FileExists(skinsModelCT, true))
+				{
+					SetEntityModel(target, skinsModelCT);
+					bCTGoalkeeper = false;
+				}
+				
+				CPrintToChat(target, "{%s}[%s] {%s}Your gk skin was removed by an admin.", prefixcolor, prefix, textcolor);
+				CPrintToChat(client, "{%s}[%s] {%s}GK skin of %N removed.", prefixcolor, prefix, textcolor, target);
+			}
+			else
+			{
+				CPrintToChat(client, "{%s}[%s] {%s}%N is not currently using a gk skin.", prefixcolor, prefix, textcolor, target);
+				return Plugin_Handled;
+			}
+		}
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	return Plugin_Handled;
+}
+
 
 /*public Action Command_Test(int client, int args)
 {

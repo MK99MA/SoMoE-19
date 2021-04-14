@@ -148,6 +148,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_health_godmode",				healthGodmode);
 	kvConfig.SetFloat("soccer_mod_respawn_delay",				respawnDelay);
 	kvConfig.SetNum("soccer_mod_blockdj_enable",				djbenabled);
+	kvConfig.SetFloat("soccer_mod_blockdj_time",				fJUMP_TIMER);
 	kvConfig.SetNum("soccer_mod_damagesounds",					damageSounds);
 	kvConfig.SetNum("soccer_mod_dissolver",						dissolveSet);
 	kvConfig.SetNum("soccer_mod_joinclass",						joinclassSet);
@@ -186,6 +187,8 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_ranking_points_mvp",				rankingPointsForMVP);
 	kvConfig.SetNum("soccer_mod_ranking_points_motm",				rankingPointsForMOTM);
 	kvConfig.SetNum("soccer_mod_ranking_cdtime",					rankingCDTime);
+	kvConfig.SetNum("soccer_mod_gksaves_only", 						gksavesSet);
+	kvConfig.SetNum("soccer_mod_rankmode", 							rankMode);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Training Settings", true);
@@ -338,20 +341,6 @@ public void CreateGKAreaConfig()
 	kvGKArea.SetNum("t_max_z",		120);
 	kvGKArea.GoBack();
 	
-	kvGKArea.JumpToKey("ka_soccer_avalon_v8", true);
-	kvGKArea.SetNum("ct_min_x",		-313);
-	kvGKArea.SetNum("ct_max_x",		313);
-	kvGKArea.SetNum("ct_min_y",		-1379);
-	kvGKArea.SetNum("ct_max_y",		-1188);
-	kvGKArea.SetNum("ct_min_z",		0);
-	kvGKArea.SetNum("ct_max_z",		120);
-	kvGKArea.SetNum("t_min_x",		-313);
-	kvGKArea.SetNum("t_max_x",		313);
-	kvGKArea.SetNum("t_min_y",		1188);
-	kvGKArea.SetNum("t_max_y",		1379);
-	kvGKArea.SetNum("t_min_z",		0);
-	kvGKArea.SetNum("t_max_z",		120);
-	
 	kvGKArea.Rewind();
 	kvGKArea.ExportToFile(statsKeygroupGoalkeeperAreas);
 	kvGKArea.Close();
@@ -501,6 +490,7 @@ public void ReadFromConfig()
 	healthGodmode			= kvConfig.GetNum("soccer_mod_health_godmode", 1);
 	respawnDelay			= kvConfig.GetFloat("soccer_mod_respawn_delay", 10.0);
 	djbenabled				= kvConfig.GetNum("soccer_mod_blockdj_enable", 1);
+	fJUMP_TIMER				= kvConfig.GetFloat("soccer_mod_blockdj_time", 0.4);
 	damageSounds			= kvConfig.GetNum("soccer_mod_damagesounds", 0);
 	dissolveSet				= kvConfig.GetNum("soccer_mod_dissolver", 2);
 	joinclassSet			= kvConfig.GetNum("soccer_mod_joinclass", 0);
@@ -543,6 +533,8 @@ public void ReadFromConfig()
 	rankingPointsForMVP				= kvConfig.GetNum("soccer_mod_ranking_points_mvp", 15);
 	rankingPointsForMOTM			= kvConfig.GetNum("soccer_mod_ranking_points_motm", 25);
 	rankingCDTime					= kvConfig.GetNum("soccer_mod_ranking_cdtime", 300);
+	gksavesSet						= kvConfig.GetNum("soccer_mod_gksaves_only", 0);
+	rankMode						= kvConfig.GetNum("soccer_mod_rankmode", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Training Settings", true);

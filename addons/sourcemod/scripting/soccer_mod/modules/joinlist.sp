@@ -41,6 +41,11 @@ public void OpenJoinlistPanel(int client)
 	}
 	kvConnectlist.Rewind();
 	
+	// nr 2 fehlte ? -> check ob disctime > 90 sekunden ist, wenn ja auf 0 setzen da somit löschen fehlgeschlagen
+	// picklist nr
+	// chat msg nr
+	// training menu in mode 1?
+	
 	// geh an erste stelle in datei
 	// hole Steamid
 	char bName[MAX_NAME_LENGTH];
@@ -62,6 +67,7 @@ public void OpenJoinlistPanel(int client)
 			discTime = kvConnectlist.GetNum("disconnecttime", 0);
 			bFound = true;
 			if(discTime == 0) joinnr++;
+			else if (discTime < currTime-rrchecktime) kvConnectlist.DeleteThis();
 		}
 		kvConnectlist.GotoNextKey();
 		kvConnectlist.SavePosition();
@@ -168,7 +174,7 @@ public bool bIsOnServer(char steamid[32])
 	return false;
 }
 
-public void LCOnClientPutInServer(int client)
+public void LCOnClientConnected(int client)
 {
 	// someone joins -> add to list
 	// time, steamid, name
@@ -176,11 +182,11 @@ public void LCOnClientPutInServer(int client)
 	
 	//kvConnectlist = new KeyValues("connectlist");
 	//kvConnectlist.ImportFromFile(DCListKV);
-	if (IsValidClient(client) && !IsFakeClient(client) && !IsClientSourceTV(client))
+	if (!IsFakeClient(client) && !IsClientSourceTV(client)) // IsValidClient(client) && 
 	{
 		char bName[MAX_NAME_LENGTH];
 		char bSteam[32];
-		int connTime;
+		int connTime, discTime;
 		
 		connTime = GetTime();
 		
@@ -189,7 +195,7 @@ public void LCOnClientPutInServer(int client)
 		
 		// check if entry exists aka rr
 		if (!(kvConnectlist.JumpToKey(bSteam, false)))
-		{		
+		{	
 			kvConnectlist.JumpToKey(bSteam, true);
 			kvConnectlist.SetString("name", bName);
 			kvConnectlist.SetNum("connecttime", connTime);
@@ -197,10 +203,19 @@ public void LCOnClientPutInServer(int client)
 			kvConnectlist.GoBack();	
 		}
 		else
-		{
+		{	
+			discTime = kvConnectlist.GetNum("disconnecttime", -1);
+			if (discTime < (connTime-rrchecktime) || discTime == -1) // deletethis & recreate
+			{
+				kvConnectlist.DeleteThis();
+				kvConnectlist.GoBack();
+				
+				kvConnectlist.JumpToKey(bSteam, true);
+				kvConnectlist.SetNum("connecttime", connTime);
+			}
 			kvConnectlist.SetString("name", bName);
 			kvConnectlist.SetNum("disconnecttime", 0);
-			kvConnectlist.GoBack();
+			//kvConnectlist.GoBack();
 		}
 	}
 	

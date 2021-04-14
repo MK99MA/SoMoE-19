@@ -108,7 +108,9 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ !rank Cooldown Setting
 		 │     │  ├─ Readycheck Toggle
 		 │     │  ├─ Damage Sound Toggle
-		 │     │  └─ Killfeed Toggle
+		 │     │  ├─ Killfeed Toggle
+		 │     │  ├─ GK saves only Toggle
+		 │     │  └─ Rankmode Toggle
 		 │     │  
 		 │     ├─ Skin Settings (^)
 		 │     │  ├─ CT Skin

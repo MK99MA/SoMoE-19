@@ -5,6 +5,43 @@ Changelog
 =========
 
 -----
+1.2.9
+-----
+
+***
+New
+***
+
+ - Added option to track only saves done by a player using the gk skin. If no player of the team is using the gk skin everyone of the team is able to earn saves inside the gk area.
+ - Added admin command !ungk <target> (<target> can be either a player or t/ct).
+ - Added match tracking. Everyone who is in CT or T when a round ends during a match will have his match number increased when the end ends or it is stopped (at least played till halftime). Resetting the stats is highly recommended if you intend to use the ranking based on matches.
+ - Added 2 alternative commands. (!late - same as !lc; !up - same as !unp / !unpause)
+ - Added new preferred duckjumpblock-mode. Duckjumpblock setting now allows 3 settings: OFF, ON, ON (NEW). Old version remains in case of unforseen issues.
+ - Added ROOT command to adjust resettime for new duckjumpblock.
+
+*******
+Changes
+*******
+
+ - !gk limited to one player per team.
+ - Ranking can now be sorted by either pure pts, pts/matches (match rankings only) or pts/rounds. 
+ - Changed rank reset options to set every value to 0 instead of deleting the row.
+ - Stats will only count in matches if it both teams have 5 players at the end of the round.
+ - Added join number to pick menu
+ - Added join number message for each player when cap fight starts
+ - Added GK skin check prior to setting GK skin. Hopefully removes erroreneous entries from GK skin array.
+ 
+*****
+Fixes
+*****
+
+ - Fixed !pos menu being displayed everytime a cap is started instead of only if no position or "Spec only" is set again.
+ - Fixes to rounds won / lost tracking.
+ - Fixed gk skin being locked if a gk skin user joins spectator before leaving.
+ - Fixed issues with !spray command.
+ - Added missing ball entity check.
+
+-----
 1.2.8
 -----
 

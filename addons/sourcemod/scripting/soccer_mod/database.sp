@@ -10,7 +10,7 @@ public void ConnectToDatabase()
 public void WipeStatsTable(char[] table)
 {
 	char query[1024];
-	Format(query, sizeof(query), "DELETE FROM %s", table);
+	Format(query, sizeof(query), "UPDATE %s SET goals = 0, assists = 0, own_goals = 0, hits = 0, passes = 0, interceptions = 0, ball_losses = 0, saves = 0, rounds_lost = 0, rounds_won = 0, points = 0, mvp = 0, motm = 0, matches = 0", table);
 	SQL_FastQuery(db, query);
 }
 
@@ -75,13 +75,14 @@ public void CreateTables()
 
 public void ApplyPatches()
 {
-    SQL_FastQuery(db, "ALTER TABLE soccer_mod_players ADD money INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_players ADD money INTEGER DEFAULT '0' NOT NULL");
 
-    SQL_FastQuery(db, "ALTER TABLE soccer_mod_match_stats ADD mvp INTEGER DEFAULT '0' NOT NULL");
-    SQL_FastQuery(db, "ALTER TABLE soccer_mod_match_stats ADD motm INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_match_stats ADD mvp INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_match_stats ADD motm INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_match_stats ADD matches INTEGER DEFAULT '0' NOT NULL");
 
-    SQL_FastQuery(db, "ALTER TABLE soccer_mod_public_stats ADD mvp INTEGER DEFAULT '0' NOT NULL");
-    SQL_FastQuery(db, "ALTER TABLE soccer_mod_public_stats ADD motm INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_public_stats ADD mvp INTEGER DEFAULT '0' NOT NULL");
+	SQL_FastQuery(db, "ALTER TABLE soccer_mod_public_stats ADD motm INTEGER DEFAULT '0' NOT NULL");
 }
 
 public bool ExecuteQuery(char[] query)

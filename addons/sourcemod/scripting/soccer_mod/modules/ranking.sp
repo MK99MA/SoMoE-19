@@ -3,15 +3,15 @@
 // ********************************************************************************************************************* 
 public void ClientCommandPublicRanking(int client)
 {
-	char query[256] = "SELECT soccer_mod_players.steamid, points FROM soccer_mod_players, soccer_mod_public_stats \
-		WHERE soccer_mod_players.steamid = soccer_mod_public_stats.steamid AND hits > 0 ORDER BY points desc";
+	char query[256] = "SELECT soccer_mod_players.steamid, points, rounds_won, rounds_lost FROM soccer_mod_players, soccer_mod_public_stats \
+		WHERE soccer_mod_players.steamid = soccer_mod_public_stats.steamid AND hits > 0 ORDER BY points/(rounds_won + rounds_lost) desc";
 	SQL_TQuery(db, ClientCommandPublicRankingCallback, query, client);
 }
 
 public void ClientCommandMatchRanking(int client)
 {
-	char query[256] = "SELECT soccer_mod_players.steamid, points FROM soccer_mod_players, soccer_mod_match_stats \
-		WHERE soccer_mod_players.steamid = soccer_mod_match_stats.steamid AND hits > 0 ORDER BY points desc";
+	char query[256] = "SELECT soccer_mod_players.steamid, points, rounds_won, rounds_lost, matches FROM soccer_mod_players, soccer_mod_match_stats \
+		WHERE soccer_mod_players.steamid = soccer_mod_match_stats.steamid AND hits > 0 ORDER BY points/matches desc";
 	SQL_TQuery(db, ClientCommandMatchRankingCallback, query, client);
 }
 
@@ -33,17 +33,26 @@ public void ClientCommandPublicRankingCallback(Handle owner, Handle hndl, const 
 		char steamid[32];
 		int rank;
 		int points;
+		int rounds;
 		while (SQL_FetchRow(hndl))
 		{
 			rank++;
 			SQL_FetchString(hndl, 0, steamid, sizeof(steamid));
 			points = SQL_FetchInt(hndl, 1);
+			rounds = SQL_FetchInt(hndl, 2) + SQL_FetchInt(hndl, 3);
 			if (StrEqual(clientSteamid, steamid)) break;
 		}
 
+		if (rankMode < 2)	points = points / rounds;
+
 		for (int player = 1; player <= MaxClients; player++)
 		{
-			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points in the public rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+			
+			if (IsClientInGame(player) && IsClientConnected(player))
+			{
+				if(rankMode < 2) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with average %i points per round in the public rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+				else CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points in the public rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+			}
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
@@ -67,17 +76,30 @@ public void ClientCommandMatchRankingCallback(Handle owner, Handle hndl, const c
 		char steamid[32];
 		int rank;
 		int points;
+		int rounds;
+		int matches;
 		while (SQL_FetchRow(hndl))
 		{
 			rank++;
 			SQL_FetchString(hndl, 0, steamid, sizeof(steamid));
 			points = SQL_FetchInt(hndl, 1);
+			rounds = SQL_FetchInt(hndl, 2) + SQL_FetchInt(hndl, 3);
+			matches = SQL_FetchInt(hndl, 4);
+			
 			if (StrEqual(clientSteamid, steamid)) break;
 		}
-
+		
+		if (rankMode == 0) points = points / matches;
+		else if (rankMode == 1) points = points / rounds;
+		
 		for (int player = 1; player <= MaxClients; player++)
 		{
-			if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points in the match rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+			if (IsClientInGame(player) && IsClientConnected(player)) 
+			{
+				if (rankMode == 0)CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with average %i points per match in the match rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+				else if (rankMode == 1)CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with average %i points per round in the match rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+				else if (rankMode == 2)CPrintToChat(player, "{%s}[%s] {%s}%N is ranked %i with %i points  in the match rankings.", prefixcolor, prefix, textcolor, client, rank, points);
+			}
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}You are not ranked yet.", prefixcolor, prefix, textcolor);
@@ -89,7 +111,7 @@ public void ResetStats(int client, char[] table)
 	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 	
 	char query[1024];
-	Format(query, sizeof(query), "DELETE FROM soccer_mod_%s_stats WHERE soccer_mod_%s_stats.steamid = '%s'", table, table, steamid);
+	Format(query, sizeof(query), "UPDATE soccer_mod_%s_stats SET goals = 0, assists = 0, own_goals = 0, hits = 0, passes = 0, interceptions = 0, ball_losses = 0, saves = 0, rounds_lost = 0, rounds_won = 0, points = 0, mvp = 0, motm = 0, matches = 0 WHERE soccer_mod_%s_stats.steamid = '%s'", table, table, steamid);
 	
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, client);
@@ -116,10 +138,10 @@ public void ClientResetRankingCallback(Handle owner, Handle hndl, const char[] e
 		char type[64], queryString[512];
 		ReadPackString(pack, type, sizeof(type));
 		CPrintToChat(client, "{%s}[%s] {%s}Your %s ranking has been reset.", prefixcolor, prefix, textcolor, type);
-		Format(queryString, sizeof(queryString), "INSERT INTO soccer_mod_match_stats (steamid) VALUES ('%s')", steamid);
+		Format(queryString, sizeof(queryString), "INSERT INTO soccer_mod_%s_stats (steamid) VALUES ('%s')", type, steamid);
 		ExecuteQuery(queryString);
-		Format(queryString, sizeof(queryString), "INSERT INTO soccer_mod_public_stats (steamid) VALUES ('%s')", steamid);
-		ExecuteQuery(queryString);
+		/*Format(queryString, sizeof(queryString), "INSERT INTO soccer_mod_public_stats (steamid) VALUES ('%s')", type, steamid);
+		ExecuteQuery(queryString);*/
 		OpenRankingMenu(client);
 	}
 }
@@ -130,12 +152,27 @@ public void ClientResetRankingCallback(Handle owner, Handle hndl, const char[] e
 public void OpenRankingMenu(int client)
 {
 	Menu menu = new Menu(RankingMenuHandler);
-
+	
 	menu.SetTitle("Soccer Mod - Ranking");
-
-	menu.AddItem("match_top", "Match Top 50");
-
-	menu.AddItem("public_top", "Public Top 50");
+	
+	if (rankMode == 0) 
+	{
+		menu.AddItem("match_top", "Top 50 per match avg");
+		
+		menu.AddItem("public_top", "Public top 50 per round avg");
+	}	
+	else if (rankMode == 1) 
+	{
+		menu.AddItem("match_top", "Match top 50 per round avg");
+		
+		menu.AddItem("public_top", "Public top 50 per round avg");
+	}
+	else if (rankMode == 2) 
+	{
+		menu.AddItem("match_top", "Match top 50");
+		
+		menu.AddItem("public_top", "Public Top 50");
+	}
 
 	menu.AddItem("match_personal", "Match Personal");
 
@@ -207,8 +244,12 @@ public int RankingResetMenuHandler(Menu menu, MenuAction action, int client, int
 // **********************************************************************************************************************
 public void OpenRankingTopMenu(int client, char type[8])
 {
-	char query[256];
-	Format(query, sizeof(query), "SELECT soccer_mod_players.steamid, points, name FROM soccer_mod_players, soccer_mod_%s_stats \
+	char query[512];
+	if (rankMode == 0 && StrEqual(type, "match")) Format(query, sizeof(query), "SELECT soccer_mod_players.steamid, points, name, matches FROM soccer_mod_players, soccer_mod_%s_stats \
+		WHERE soccer_mod_players.steamid = soccer_mod_%s_stats.steamid AND hits > 0 AND matches > 0 ORDER BY points/matches desc LIMIT 0,50", type, type);
+	else if (rankMode <= 1 ) Format(query, sizeof(query), "SELECT soccer_mod_players.steamid, points, name, rounds_won, rounds_lost FROM soccer_mod_players, soccer_mod_%s_stats \
+		WHERE soccer_mod_players.steamid = soccer_mod_%s_stats.steamid AND hits > 0 AND (rounds_won + rounds_lost) > 0 ORDER BY points/(rounds_won + rounds_lost) desc LIMIT 0,50", type, type);
+	else if (rankMode == 2) Format(query, sizeof(query), "SELECT soccer_mod_players.steamid, points, name FROM soccer_mod_players, soccer_mod_%s_stats \
 		WHERE soccer_mod_players.steamid = soccer_mod_%s_stats.steamid AND hits > 0 ORDER BY points desc LIMIT 0,50", type, type);
 
 	Handle pack = CreateDataPack();
@@ -231,23 +272,29 @@ public void OpenRankingTopMenuCallback(Handle owner, Handle hndl, const char[] e
 	}
 	else if (SQL_GetRowCount(hndl))
 	{
-		char type[64];
+		char type[64], title[64];
 		ReadPackString(pack, type, sizeof(type));
 
 		//char langString[64], langString1[64], langString2[64];
 		//Format(langString1, sizeof(langString1), "Ranking", client);
-
 		if (StrEqual(type, "match"))
 		{
 			//Format(langString2, sizeof(langString2), "%T", "Match top $number", client, 50);
 			//Format(langString, sizeof(langString), "Soccer Mod - %s - %s", langString1, langString2);
-			CreateRankingTopMenu(client, "Match top 50", hndl);
+			if (rankMode == 0) title = "Top 50 per match average";
+			else if (rankMode == 1) title = "Match top 50 per round average";
+			else if (rankMode == 2) title = "Match top 50";
+			
+			CreateRankingTopMenu(client, title, hndl);
 		}
 		else if (StrEqual(type, "public"))
 		{
 			//Format(langString2, sizeof(langString2), "%T", "Public top $number", client, 50);
 			//Format(langString, sizeof(langString), "Soccer Mod - %s - %s", langString1, langString2);
-			CreateRankingTopMenu(client, "Public top 50", hndl);
+			if (rankMode <= 1) title = "Public top 50 per round average";
+			else if (rankMode == 2) title = "Public top 50";
+			
+			CreateRankingTopMenu(client, title, hndl);
 		}
 	}
 	else
@@ -267,6 +314,8 @@ public void CreateRankingTopMenu(int client, char title[64], Handle hndl)
 	char menuString[1024];
 	int points;
 	int position;
+	int rounds;
+	int matches;
 
 	while (SQL_FetchRow(hndl))
 	{
@@ -274,6 +323,17 @@ public void CreateRankingTopMenu(int client, char title[64], Handle hndl)
 		SQL_FetchString(hndl, 0, steamid, sizeof(steamid));
 		SQL_FetchString(hndl, 2, name, sizeof(name));
 		points = SQL_FetchInt(hndl, 1);
+		if(rankMode == 0)
+		{
+			matches = SQL_FetchInt(hndl, 3);
+			points = points/matches;
+		}
+		else if(rankMode == 1)
+		{
+			rounds = SQL_FetchInt(hndl, 3) + SQL_FetchInt(hndl, 4);
+			points = points/rounds;
+		}
+		
 		Format(menuString, sizeof(menuString), "(%i) %s (%i)", position, name, points);
 		menu.AddItem(steamid, menuString, ITEMDRAW_DISABLED);
 	}
@@ -299,7 +359,7 @@ public void OpenRankingPersonalMenu(int client, char type[8])
 
 	char query[512];
 	Format(query, sizeof(query), "SELECT goals, assists, own_goals, passes, interceptions, ball_losses, hits, points, saves, rounds_won, rounds_lost, \
-		mvp, motm, last_connected, created, play_time FROM soccer_mod_players, soccer_mod_%s_stats \
+		mvp, motm, last_connected, created, play_time, matches FROM soccer_mod_players, soccer_mod_%s_stats \
 		WHERE soccer_mod_players.steamid = soccer_mod_%s_stats.steamid AND soccer_mod_players.steamid = '%s'", type, type, steamid);
 
 	Handle pack = CreateDataPack();
@@ -402,6 +462,10 @@ public void CreateRankingPersonalMenu(int client, char title[64], Handle hndl)
 		number = SQL_FetchInt(hndl, 10);
 		Format(menuString, sizeof(menuString), "%s: %i", "Rounds lost", number);
 		menu.AddItem("rounds_lost", menuString, ITEMDRAW_DISABLED);
+
+		number = SQL_FetchInt(hndl, 16);
+		Format(menuString, sizeof(menuString), "%s: %i", "Matches", number);
+		menu.AddItem("matches", menuString, ITEMDRAW_DISABLED);
 
 		number = SQL_FetchInt(hndl, 11);
 		Format(menuString, sizeof(menuString), "%s: %i", "MVP", number);

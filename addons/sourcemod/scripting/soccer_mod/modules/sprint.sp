@@ -34,28 +34,12 @@ public void floodcheck()
 	}
 }
 
-
-public void OnClientConnected(int client)
-{
-	SetDefaultClientSettings(client);
-	return;
-}
-
 //public void OnClientDisconnect(int client)
 //{
 //  WriteClientCookie(client);
 //  return;
 //}
 
-//Client settings
-public void OnClientCookiesCached(int client)
-{
-	if(IsClientConnected(client))
-	{
-		ReadClientCookie(client);
-	}
-	return;
-}
 
 public Action Command_StartSprint(int client, int args)
 {
@@ -157,21 +141,6 @@ public Action SprintHud(Handle timer, DataPack pack)
 		}
 	}
 	
-	return;
-}
-
-public void OnGameFrame()
-{
-	if(bSPRINT_BUTTON)
-	{
-		for(int i = 1; i <= MaxClients; i++)
-		{
-			if(IsClientInGame(i) && (GetClientButtons(i) & IN_USE))
-			{
-				if(!showHudPrev[i])	Command_StartSprint(i, 0);
-			}
-		}
-	}
 	return;
 }
 

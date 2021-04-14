@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.8"
+#define PLUGIN_VERSION "1.2.9"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -114,6 +114,7 @@ public void OnPluginStart()
 	HookEvent("player_hurt",			EventPlayerHurt);
 	HookEvent("player_spawn",		   EventPlayerSpawn);
 	HookEvent("player_team",			EventPlayerTeam);
+	HookEvent("player_jump", 			EventPlayerJump);
 	HookEvent("round_start",			EventRoundStart);
 	HookEvent("round_end",			  EventRoundEnd);
 	
@@ -496,6 +497,50 @@ public void OnAllPluginsLoaded()
 	}
 }
 
+public void OnGameFrame()
+{
+	if(bSPRINT_BUTTON)
+	{
+		for(int i = 1; i <= MaxClients; i++)
+		{
+			if(IsClientInGame(i) && (GetClientButtons(i) & IN_USE))
+			{
+				if(!showHudPrev[i])	Command_StartSprint(i, 0);
+			}
+			//JumpReset
+			if(IsClientInGame(i) && g_bJump[i])
+			{
+				if (GetGameTime() > jump_time[i] + fJUMP_TIMER)
+				{
+					//PrintToChatAll("reset %.1f", GetGameTime());
+					g_bJump[i] = false;
+					jump_time[i] = 0.0;
+				}
+				else if(GetEntityFlags(i) & FL_ONGROUND)
+				{
+					// reset if true
+					//PrintToChatAll("groundreset");
+					g_bJump[i] = false;
+					jump_time[i] = 0.0;
+				}
+			}
+		}
+	}
+	return;
+}
+
+public void OnClientConnected(int client)
+{	
+	SetDefaultClientSettings(client);
+	return;
+}
+
+public void OnClientAuthorized(int client)
+{	
+	LCOnClientConnected(client);
+	return;
+}
+
 public void OnClientPutInServer(int client)
 {
 	changeSetting[client] = "";
@@ -512,7 +557,7 @@ public void OnClientPutInServer(int client)
 	//SprintOnClientPutInServer(client);
 	AFKKickOnClientPutInServer(client);
 	
-	LCOnClientPutInServer(client);
+	//LCOnClientConnected(client);
 
 	ReadPersonalCannonSettings(client);
 	RadioCommandsOnClientPutInServer(client);
@@ -569,11 +614,23 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
 	//if((passwordlock == 1) && (pwchange == true))	AFKKickOnPlayerRunCmd(client, buttons, impulse, vel, angles, weapon);
 }
 
+//Client settings
+public void OnClientCookiesCached(int client)
+{
+	if(IsClientConnected(client))
+	{
+		ReadClientCookie(client);
+	}
+	return;
+}
+
 public void OnClientDisconnect(int client)
 {
 	DatabaseCheckPlayer(client);
 
 	RespawnOnClientDisconnect(client);
+	
+	GKSkinOnClientDisconnect(client);
 
 	RadioCommandsOnClientDisconnect(client);
 	SavePersonalCannonSettings(client);
@@ -581,6 +638,7 @@ public void OnClientDisconnect(int client)
 	WriteClientCookie(client);
 	
 	LCDisconnect(client);
+	JumpDisconnect(client);
 }
 
 public void OnClientDisconnect_Post(int client)
@@ -641,6 +699,7 @@ public Action EventPlayerTeam(Event event, const char[] name, bool dontBroadcast
 	if (currentMapAllowed)
 	{
 		RespawnEventPlayer(event);
+		GKSkinEventPlayer(event);
 	}
 }
 
@@ -1097,6 +1156,14 @@ stock bool DrawLaser(char[] name, float startX, float startY, float startZ, floa
 
 	return false;
 }
+
+// *********************************************** VALIDATION ********************************************************
+
+stock bool IsValidClient(int client, bool bAlive = false)
+{
+	return (client >= 1 && client <= MaxClients && IsClientConnected(client) && IsClientInGame(client) && !IsClientSourceTV(client));
+}
+
 
 // ***************************************************************************************************************
 // ************************************************** DEBUGGING **************************************************

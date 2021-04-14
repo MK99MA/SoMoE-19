@@ -4,26 +4,103 @@
 public void ClientCommandSetGoalkeeperSkin(int client)
 {
 	int team = GetClientTeam(client);
+	
+	//check current gk skin users
+	if (gkSkinFound(team) == false)
+	{
+		if (team == 2)	bTGoalkeeper = false;
+		else if (team == 3) bCTGoalkeeper = false;
+	}
 
-	if (skinsIsGoalkeeper[client])
+	if (skinsIsGoalkeeper[client] == 1)
 	{
 		skinsIsGoalkeeper[client] = 0;
 
-		if (team == 2 && FileExists(skinsModelT, true)) SetEntityModel(client, skinsModelT);
-		else if (team == 3 && FileExists(skinsModelCT, true)) SetEntityModel(client, skinsModelCT);
-
+		if (team == 2 && FileExists(skinsModelT, true))
+		{
+			SetEntityModel(client, skinsModelT);
+			bTGoalkeeper = false;
+		}
+		else if (team == 3 && FileExists(skinsModelCT, true))
+		{
+			SetEntityModel(client, skinsModelCT);
+			bCTGoalkeeper = false;
+		}
+		
 		CPrintToChat(client, "{%s}[%s] {%s}Goalkeeper skin disabled", prefixcolor, prefix, textcolor);
 	}
 	else
 	{
-		skinsIsGoalkeeper[client] = 1;
-
-		if (team == 2 && FileExists(skinsModelTGoalkeeper, true)) SetEntityModel(client, skinsModelTGoalkeeper);
-		else if (team == 3 && FileExists(skinsModelCTGoalkeeper, true)) SetEntityModel(client, skinsModelCTGoalkeeper);
-
-		CPrintToChat(client, "{%s}[%s] {%s}Goalkeeper skin enabled", prefixcolor, prefix, textcolor);
+		if (team == 2 && FileExists(skinsModelTGoalkeeper, true) && !bTGoalkeeper)
+		{
+			skinsIsGoalkeeper[client] = 1;
+			SetEntityModel(client, skinsModelTGoalkeeper);
+			
+			bTGoalkeeper = true;
+			
+			CPrintToChat(client, "{%s}[%s] {%s}Goalkeeper skin enabled", prefixcolor, prefix, textcolor);
+		}
+		else if (team == 3 && FileExists(skinsModelCTGoalkeeper, true) && !bCTGoalkeeper)
+		{
+			skinsIsGoalkeeper[client] = 1;
+			SetEntityModel(client, skinsModelCTGoalkeeper);
+			
+			bCTGoalkeeper = true;
+			
+			CPrintToChat(client, "{%s}[%s] {%s}Goalkeeper skin enabled", prefixcolor, prefix, textcolor);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Only 1 goalkeeper skin per team allowed.", prefixcolor, prefix, textcolor);	
 	}
 }
+
+public bool gkSkinFound(int team)
+{
+	int tempteam;
+	char tempmodel[128];
+	
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i)) 
+		{
+			tempteam = GetClientTeam(i);
+			if (team == tempteam && team == 2)
+			{
+				GetClientModel(i, tempmodel, sizeof(tempmodel))
+				if (StrEqual(tempmodel, skinsModelTGoalkeeper)) return true;
+				else 
+				{
+					if (skinsIsGoalkeeper[i] == 1)
+					{
+						skinsIsGoalkeeper[i] = 0;
+					}
+				}
+			}
+
+			if (team == tempteam && team == 3)
+			{
+				GetClientModel(i, tempmodel, sizeof(tempmodel))
+				if (StrEqual(tempmodel, skinsModelCTGoalkeeper)) return true;
+				else
+				{
+					if (skinsIsGoalkeeper[i] == 1)
+					{
+						skinsIsGoalkeeper[i] = 0;
+					}
+				}
+			}
+			
+			if (tempteam == 1)
+			{
+				if (skinsIsGoalkeeper[i] == 1)
+				{
+					skinsIsGoalkeeper[i] = 0;
+				}
+			}
+		}
+	}
+	return false
+}
+
 
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
@@ -95,6 +172,45 @@ public void SkinsEventPlayerSpawn(Event event)
 				DispatchKeyValue(client, "skin", skinsModelCTNumber);
 			}
 		}
+	}
+}
+
+public void GKSkinEventPlayer(Event event)
+{
+	int userid = event.GetInt("userid");
+	int oldTeam = event.GetInt("oldteam");
+	int newTeam = event.GetInt("team");
+	int client = GetClientOfUserId(userid);
+	
+	if (skinsIsGoalkeeper[client] && newTeam == 1)
+	{
+		//skinsIsGoalkeeper[client] = 0;
+		//PrintToChatAll("joined spec");
+		if(oldTeam == 2) bTGoalkeeper = false;
+		else if(oldTeam == 3) bCTGoalkeeper = false;
+	}
+	else if (skinsIsGoalkeeper[client] && (newTeam == 2 || newTeam == 3))
+	{
+		//PrintToChatAll("joined %i", newTeam);
+		if(newTeam == 2 && !bTGoalkeeper) bTGoalkeeper = true;
+		else if (newTeam == 3 && !bCTGoalkeeper) bCTGoalkeeper = true;
+		else 
+		{
+			skinsIsGoalkeeper[client] = 0;
+			CPrintToChat(client, "{%s}[%s] {%s}There is already a goalkeeper skin used in this team. Goalkeeper skin disabled.", prefixcolor, prefix, textcolor);
+		}
+	}
+}
+
+public void GKSkinOnClientDisconnect(int client)
+{
+	if (skinsIsGoalkeeper[client])
+	{
+		int team = GetClientTeam(client);
+		skinsIsGoalkeeper[client] = 0;
+		
+		if(team == 2) bTGoalkeeper = false;
+		else if(team == 3) bCTGoalkeeper = false;
 	}
 }
 

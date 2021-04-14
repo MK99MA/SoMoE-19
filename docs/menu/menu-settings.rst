@@ -183,12 +183,14 @@ The following features are toggleable or changeable:
  - **Class Choice** - *Toggle* - Enables or Disables the class selection screen after joining a team.
  - **Load Map Defaults** - *Toggle* - Enable or Disable loading per map defaults when loading that map.
  - **Remove Ragdoll** - *Toggle* - Select 1 of 3 modes of ragdoll handling (Do nothing / Remove ragdoll / Dissolve ragdoll).
- - **Duckjump Block** - *Toggle* - Enable or Disable the Duckjump preventions.
+ - **Duckjump Block** - *Toggle* - Enable or Disable the Duckjump preventions. Features 2 attempts at doing so.
  - **Hostname Info** - *Toggle* - Enable or Disable status updates in the servers name.
  - **!rank cooldown** - *Value* - Change the cooldown between !rank usages - 0 to disable.
  - **Ready Check** - *Toggle* - Select 1 of 3 modes of unpause handling (Default / Auto-Unpause if everyone ready / Block unpause unless everyone is ready).
  - **Damage Sounds** - *Toggle* - Enable or Disable hurt-sounds when being hit by the ball.
  - **Killfeed** - *Toggle* - Enable or Disable the killfeed in the upper right corner.
+ - **GK saves only** - *Toggle* - Enable or Disable save tracking only for players using the gk skin. If this option is enabled and no player of the team is using the gk skin, everyone will be able to earn saves in the gk area.
+ - **Rank Mode** - *Toggle* - Select 1 of 3 ranking modes ( pts/matches, pts/rounds, pts).
  
 ----
 

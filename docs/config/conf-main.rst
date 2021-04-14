@@ -204,6 +204,7 @@ This section features miscellaneous settings that do not fit into any of the oth
 			"soccer_mod_health_godmode"     "1"
 			"soccer_mod_respawn_delay"      "10.000000"
 			"soccer_mod_blockdj_enable"     "1"
+			"soccer_mod_blockdj_time"		"0.45"
 			"soccer_mod_damagesounds"       "0"
 			"soccer_mod_dissolver"          "2"
 			"soccer_mod_joinclass"          "0"
@@ -218,6 +219,7 @@ This section features miscellaneous settings that do not fit into any of the oth
  - **soccer_mod_health_godmode** controls whether players can kill each other with the ball or knives.
  - **soccer_mod_respawn_delay** controls the number of seconds it takes before a player respawns (after joining a running game or if he used the kill-command).
  - **soccer_mod_blockdj_enable** controls whether duckjumps should be suppressed.
+ - **soccer_mod_blockdj_time** controls after what timeframe ducking should be reallowed in the NEW mode.
  - **soccer_mod_damagesounds** controls whether the sound playing when a player is hit by the ball should be played or not. (Allowed values: 0 - No sound, 1 - Play sound).
  - **soccer_mod_dissolver** controls what happens to a players corpse (Allowed values: 0 - Default ragdoll, 1 - Remove ragdoll, 2 - Dissolve animation).
  - **soccer_mod_joinclass** controls whether players should see the class selection screen after joining a team.
@@ -305,6 +307,8 @@ As the name suggests, this section features settings related to the stats system
 			"soccer_mod_ranking_points_mvp"           "15"
 			"soccer_mod_ranking_points_motm"          "25"
 			"soccer_mod_ranking_cdtime"               "300"
+			"soccer_mod_gksaves_only"                 "0"
+			"soccer_mod_rankmode"                     "0"
 		}
 		
 .. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file. The default values were not thoroughly tested, so feel free to adjust them to your needs if needed.
@@ -312,6 +316,8 @@ As the name suggests, this section features settings related to the stats system
 Each key determines the number of points a player will receive when performing the given action. *soccer_mod_ranking_points_save* does require you to setup Goalkeeper Areas for every map in *soccer_mod_GKAreas.cfg*.
 
  - **soccer_mod_ranking_cdtime** controls the number of seconds players have to wait between using the !rank command.
+ - **soccer_mod_gksaves_only** controls whether gk skin users are the only ones able to earn saves. If no player of the team is using the gk skin everyone of the team is able to earn saves inside the gk area.
+ - **soccer_mod_rankmode** controls the ranking method (0 - pts/matches, 1 - pts/rounds, 2 - pts).
  
 ----
 

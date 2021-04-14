@@ -48,8 +48,10 @@ public void StatsOnTakeDamage(int ball, int client)
 	GetEntPropVector(ball, Prop_Send, "m_vecOrigin", ballPosition);
 	
 	int prevhitteam;
-	if (statsLastHitId) prevhitteam = GetClientTeam(statsLastHitId);
-
+	if (statsLastHitId)
+	{
+		if (IsClientConnected(statsLastHitId)) prevhitteam = GetClientTeam(statsLastHitId);
+	}
 	if (statsSaver) //CHECK LASTHIT = ENEMYTEAM
 	{
 		if (IsClientConnected(statsSaver))
@@ -96,7 +98,17 @@ public void StatsOnTakeDamage(int ball, int client)
 		statsCTGKAreaMinY <= ballPosition[1] <= statsCTGKAreaMaxY && 
 		statsCTGKAreaMinZ <= ballPosition[2] <= statsCTGKAreaMaxZ)
 	{
-		if (prevhitteam == 2) statsSaver = client;
+		if (prevhitteam == 2) 
+		{
+			if (gksavesSet == 1 && bCTGoalkeeper)
+			{
+				if (skinsIsGoalkeeper[client])	statsSaver = client;
+			}
+			else
+			{
+				statsSaver = client;
+			}		
+		}
 		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the CT gk area", prefixcolor, prefix, textcolor, client);
 	}
 	else if (team == 2 && 
@@ -104,7 +116,17 @@ public void StatsOnTakeDamage(int ball, int client)
 		statsTGKAreaMinY <= ballPosition[1] <= statsTGKAreaMaxY && 
 		statsTGKAreaMinZ <= ballPosition[2] <= statsTGKAreaMaxZ)
 	{
-		if (prevhitteam == 3) statsSaver = client;
+		if (prevhitteam == 3) 
+		{
+			if (gksavesSet == 1 && bTGoalkeeper)
+			{
+				if (skinsIsGoalkeeper[client])	statsSaver = client;
+			}
+			else
+			{
+				statsSaver = client;
+			}		
+		}
 		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the T gk area", prefixcolor, prefix, textcolor, client);
 	}
 
@@ -435,7 +457,7 @@ public void StatsEventRoundEnd(Event event)
 	int winner = event.GetInt("winner");
 	// Handle keygroup;
 	// char queryString[1024];
-
+	
 	if (winner > 1)
 	{
 		if (statsScorerClientid)
@@ -570,46 +592,51 @@ public void StatsEventRoundEnd(Event event)
 					int team = GetClientTeam(client);
 					if (team > 1)
 					{
-						char steamid[32];
+						char steamid[32], name[MAX_NAME_LENGTH];
 						GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+						GetClientName(client, name, sizeof(name));
 
-						statsKeygroupMatch.JumpToKey(steamid, true);
-						statsKeygroupRound.JumpToKey(steamid, true);
+						//statsKeygroupMatch.JumpToKey(steamid, true);
 
 						if (team == winner)
 						{
-							int keyValue = statsKeygroupMatch.GetNum("rounds_won", 0);
+							AddPlayerStatInt(name, steamid, "rounds_won", rankingPointsForRoundWon);
+						
+							/*int keyValue = statsKeygroupMatch.GetNum("rounds_won", 0);
 							statsKeygroupMatch.SetNum("rounds_won", keyValue + 1);
 							keyValue = statsKeygroupMatch.GetNum("points", 0);
-							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundWon);
+							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundWon);*/
 							
-							statsKeygroupRound.SetNum("rounds_won", 1);
-							statsKeygroupRound.SetNum("rounds_lost", 0);
-
 							// Format(queryString, sizeof(queryString), "UPDATE %s SET rounds_won = (rounds_won + 1), points = (points + %i) WHERE steamid = '%s'", 
 							//  table, rankingPointsForRoundWon, steamid);
 							// ExecuteQuery(queryString);
 						}
 						else
 						{
-							int keyValue = statsKeygroupMatch.GetNum("rounds_lost", 0);
+							AddPlayerStatInt(name, steamid, "rounds_lost", rankingPointsForRoundLost);
+						
+							/*int keyValue = statsKeygroupMatch.GetNum("rounds_lost", 0);
 							statsKeygroupMatch.SetNum("rounds_lost", keyValue + 1);
 							keyValue = statsKeygroupMatch.GetNum("points", 0);
-							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundLost);
-
-							statsKeygroupRound.SetNum("rounds_won", 0);
-							statsKeygroupRound.SetNum("rounds_lost", 1);
+							statsKeygroupMatch.SetNum("points", keyValue + rankingPointsForRoundLost);*/
 
 							// Format(queryString, sizeof(queryString), "UPDATE %s SET rounds_lost = (rounds_lost + 1), points = (points + %i) WHERE steamid = '%s'", 
 							//  table, rankingPointsForRoundLost, steamid);
 							// ExecuteQuery(queryString);
 						}
+						
+						statsKeygroupMatch.JumpToKey(steamid, true);
+						
+						int matchtemp = statsKeygroupMatch.GetNum("matches", 0);
+						if(matchtemp == 0) statsKeygroupMatch.SetNum("matches", 1);
+						
+						statsKeygroupMatch.Rewind();
+						
 					}
 				}
 			}
 
-			statsKeygroupMatch.Rewind();
-			statsKeygroupRound.Rewind();
+			//statsKeygroupMatch.Rewind();
 			// keygroup.ExportToFile(statsKeygroupMatch);
 			// keygroup.Close();
 
@@ -642,16 +669,8 @@ public void StatsEventRoundEnd(Event event)
 		int goals = statsKeygroupRound.GetNum("goals", 0);
 		int assists = statsKeygroupRound.GetNum("assists", 0);
 		int own_goals = statsKeygroupRound.GetNum("own_goals", 0);
-		int rounds_won = 0;
-		int rounds_lost = 0;
-		if (statsKeygroupRound.GetNum("rounds_won", 0) == 1)
-		{
-			rounds_won = 1;
-		}
-		if (statsKeygroupRound.GetNum("rounds_lost", 0) == 1)
-		{
-			rounds_lost = 1;
-		}
+		int rounds_won = statsKeygroupRound.GetNum("rounds_won", 0);
+		int rounds_lost = statsKeygroupRound.GetNum("rounds_lost", 0);
 		int hits = statsKeygroupRound.GetNum("hits", 0);
 		int saves = statsKeygroupRound.GetNum("saves", 0);
 		int passes = statsKeygroupRound.GetNum("passes", 0);
@@ -665,10 +684,13 @@ public void StatsEventRoundEnd(Event event)
 		char steamid[32];
 		statsKeygroupRound.GetSectionName(steamid, sizeof(steamid));
 
-		Format(queryString, sizeof(queryString), "UPDATE %s SET goals = (goals + %i), assists = (assists + %i), own_goals = (own_goals + %i), rounds_won = (rounds_won + %i), \
-			rounds_lost = (rounds_lost + %i), hits = (hits + %i), saves = (saves + %i), passes = (passes + %i), interceptions = (interceptions + %i), ball_losses = (ball_losses + %i), \
-			points = (points + %i) WHERE steamid = '%s'", table, goals, assists, own_goals, rounds_won, rounds_lost, hits, saves, passes, interceptions, ball_losses, points, steamid);
-		ExecuteQuery(queryString);
+		if (EnoughPlayers())
+		{
+			Format(queryString, sizeof(queryString), "UPDATE %s SET goals = (goals + %i), assists = (assists + %i), own_goals = (own_goals + %i), rounds_won = (rounds_won + %i), \
+				rounds_lost = (rounds_lost + %i), hits = (hits + %i), saves = (saves + %i), passes = (passes + %i), interceptions = (interceptions + %i), ball_losses = (ball_losses + %i), \
+				points = (points + %i) WHERE steamid = '%s'", table, goals, assists, own_goals, rounds_won, rounds_lost, hits, saves, passes, interceptions, ball_losses, points, steamid);
+			ExecuteQuery(queryString);
+		}
 	}
 	while (statsKeygroupRound.GotoNextKey());
 
@@ -1007,7 +1029,7 @@ public Action SetPlayerStats(Handle timer, any client)
 		SetEntProp(client, Prop_Data, "m_iFrags", statsKeygroupMatch.GetNum("goals", 0));
 		SetEntProp(client, Prop_Data, "m_iDeaths", statsKeygroupMatch.GetNum("assists", 0));
 
-		CS_SetMVPCount(client, statsKeygroupMatch.GetNum("mvpCount", 0));
+		if (MVPEnabled == 1) CS_SetMVPCount(client, statsKeygroupMatch.GetNum("mvpCount", 0));
 
 		statsKeygroupMatch.Rewind();
 		// keygroup.Close();
@@ -1180,9 +1202,12 @@ public void ShowMVP()
 		if (matchStarted) table = "soccer_mod_match_stats";
 		else table = "soccer_mod_public_stats";
 
-		Format(queryString, sizeof(queryString), "UPDATE %s SET mvp = (mvp + 1), points = (points + %i) WHERE steamid = '%s'", 
-			table, rankingPointsForMVP, steamidMVP);
-		ExecuteQuery(queryString);
+		if (EnoughPlayers())
+		{
+			Format(queryString, sizeof(queryString), "UPDATE %s SET mvp = (mvp + 1), points = (points + %i) WHERE steamid = '%s'", 
+				table, rankingPointsForMVP, steamidMVP);
+			ExecuteQuery(queryString);
+		}
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
@@ -1200,11 +1225,70 @@ public void ShowMVP()
 	}
 }
 
+public bool EnoughPlayers()
+{
+	int ctplayers = GetTeamClientCount(3);
+	int tplayers = GetTeamClientCount(2);
+	
+	if(matchStarted)
+	{
+		if(tplayers >= 5 && ctplayers >= 5) return true;
+	}
+	else return true;
+	
+	return false;
+}
+
+public void AddMatchStat(char type[8])
+{
+	char queryString[512];
+	int keyValue
+	
+	statsKeygroupMatch.GotoFirstSubKey();
+
+	if (StrEqual(type, "reset"))
+	{
+		do
+		{
+			keyValue = statsKeygroupMatch.GetNum("matches", 0);
+			if (keyValue == 1)
+			{
+				char steamid[32];
+				statsKeygroupMatch.GetSectionName(steamid, sizeof(steamid));
+				statsKeygroupMatch.SetNum("matches", 0);
+			}
+		}
+		while (statsKeygroupMatch.GotoNextKey());
+	}
+	else
+	{
+		do
+		{
+			keyValue = statsKeygroupMatch.GetNum("matches", 0);
+			if (keyValue == 1)
+			{
+				char steamid[32];
+				statsKeygroupMatch.GetSectionName(steamid, sizeof(steamid));
+				statsKeygroupMatch.SetNum("matches", 0);
+				
+				if(EnoughPlayers)
+				{
+					Format(queryString, sizeof(queryString), "UPDATE soccer_mod_match_stats SET matches = (matches +1) WHERE steamid = '%s'", steamid);
+					ExecuteQuery(queryString);
+				}
+			}
+		}
+		while (statsKeygroupMatch.GotoNextKey());
+	}
+
+	statsKeygroupMatch.Rewind();
+}
+
 public void ShowManOfTheMatch()
 {
 	int highestScore = 0;
 	char matchMVP[MAX_NAME_LENGTH];
-	char steamidMVP[32];
+	char steamidMVP[32]; 
 
 	// Handle keygroup = new KeyValues("matchStatistics");
 	// keygroup.ImportFromFile(statsKeygroupMatch);
@@ -1245,9 +1329,12 @@ public void ShowManOfTheMatch()
 		if (matchStarted) table = "soccer_mod_match_stats";
 		else table = "soccer_mod_public_stats";
 
-		Format(queryString, sizeof(queryString), "UPDATE %s SET motm = (motm + 1), points = (points + %i) WHERE steamid = '%s'", 
-			table, rankingPointsForMOTM, steamidMVP);
-		ExecuteQuery(queryString);
+		if (EnoughPlayers())
+		{
+			Format(queryString, sizeof(queryString), "UPDATE %s SET motm = (motm + 1), points = (points + %i) WHERE steamid = '%s'", 
+				table, rankingPointsForMOTM, steamidMVP);
+			ExecuteQuery(queryString);
+		}
 
 		for (int player = 1; player <= MaxClients; player++)
 		{

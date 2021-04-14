@@ -7,7 +7,7 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], DebugString[32];
+	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -28,9 +28,6 @@ public void OpenMenuSettings(int client)
 	
 	if(joinclassSet == 0)				JoinString = "ClassChoice: OFF";
 	else if (joinclassSet == 1)			JoinString = "ClassChoice: ON";
-	
-	if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
-	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";
 	
 	Format(RankString, sizeof(RankString), "!rank Cooldown: %i", rankingCDTime);
 	
@@ -91,7 +88,7 @@ public void OpenMenuMiscSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Misc");
 
-	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32]; //, DebugString[32];
+	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32]; //, DebugString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -105,6 +102,7 @@ public void OpenMenuMiscSettings(int client)
 	
 	if(djbenabled == 0)					DJString = "DuckJumpBlock: OFF";
 	else if (djbenabled == 1)			DJString = "DuckJumpBlock: ON";
+	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON (NEW)";
 	
 	if(joinclassSet == 0)				JoinString = "ClassChoice: OFF";
 	else if (joinclassSet == 1)			JoinString = "ClassChoice: ON";
@@ -118,8 +116,23 @@ public void OpenMenuMiscSettings(int client)
 	if(killfeedSet == 0)				FeedString = "Killfeed: OFF";
 	else if (killfeedSet == 1)			FeedString = "Killfeed: ON";
 	
+	if(gksavesSet == 0)					GKString = "GK saves only: OFF";
+	else if (gksavesSet == 1)			GKString = "GK saves only: ON";
+	
+	if(rankMode == 0)					RankModeString = "Ranking: pts/matches";
+	else if (rankMode == 1)				RankModeString = "Ranking: pts/rounds";
+	else if (rankMode == 2)				RankModeString = "Ranking: pts";
+	
 	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
 	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
+	
+	// gk skin saves only toggle x
+	// wenn aktiv und gk skin in team aktiv -> nur gk mit saves, sonst jeder ? x
+	// 1 gk skin per team x
+	// pts / runden teilen x
+	// pos menu  x
+	// rounds tracking ?
+	// reset rank problems ? x
 	
 	Format(RankString, sizeof(RankString), "!rank Cooldown: %i", rankingCDTime);
 	
@@ -132,6 +145,8 @@ public void OpenMenuMiscSettings(int client)
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
 	menu.AddItem("killfeed", FeedString);
+	menu.AddItem("gksaves", GKString);
+	menu.AddItem("rankmode", RankModeString);
 	/*if (debuggingEnabled == 1 && CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gk_areas", "Set gk areas");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("debugset", DebugString);*/
 
@@ -207,6 +222,12 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			}
 			else if(djbenabled == 1)
 			{
+				djbenabled = 2;
+				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
+				OpenMenuMiscSettings(client);
+			}
+			else if(djbenabled >= 2)
+			{
 				djbenabled = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
 				OpenMenuMiscSettings(client);
@@ -274,6 +295,42 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				killfeedSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_killfeed", killfeedSet);
+				OpenMenuMiscSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "gksaves"))
+		{
+			if(gksavesSet == 0)
+			{
+				gksavesSet = 1;
+				UpdateConfigInt("Stats Settings", "soccer_mod_gksaves_only", gksavesSet);
+				OpenMenuMiscSettings(client);
+			}
+			else if(gksavesSet == 1)
+			{
+				gksavesSet = 0;
+				UpdateConfigInt("Stats Settings", "soccer_mod_gksaves_only", gksavesSet);
+				OpenMenuMiscSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "rankmode")) 
+		{
+			if(rankMode == 0)
+			{
+				rankMode = 1;
+				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
+				OpenMenuMiscSettings(client);
+			}
+			else if(rankMode == 1)
+			{
+				rankMode = 2;
+				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
+				OpenMenuMiscSettings(client);
+			}
+			else if(rankMode >= 2)
+			{
+				rankMode = 0;
+				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
 				OpenMenuMiscSettings(client);
 			}
 		}

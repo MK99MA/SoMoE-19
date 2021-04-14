@@ -68,8 +68,7 @@ public int RefereeMenuHandler(Menu menu, MenuAction action, int client, int choi
 	}
 	else if (action == MenuAction_Cancel && choice == -6)
 	{
-		if((publicmode ==1) && !(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))) OpenMatchMenu(client);
-		else OpenMenuAdmin(client);
+		OpenMenuAdmin(client);
 	}
 	else if (action == MenuAction_End)					  menu.Close();
 }

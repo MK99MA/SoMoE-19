@@ -136,8 +136,6 @@ public void OpenMatchMenu(int client)
 
 	menu.AddItem("pause", "Pause / Unpause");
 
-	//if(publicmode == 1 && !((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client)))	menu.AddItem("referee", "Referee");
-	
 	menu.AddItem("settings", "Match Settings");
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match"))
@@ -192,10 +190,6 @@ public int MatchMenuHandler(Menu menu, MenuAction action, int client, int choice
 		{
 			MatchStop(client);
 			OpenMatchMenu(client);
-		}
-		else if (StrEqual(menuItem, "referee"))
-		{
-			if (publicmode == 1) OpenRefereeMenu(client);
 		}
 		else if (StrEqual(menuItem, "log"))
 		{	 
@@ -336,7 +330,7 @@ public void OpenMenuMatchSettings(int client)
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("forfeitset", "Forfeit Vote settings");
 	
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("nameset", "Team Name settings");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "match")) menu.AddItem("nameset", "Team Name settings");
 	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) menu.AddItem("matchinfoset", "Match-Info settings");
 
@@ -1830,6 +1824,7 @@ public Action DelayMatchEnd(Handle timer)
 
 	LogMessage("Final score: %s %i - %i %s", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 
+	AddMatchStat("add");
 	ShowManOfTheMatch();
 	MatchReset();
 	NameReset();
@@ -1848,6 +1843,7 @@ public void MatchReset()
 	matchPaused					= false;
 	matchPeriodBreak			= false;
 	matchStoppageTimeStarted	= false;
+	matchValid					= false;
 
 	matchTime = 0;
 	matchStoppageTime = 0;
@@ -2047,6 +2043,8 @@ public void MatchStop(int client)
 			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
 			showPanel = false;
 		}
+		if (matchValid) AddMatchStat("add");
+		else AddMatchStat("reset");
 		MatchReset();
 		NameReset();
 		UnfreezeAll();
@@ -2106,6 +2104,7 @@ public void EndStoppageTime()
 		if (matchPeriod <= matchPeriods)
 		{
 			matchPeriodBreak = true;
+			matchValid = true;
 			PlaySound("soccermod/halftime.wav"); 
 			
 			PrintCenterTextAll("Halftime break");
@@ -2136,7 +2135,7 @@ public void EndStoppageTime()
 			{
 
 				PlaySound("soccermod/endmatch.wav");
-
+				
 				for (int player = 1; player <= MaxClients; player++)
 				{
 					if (IsClientInGame(player) && IsClientConnected(player))
@@ -2147,6 +2146,7 @@ public void EndStoppageTime()
 
 				LogMessage("Final score: %s %i - %i %s", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 
+				AddMatchStat("add");
 				ShowManOfTheMatch();
 				MatchReset();
 				NameReset();

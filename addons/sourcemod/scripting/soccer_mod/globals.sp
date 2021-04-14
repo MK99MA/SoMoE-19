@@ -44,6 +44,9 @@ bool goalScored					= false;
 bool menuaccessed[MAXPLAYERS+1];
 bool roundEnded					= false;
 bool xorientation				= true;
+bool g_bIsDuck[MAXPLAYERS+1] 	= {false,...};
+bool g_bDuck[MAXPLAYERS+1] 		= {false,...};
+bool g_bJump[MAXPLAYERS+1] 		= {false,...};
 
 // FLOATS
 float phys_timescale			= 1.0;
@@ -54,6 +57,8 @@ float mapBallStartPosition[3];
 float vec_tgoal_origin[3];
 float vec_ctgoal_origin[3];
 float sprayVector[MAXPLAYERS+1][3];
+float fJUMP_TIMER				= 0.45;
+float jump_time[MAXPLAYERS+1]	= {0.0, ...};
 
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
@@ -61,6 +66,7 @@ Handle db			   			= INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
 Handle dclistTimer;
+Handle g_cJumpTimer[MAXPLAYERS+1] = {null,...};
 
 ArrayList groupArray;
 ArrayList lcPanelArray;
@@ -77,6 +83,7 @@ int dissolveSet					= 2;
 int joinclassSet				= 0;
 int defaultSet					= 1;
 int killfeedSet					= 0;
+int jump_count[MAXPLAYERS+1]	= {0, ...};
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -198,6 +205,7 @@ bool matchPeriodBreak			= false;
 bool matchGoldenGoalActive		= false;
 bool matchKickOffTaken			= false;
 bool matchStoppageTimeStarted	= false;
+bool matchValid					= false;
 
 // FLOATS
 float matchBallStartPosition[3];
@@ -299,6 +307,8 @@ int rankingPointsForRoundWon		= 10;
 int rankingPointsForRoundLost		= -10;
 int rankingPointsForMVP				= 15;
 int rankingPointsForMOTM			= 25;
+int gksavesSet						= 0;
+int rankMode						= 0;
 
 int rankingCDTime					= 300;
 int rankingPlayerCDTimes[MAXPLAYERS+1];
@@ -375,6 +385,8 @@ char defaultpw[256];
 // **************************************************** SKINS ***************************************************
 
 // BOOL
+bool bTGoalkeeper	 	= false;
+bool bCTGoalkeeper 		= false;
 
 // FLOATS
 
