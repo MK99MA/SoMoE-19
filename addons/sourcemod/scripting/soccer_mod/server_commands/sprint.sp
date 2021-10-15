@@ -9,100 +9,106 @@
 //Register Commands
 public void RegisterServerCommandsSprint()
 {
-	h_BUTTON = CreateConVar(
-		"soccer_mod_sprint_button", 
-		DEF_BUTTON,
-		"Enable/Disable +use button support - Default 1",
-		0, true, 0.0, true, 1.0
+	RegServerCmd
+	(
+		"soccer_mod_sprint_button",
+		ServerCommandsSprint,
+		"Enable(1)/Disable(0) the sprint button (+use), default: 1" 
 	);
-	h_COOLDOWN = CreateConVar(
-		"soccer_mod_sprint_cooldown", 
-		DEF_COOLDOWN,
-		"Time in seconds the player must wait for the next sprint - Default 7.5",
-		0, true, 1.0, true, 15.0
+	RegServerCmd
+	(
+		"soccer_mod_sprint_cooldown",
+		ServerCommandsSprint,
+		"Time in seconds the player must wait for the next sprint - values: 1.0-15.0, default: 7.5" 
 	);
-	h_SPRINT_ENABLED = CreateConVar(
-		"soccer_mod_sprint_enable", 
-		DEF_SPRINT_ENABLED,
-		"Enable/Disable ShortSprint - Default: 1",
-		0, true, 0.0, true, 1.0
+	RegServerCmd
+	(
+		"soccer_mod_sprint_enable",
+		ServerCommandsSprint,
+		"Enable(1)/Disable(0) the sprint module, default: 1" 
 	);
-	h_SPEED = CreateConVar(
-		"socer_mod_sprint_speed", 
-		DEF_SPEED,
-		"Ratio for how fast the player will sprint - Default 1.25",
-		0, true, 1.01, true, 5.00
+	RegServerCmd
+	(
+		"soccer_mod_sprint_speed",
+		ServerCommandsSprint,
+		"Ratio for how fast the player will sprint - values: 1.01-5.00, default: 1.25" 
 	);
-	h_TIME= CreateConVar(
-		"soccer_mod_sprint_time", 
-		DEF_TIME, 
-		"Time in seconds the player will sprint - Default 3",
-		0, true, 1.0, true, 30.0 
+	RegServerCmd
+	(
+		"soccer_mod_sprint_time",
+		ServerCommandsSprint,
+		"Time in seconds the player will sprint - values: 1.0-30.0, default 3.0" 
 	);
-
-	HookConVarChange			(h_BUTTON, ButtonConVarChanged);
-	HookConVarChange			(h_COOLDOWN, CooldownConVarChanged);
-	HookConVarChange			(h_SPRINT_ENABLED, EnabledConVarChanged);
-	HookConVarChange			(h_SPEED, SpeedConVarChanged);
-	HookConVarChange			(h_TIME, TimeConVarChanged);
-
-	//Manually trigger convar readout
-	CooldownConVarChanged(INVALID_HANDLE, "0", "0");
-	EnabledConVarChanged(INVALID_HANDLE, "0", "0");
-	SpeedConVarChanged(INVALID_HANDLE, "0", "0");
-	TimeConVarChanged(INVALID_HANDLE, "0", "0"); 
-
-	return;
 }
 
-public void EnabledConVarChanged(Handle convar, char[] oldValue, char[] newValue)
+public Action ServerCommandsSprint(int args)
 {
-	bSPRINT_ENABLED = GetConVarInt(h_SPRINT_ENABLED);
-	UpdateConfigInt("Sprint Settings", "soccer_mod_sprint_enable", bSPRINT_ENABLED);
+	char serverCommand[50], cmdArg1[8];
+	GetCmdArg(0, serverCommand, sizeof(serverCommand));
+	GetCmdArg(1, cmdArg1, sizeof(cmdArg1));
+	int number = StringToInt(cmdArg1);
+	float numfloat = StringToFloat(cmdArg1);
 
-	if(!bSPRINT_ENABLED)
+	if (StrEqual(serverCommand, "soccer_mod_sprint_button"))
 	{
-		bSPRINT_BUTTON = false;
-		CPrintToChatAll("{%s}[%s] {%s}Sprint module was disabled!", prefixcolor, prefix, textcolor);
-		return;
+		if (number == 0) 
+		{
+			bSPRINT_BUTTON = number;
+			CPrintToChatAll("{%s}[%s] {%s}Sprinting with +use was disabled!", prefixcolor, prefix, textcolor);
+		}
+		else if (number >= 1)
+		{
+			bSPRINT_BUTTON = 1;
+			CPrintToChatAll("{%s}[%s] {%s}Sprinting with +use was enabled!", prefixcolor, prefix, textcolor);
+		}
+		
+		UpdateConfigInt("Sprint Settings", "soccer_mod_sprint_button", bSPRINT_BUTTON);
 	}
-	else CPrintToChatAll("{%s}[%s] {%s}Sprint module was enabled!", prefixcolor, prefix, textcolor);
+	else if (StrEqual(serverCommand, "soccer_mod_sprint_cooldown"))
+	{
+		if (1.0 <= numfloat <= 15.0) 
+		{
+			fSPRINT_COOLDOWN = numfloat;
+			UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_cooldown", fSPRINT_COOLDOWN);
 
-	//ButtonConVarChanged(INVALID_HANDLE, "0", "0");
+			CPrintToChatAll("{%s}[%s] {%s}Sprint cooldown was set to %f!", prefixcolor, prefix, textcolor, fSPRINT_COOLDOWN);
+		}
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_sprint_enable"))
+	{
+		if (number == 0)
+		{
+			bSPRINT_ENABLED = number;
+			CPrintToChatAll("{%s}[%s] {%s}Sprinting module disabled!", prefixcolor, prefix, textcolor);
+		}
+		else if (number >= 1)
+		{
+			bSPRINT_ENABLED = 1; 
+			CPrintToChatAll("{%s}[%s] {%s}Sprinting module enabled!", prefixcolor, prefix, textcolor);
+		}
+		
+		UpdateConfigInt("Sprint Settings", "soccer_mod_sprint_enable", bSPRINT_ENABLED);
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_sprint_speed"))
+	{
+		if (1.01 <= numfloat <= 5.00) 
+		{
+			fSPRINT_SPEED = numfloat;
+			UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_speed", fSPRINT_SPEED);
 
-	return;
-}
-	
-public void ButtonConVarChanged(Handle convar, char[] oldValue, char[] newValue)
-{
-	bSPRINT_BUTTON = GetConVarInt(h_BUTTON);
-	UpdateConfigInt("Sprint Settings", "soccer_mod_sprint_button", bSPRINT_BUTTON);
-	if(bSPRINT_BUTTON) CPrintToChatAll("{%s}[%s] {%s}Sprinting with +use was enabled!", prefixcolor, prefix, textcolor);
-	else CPrintToChatAll("{%s}[%s] {%s}Sprinting with +use was disabled!", prefixcolor, prefix, textcolor);
-	return;
-}
+			CPrintToChatAll("{%s}[%s] {%s}Sprint cooldown was set to %f!", prefixcolor, prefix, textcolor, fSPRINT_SPEED);
+		}
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_sprint_time"))
+	{
+		if (1.0 <= numfloat <= 30.0) 
+		{
+			fSPRINT_TIME = numfloat;
+			UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_time", fSPRINT_TIME);
 
-public void CooldownConVarChanged(Handle convar, char[] oldValue, char[] newValue)
-{
-	fSPRINT_COOLDOWN = GetConVarFloat(h_COOLDOWN);
-	UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_cooldown", fSPRINT_COOLDOWN);
-	CPrintToChatAll("{%s}[%s] {%s}Sprint cooldown was set to %f!", prefixcolor, prefix, textcolor, h_COOLDOWN);
-	
-	return;
-}
+			CPrintToChatAll("{%s}[%s] {%s}Sprint cooldown was changed to %f!", prefixcolor, prefix, textcolor, fSPRINT_TIME);
+		}
+	}
 
-public void SpeedConVarChanged(Handle convar, char[] oldValue, char[] newValue)
-{
-	fSPRINT_SPEED = GetConVarFloat(h_SPEED);
-	UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_speed", fSPRINT_SPEED);
-	CPrintToChatAll("{%s}[%s] {%s}Sprint speed was changed to %f!", prefixcolor, prefix, textcolor, fSPRINT_SPEED);
-	return;
-}
-
-public void TimeConVarChanged(Handle convar, char[] oldValue, char[] newValue)
-{
-	fSPRINT_TIME = GetConVarFloat(h_TIME);
-	UpdateConfigFloat("Sprint Settings", "soccer_mod_sprint_time", fSPRINT_TIME);
-	CPrintToChatAll("{%s}[%s] {%s}Sprint cooldown was changed to %f!", prefixcolor, prefix, textcolor, fSPRINT_TIME);
-	return;
+	return Plugin_Handled;
 }

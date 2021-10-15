@@ -4,21 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.8"
-			"Previous"	"1.2.7"
+			"Latest"	"1.2.9.1"
+			"Previous"	"1.2.9"
 		}
 		
-		"Notes"	"Added option to the help menu to print helpful urls to console"
-		"Notes" "Added option to the help menu to open the documentation in the motd"
-		"Notes" "Added command to adjust GK areas ingame (!gksetup; requires RCON-flag)"
-		"Notes" "Added option to disable the killfeed (Always enabled during capfights)"
-		"Notes" "Added command to 'remove' spraylogos (!spray; requires GENERIC-flag)"
-		"Notes" "Saves only count if the last hit before the gk's was done by an opponent now"
-		"Notes" "Reworked credits menu"
-		"Notes" "Reworked help menu"
-		"Notes" "Fixed hostname status not being applied after !matchrr usage"
-		"Notes" "Fixed stoppage time not working properly on maps rotated by 90"
-		"Notes" "Fixed !pos menu being displayed everytime a cap is started"
+		"Notes"	"Fixed sprint config section resetting on server restart."
 	}
 	
 	"Files"
