@@ -125,6 +125,7 @@ char szTarget2[64];
 
 // BOOL
 bool capFightStarted	= false;
+bool tempSprint			= true;
 
 // FLOATS
 

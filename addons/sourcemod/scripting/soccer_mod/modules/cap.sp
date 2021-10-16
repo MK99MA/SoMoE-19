@@ -56,7 +56,7 @@ public void CapEventRoundEnd(Event event)
 		HostName_Change_Status("Picking");
 		
 		//reenable sprint
-		bSPRINT_ENABLED = 1;
+		if (tempSprint)		bSPRINT_ENABLED = 1;
 
 		int winner = event.GetInt("winner");
 		if (winner == 2) 
@@ -418,7 +418,13 @@ public void CapStartFight(int client)
 			AFKKick();
 		}
 		
-		bSPRINT_ENABLED = 0;
+		if(bSPRINT_ENABLED == 1)
+		{
+			bSPRINT_ENABLED = 0;
+			tempSprint = true;
+		}
+		else tempSprint = false;
+		
 		capFightStarted = true;
 		capPicksLeft = (matchMaxPlayers - 1) * 2;
 		
