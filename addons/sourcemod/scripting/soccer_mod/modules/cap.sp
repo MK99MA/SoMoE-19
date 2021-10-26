@@ -461,14 +461,21 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 				//Give selected weapon
 				char weaponName[64];
 				Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
-				GivePlayerItem(player, weaponName);
 				//If weapon == grenade refill whenever it's thrown
 				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang") || StrEqual(weaponName, "weapon_hegrenade"))
 				{
 					//Refill
+					GivePlayerItem(player, weaponName);
 					CreateTimer(0.5, GrenadeRefillTimer, _,TIMER_REPEAT);
 				}
+				else if (StrEqual(weaponName, "weapon_knife")) GivePlayerItem(player, weaponName);
+				else
+				{
+					GivePlayerItem(player, "weapon_knife");
+					GivePlayerItem(player, weaponName);
+				}
 				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang"))	SetEntProp(player, Prop_Send, "m_iHealth", 1)
+				else if (StrEqual(weaponName, "weapon_hegrenade")) SetEntProp(player, Prop_Send, "m_iHealth", 98)
 				else	SetEntProp(player, Prop_Send, "m_iHealth", 101)
 			}
 		}
