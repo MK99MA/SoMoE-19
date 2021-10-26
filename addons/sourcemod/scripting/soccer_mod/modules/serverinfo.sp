@@ -1,6 +1,7 @@
 public void ChangeGameDesc()
 {
-	SteamWorks_SetGameDescription("CS:S Soccer Mod");
+	if (StrEqual(gamevar, "cstrike"))	SteamWorks_SetGameDescription("CS:S Soccer Mod")
+	else if (StrEqual(gamevar, "csgo"))		SteamWorks_SetGameDescription("CS:GO Soccer Mod");
 }
 
 public void HostName_Change_Status(char type[16])

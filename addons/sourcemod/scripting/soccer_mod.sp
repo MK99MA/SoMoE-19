@@ -91,7 +91,7 @@ public void OnPluginStart()
 	if (!DirExists("cfg/sm_soccermod/logs"))	CreateDirectory("cfg/sm_soccermod/logs", 511, false);
 
 	
-	//GetGameFolderName(gamevar, sizeof(gamevar));
+	GetGameFolderName(gamevar, sizeof(gamevar));
 
 	AddCommandListener(SayCommandListener, "say");
 	AddCommandListener(SayCommandListener, "say2");
@@ -120,7 +120,7 @@ public void OnPluginStart()
 	
 	AddTempEntHook("Player Decal", Player_Decal);
 
-	HookUserMessage(GetUserMessageId("VGUIMenu"), HookMsg, true);
+	if (StrEqual(gamevar, "cstrike")) HookUserMessage(GetUserMessageId("VGUIMenu"), HookMsg, true);
 	//LoadTranslations("soccer_mod.phrases.txt");
 	
 	ConnectToDatabase();
@@ -468,6 +468,9 @@ public void OnMapStart()
 		return;
 	}
 	//else LoadConfigNonSoccer();
+
+	g_hostname = FindConVar("hostname");
+	g_hostname.GetString(old_hostname, 250);
 
 	MatchOnMapStart();
 	SkinsOnMapStart();

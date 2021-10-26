@@ -10,8 +10,11 @@ public void DeadChatOnPluginStart()
 		SetFailState("This game doesn't support SayText2 user messages.");
 	}
 	
-	HookUserMessage(SayText2, Hook_UserMessage);
-	HookEvent("player_say", Event_PlayerSay);
+	if (DeadChatMode > 0)
+	{
+		HookUserMessage(SayText2, Hook_UserMessage);
+		HookEvent("player_say", Event_PlayerSay);
+	}
 	
 	// Convars.
 	g_hCvarAllTalk = FindConVar("sv_alltalk");

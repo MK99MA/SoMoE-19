@@ -4,11 +4,11 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.9.2"
-			"Previous"	"1.2.9.1"
+			"Latest"	"1.2.9.3"
+			"Previous"	"1.2.9.2"
 		}
 		
-		"Notes"	"Sprint only gets re-enabled after a capfight if it was enabled before."
+		"Notes"	"Added capfight weapon choice"
 	}
 	
 	"Files"

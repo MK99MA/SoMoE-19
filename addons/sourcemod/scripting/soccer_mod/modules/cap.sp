@@ -75,6 +75,8 @@ public void CapEventRoundEnd(Event event)
 // **************************************************************************************************************
 public void OpenCapMenu(int client)
 {
+	char capString[32];
+	Format(capString, sizeof(capString), "Start cap fight (%s)", capweapon);
 	Menu menu = new Menu(CapMenuHandler);
 
 	menu.SetTitle("Soccer - Admin - Cap");
@@ -83,7 +85,9 @@ public void OpenCapMenu(int client)
 
 	menu.AddItem("random", "Add random player");
 
-	menu.AddItem("start", "Start cap fight");
+	menu.AddItem("start", capString);
+	
+	menu.AddItem("capweap", "Weapon selection");
 
 	if(publicmode == 0 || publicmode == 2) menu.ExitBackButton = true;
 	else if(publicmode == 1) 
@@ -98,13 +102,13 @@ public int CapMenuHandler(Menu menu, MenuAction action, int client, int choice)
 {
 	if (action == MenuAction_Select)
 	{
+		char menuItem[32];
+		menu.GetItem(choice, menuItem, sizeof(menuItem));
 		if (!matchStarted)
 		{
-			char menuItem[32];
-			menu.GetItem(choice, menuItem, sizeof(menuItem));
-
 			if (StrEqual(menuItem, "spec"))		 CapPutAllToSpec(client);
 			else if (StrEqual(menuItem, "random"))  CapAddRandomPlayer(client);
+			else if (StrEqual(menuItem, "capweap"))	OpenWeaponMenu(client);
 			else if (StrEqual(menuItem, "start"))
 			{
 				CapStartFight(client);
@@ -113,17 +117,114 @@ public int CapMenuHandler(Menu menu, MenuAction action, int client, int choice)
 					CPrintToChatAll("{%s}[%s] {%s}At least %i players when the capfight started; Changing the pw...", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
 					RandPass();
 				}
-			}			
+			}	
 		}
 		else CPrintToChat(client, "{%s}[%s]{%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
 
-		OpenCapMenu(client);
+		if (!(StrEqual(menuItem, "capweap")))	OpenCapMenu(client);	
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 
 
+// **************************************************************************************************************
+// ************************************************ WEAPON MENU *************************************************
+// **************************************************************************************************************
+public void OpenWeaponMenu(int client)
+{
+
+	Menu menu = new Menu(WeaponMenuHandler);
+
+	menu.SetTitle("Soccer - Cap - Weapons");
+
+	menu.AddItem("knife", 	"Knife");
+	//Pistols
+	menu.AddItem("glock", 	"Glock 18");
+	menu.AddItem("usp", 	"USP Tactical");
+	menu.AddItem("p228", 	"P228");
+	menu.AddItem("deagle", 	"Desert Eagle .50");
+	menu.AddItem("57", 		"Five-seveN");
+	menu.AddItem("dual", 	"Dual Elite Berettas");
+	//Sub-Machine Guns
+	menu.AddItem("mac10", 	"MAC10");
+	menu.AddItem("tmp", 	"TMP");
+	menu.AddItem("mp5", 	"MP5 Navy");
+	menu.AddItem("ump", 	"UMP");
+	menu.AddItem("p90", 	"P90");
+	//Shotguns
+	menu.AddItem("m3", 		"M3 Super 90");
+	menu.AddItem("xm1014", 	"XM1014");
+	//Rifles
+	menu.AddItem("galil", 	"Galil");
+	menu.AddItem("famas", 	"FAMAS");
+	menu.AddItem("ak47", 	"AK47");
+	menu.AddItem("m4a1", 	"M4A1 Carbine");
+	menu.AddItem("sg552", 	"SG-552 Commando");
+	menu.AddItem("aug", 	"AUG");
+	//MG
+	menu.AddItem("m249", 	"M249-SAW");
+	//Sniper
+	menu.AddItem("scout", 	"Scout");
+	menu.AddItem("g3sg1", 	"G3/SG-1");
+	menu.AddItem("sg550", 	"SG-550 Commando");
+	menu.AddItem("awp", 	"AWP");
+	//Grenades
+	menu.AddItem("he", 		"HE grenade");
+	menu.AddItem("flash", 	"Flashbang");
+	menu.AddItem("smoke", 	"Smoke grenade");
+
+	menu.ExitBackButton = true;
+
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int WeaponMenuHandler(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		if (!matchStarted)
+		{
+			char menuItem[32];
+			menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+			if (StrEqual(menuItem, "knife"))		 	capweapon = "knife";
+			else if (StrEqual(menuItem, "glock"))  		capweapon = "glock";
+			else if (StrEqual(menuItem, "usp"))  		capweapon = "usp";
+			else if (StrEqual(menuItem, "p228"))  		capweapon = "p228";
+			else if (StrEqual(menuItem, "deagle"))  	capweapon = "deagle";
+			else if (StrEqual(menuItem, "57"))  		capweapon = "fiveseven";
+			else if (StrEqual(menuItem, "dual"))  		capweapon = "elite";
+			else if (StrEqual(menuItem, "mac10"))  		capweapon = "mac10";
+			else if (StrEqual(menuItem, "tmp"))  		capweapon = "tmp";
+			else if (StrEqual(menuItem, "mp5"))  		capweapon = "mp5navy";
+			else if (StrEqual(menuItem, "ump"))  		capweapon = "ump45";
+			else if (StrEqual(menuItem, "p90"))  		capweapon = "p90";
+			else if (StrEqual(menuItem, "m3"))  		capweapon = "m3";
+			else if (StrEqual(menuItem, "xm1014"))  	capweapon = "xm1014";
+			else if (StrEqual(menuItem, "galil"))  		capweapon = "galil";
+			else if (StrEqual(menuItem, "famas"))  		capweapon = "famas";
+			else if (StrEqual(menuItem, "ak47"))  		capweapon = "ak47";
+			else if (StrEqual(menuItem, "m4a1"))  		capweapon = "m4a1";
+			else if (StrEqual(menuItem, "sg552"))  		capweapon = "sg552";
+			else if (StrEqual(menuItem, "aug"))  		capweapon = "aug";
+			else if (StrEqual(menuItem, "m249"))  		capweapon = "m249";
+			else if (StrEqual(menuItem, "scout"))  		capweapon = "scout";
+			else if (StrEqual(menuItem, "g3sg1"))  		capweapon = "g3sg1";
+			else if (StrEqual(menuItem, "sg550"))  		capweapon = "sg550";
+			else if (StrEqual(menuItem, "awp"))  		capweapon = "awp";
+			else if (StrEqual(menuItem, "flash"))  		capweapon = "flashbang";
+			else if (StrEqual(menuItem, "smoke"))  		capweapon = "smokegrenade";
+			else if (StrEqual(menuItem, "he"))  		capweapon = "hegrenade";
+
+		}
+		else CPrintToChat(client, "{%s}[%s]{%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
+
+		OpenCapMenu(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenCapMenu(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
 
 // ***************************************************************************************************************
 // ************************************************** PICK MENU **************************************************
@@ -346,13 +447,60 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 			{
 				SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
 				//Set Armor to 0 and cancel Timer
-				SetEntProp(player, Prop_Send, "m_iHealth", 101)
 				SetEntProp(player, Prop_Send, "m_ArmorValue", 0.0);
+				//Remove weapon/knife
+				int iWeapon = -1;
+				while((iWeapon = GetPlayerWeaponSlot(player, CS_SLOT_KNIFE)) != -1)
+				{
+					if(iWeapon > 0)
+					{
+						RemovePlayerItem(player, iWeapon);
+						AcceptEntityInput(iWeapon, "kill");
+					}
+				}
+				//Give selected weapon
+				char weaponName[64];
+				Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
+				GivePlayerItem(player, weaponName);
+				//If weapon == grenade refill whenever it's thrown
+				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang") || StrEqual(weaponName, "weapon_hegrenade"))
+				{
+					//Refill
+					CreateTimer(0.5, GrenadeRefillTimer, _,TIMER_REPEAT);
+				}
+				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang"))	SetEntProp(player, Prop_Send, "m_iHealth", 1)
+				else	SetEntProp(player, Prop_Send, "m_iHealth", 101)
 			}
 		}
 	}
 
 	UnfreezeAll();
+}
+
+public Action GrenadeRefillTimer(Handle timer)
+{
+	if (capFightStarted)
+	{
+		for (int player = 1; player <= MaxClients; player++)
+		{
+			if (IsClientInGame(player) && IsClientConnected(player))
+			{
+				if (GetClientTeam(player) > 1  && IsPlayerAlive(player)) 
+				{
+					char playerweapon[64];
+					GetClientWeapon(player, playerweapon, sizeof(playerweapon));
+					if (!(StrEqual(playerweapon, "weapon_smokegrenade") || StrEqual(playerweapon, "weapon_flashbang") || StrEqual(playerweapon, "weapon_hegrenade")))
+					{
+						char weaponName[64];
+						Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
+						GivePlayerItem(player, weaponName);
+					}
+				}
+			}
+		}
+		return Plugin_Continue;
+	}
+	else return Plugin_Stop;
 }
 
 // ***************************************************************************************************************

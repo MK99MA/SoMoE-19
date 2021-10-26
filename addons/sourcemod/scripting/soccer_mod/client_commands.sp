@@ -441,7 +441,7 @@ public Action TrainingCommand(int client, int args)
 {
 	if (currentMapAllowed)
 	{
-		if(publicmode == 1 || publicmode == 2 || (publicmode == 0 && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "training"))))
+		if(publicmode == 2 || ((publicmode == 0 || publicmode == 1) && (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "training"))))
 		{
 			OpenTrainingMenu(client);
 		}

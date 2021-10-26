@@ -3,7 +3,15 @@ public void GetFieldOrientation()
 {
 	// Get goaltrigger entity IDs
 	int t_trigger_id = GetEntityIndexByName("terro_But", "trigger_once");
+	if (t_trigger_id == -1)
+	{
+		t_trigger_id = GetEntityIndexByName("goal_t", "trigger_once");
+	}
 	int ct_trigger_id = GetEntityIndexByName("ct_But", "trigger_once");
+	if (ct_trigger_id == -1)
+	{
+		ct_trigger_id = GetEntityIndexByName("goal_ct", "trigger_once");
+	}
 	
 	// Get ball starting position
 	int soccerball_id = GetEntityIndexByName("ball", "func_physbox");

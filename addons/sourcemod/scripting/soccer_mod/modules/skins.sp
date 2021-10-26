@@ -114,6 +114,13 @@ public void SkinsOnPluginStart()
 		skinsModelCTGoalkeeper  = "models/player/soccer_mod/termi/2011/gkaway/ct_urban.mdl";
 		skinsModelTGoalkeeper   = "models/player/soccer_mod/termi/2011/gkhome/ct_urban.mdl";
 	}
+	else
+	{
+		skinsModelCT			=	"models/player/soccermod/soccer_mod_2014_ct_r3.mdl";
+		skinsModelT				=	"models/player/soccermod/soccer_mod_2014_t_r3.mdl";
+		skinsModelCTGoalkeeper	=	"models/player/soccermod/soccer_mod_2014_ct_gk_r3.mdl";
+		skinsModelTGoalkeeper	=	"models/player/soccermod/soccer_mod_2014_t_gk_r3.mdl";
+	}
 }
 
 public void SkinsOnMapStart()

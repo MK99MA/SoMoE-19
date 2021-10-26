@@ -59,6 +59,7 @@ float vec_ctgoal_origin[3];
 float sprayVector[MAXPLAYERS+1][3];
 float fJUMP_TIMER				= 0.45;
 float jump_time[MAXPLAYERS+1]	= {0.0, ...};
+//float gameTickRate      = 64.0;
 
 // HANDLES
 Handle allowedMaps	  			= INVALID_HANDLE;
@@ -138,6 +139,7 @@ int capT				= 0;
 int capPicksLeft		= 0;
 
 // STRINGS
+char capweapon[32]			="knife";
 
 // **************************************************** CHAT ****************************************************
 
