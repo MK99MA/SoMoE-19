@@ -172,7 +172,9 @@ public void OpenWeaponMenu(int client)
 	//Grenades
 	menu.AddItem("he", 		"HE grenade");
 	menu.AddItem("flash", 	"Flashbang");
-	menu.AddItem("smoke", 	"Smoke grenade");
+	//menu.AddItem("smoke", 	"Smoke grenade");
+	//Misc
+	menu.AddItem("randwp", 	"Random");
 
 	menu.ExitBackButton = true;
 
@@ -214,8 +216,9 @@ public int WeaponMenuHandler(Menu menu, MenuAction action, int client, int choic
 			else if (StrEqual(menuItem, "sg550"))  		capweapon = "sg550";
 			else if (StrEqual(menuItem, "awp"))  		capweapon = "awp";
 			else if (StrEqual(menuItem, "flash"))  		capweapon = "flashbang";
-			else if (StrEqual(menuItem, "smoke"))  		capweapon = "smokegrenade";
+			//else if (StrEqual(menuItem, "smoke"))  		capweapon = "smokegrenade";
 			else if (StrEqual(menuItem, "he"))  		capweapon = "hegrenade";
+			else if (StrEqual(menuItem, "randwp"))  	capweapon = "random";
 
 		}
 		else CPrintToChat(client, "{%s}[%s]{%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
@@ -438,6 +441,19 @@ public Action TimerCapFightCountDown(Handle timer, any seconds)
 
 public Action TimerCapFightCountDownEnd(Handle timer)
 {
+	//Prepare selected weapon
+	if (StrEqual(capweapon, "random"))
+	{
+		int randint = GetRandomInt(0, sizeof(capwparray[])-1);
+		capweapon = capwparray[randint];
+		Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
+		capweapon = "random";
+	}
+	else 
+	{
+		Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
+	}
+
 	for (int player = 1; player <= MaxClients; player++)
 	{
 		if (IsClientInGame(player) && IsClientConnected(player))
@@ -457,10 +473,7 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 						RemovePlayerItem(player, iWeapon);
 						AcceptEntityInput(iWeapon, "kill");
 					}
-				}
-				//Give selected weapon
-				char weaponName[64];
-				Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
+				}				
 				//If weapon == grenade refill whenever it's thrown
 				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang") || StrEqual(weaponName, "weapon_hegrenade"))
 				{
@@ -468,12 +481,16 @@ public Action TimerCapFightCountDownEnd(Handle timer)
 					GivePlayerItem(player, weaponName);
 					CreateTimer(0.5, GrenadeRefillTimer, _,TIMER_REPEAT);
 				}
-				else if (StrEqual(weaponName, "weapon_knife")) GivePlayerItem(player, weaponName);
+				else if (StrEqual(weaponName, "weapon_knife")) 
+				{
+					GivePlayerItem(player, weaponName);
+				}
 				else
 				{
 					GivePlayerItem(player, "weapon_knife");
 					GivePlayerItem(player, weaponName);
 				}
+				
 				if (StrEqual(weaponName, "weapon_smokegrenade") || StrEqual(weaponName, "weapon_flashbang"))	SetEntProp(player, Prop_Send, "m_iHealth", 1)
 				else if (StrEqual(weaponName, "weapon_hegrenade")) SetEntProp(player, Prop_Send, "m_iHealth", 98)
 				else	SetEntProp(player, Prop_Send, "m_iHealth", 101)
@@ -498,8 +515,6 @@ public Action GrenadeRefillTimer(Handle timer)
 					GetClientWeapon(player, playerweapon, sizeof(playerweapon));
 					if (!(StrEqual(playerweapon, "weapon_smokegrenade") || StrEqual(playerweapon, "weapon_flashbang") || StrEqual(playerweapon, "weapon_hegrenade")))
 					{
-						char weaponName[64];
-						Format(weaponName, sizeof(weaponName), "weapon_%s", capweapon);
 						GivePlayerItem(player, weaponName);
 					}
 				}
@@ -626,19 +641,17 @@ public void CapStartFight(int client)
 				posnr[player] = ImportJoinNumber(playerSteamid)
 			}
 		}
-		
-		
 
 		keygroup.Close();
+		
+		if (noPos[client] == true) 
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Please set your position to help the caps with picking", prefixcolor, prefix, textcolor);
+			OpenCapPositionMenu(client);
+		}
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
-			if (noPos[client] == true) 
-			{
-				CPrintToChat(client, "{%s}[%s] {%s}Please set your position to help the caps with picking", prefixcolor, prefix, textcolor);
-				OpenCapPositionMenu(client);
-			}
-			
 			if (IsClientInGame(player) && IsClientConnected(player)) 
 			{
 				//PrintToServer("%N : %i", player, posnr[player]); 

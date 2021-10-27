@@ -139,7 +139,38 @@ int capT				= 0;
 int capPicksLeft		= 0;
 
 // STRINGS
-char capweapon[32]			="knife";
+char capweapon[32]		="knife";
+char capwparray[27][32]		=
+{
+	"knife",
+	"glock",
+	"usp",
+	"p228",
+	"deagle",
+	"fiveseven",
+	"elite",
+	"mac10",
+	"tmp",
+	"mp5navy",
+	"ump45",
+	"p90",
+	"m3",
+	"xm1014",
+	"galil",
+	"famas",
+	"ak47",
+	"m4a1",
+	"sg552",
+	"aug",
+	"m249",
+	"scout",
+	"g3sg1",
+	"sg550",
+	"awp",
+	"flashbang",
+	"hegrenade"
+}
+char weaponName[64];
 
 // **************************************************** CHAT ****************************************************
 
