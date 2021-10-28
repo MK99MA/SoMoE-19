@@ -4,11 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.9.3"
-			"Previous"	"1.2.9.2"
+			"Latest"	"1.2.9.5"
+			"Previous"	"1.2.9.3"
 		}
 		
-		"Notes"	"Added capfight weapon choice"
+		"Notes"	"Removed Smokegrenade from capfight weapons"
+		"Notes"	"Added random option to capfight weapons"
+		"Notes"	"Fixed set position spam on capstart"
 	}
 	
 	"Files"

@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.9.4"
+#define PLUGIN_VERSION "1.2.9.5"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -510,7 +510,13 @@ public void OnGameFrame()
 			{
 				if(!showHudPrev[i])	Command_StartSprint(i, 0);
 			}
-			//JumpReset
+		}
+	}
+	//JumpReset
+	if(djbenabled == 2)
+	{
+		for(int i = 1; i <= MaxClients; i++)
+		{
 			if(IsClientInGame(i) && g_bJump[i])
 			{
 				if (GetGameTime() > jump_time[i] + fJUMP_TIMER)
