@@ -156,6 +156,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetFloat("soccer_mod_rrchecktime",					rrchecktime);
 	kvConfig.SetNum("soccer_mod_loaddefaults",					defaultSet);
 	kvConfig.SetNum("soccer_mod_killfeed",						killfeedSet);
+	kvConfig.SetNum("soccer_mod_celebrate", 					celebrateweaponSet);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -498,6 +499,7 @@ public void ReadFromConfig()
 	rrchecktime				= kvConfig.GetFloat("soccer_mod_rrchecktime",	90.0);
 	defaultSet				= kvConfig.GetNum("soccer_mod_loaddefaults", 1);
 	killfeedSet				= kvConfig.GetNum("soccer_mod_killfeed", 0);
+	celebrateweaponSet		= kvConfig.GetNum("soccer_mod_celebrate", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);

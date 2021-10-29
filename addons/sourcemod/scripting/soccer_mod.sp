@@ -118,6 +118,9 @@ public void OnPluginStart()
 	HookEvent("round_start",			EventRoundStart);
 	HookEvent("round_end",			  EventRoundEnd);
 	
+	TextMsg  = GetUserMessageId("TextMsg");
+	HookUserMessage(TextMsg,			EventUserMessage, true);
+	
 	AddTempEntHook("Player Decal", Player_Decal);
 
 	if (StrEqual(gamevar, "cstrike")) HookUserMessage(GetUserMessageId("VGUIMenu"), HookMsg, true);
@@ -790,6 +793,11 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 	{
 		roundEnded = false;
 		goalScored = false;
+		
+		Handle hConvar;
+		hConvar = FindConVar("mp_friendlyfire");
+		if (hConvar == INVALID_HANDLE)	return Plugin_Continue;
+		changeConvar(hConvar, "mp_friendlyfire", "0")
 
 		if (!matchStarted)
 		{
@@ -809,6 +817,8 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 		TrainingEventRoundStart(event);
 		PersonalTrainingEventRoundStart(event);
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action EventRoundEnd(Event event, const char[] name, bool dontBroadcast)
@@ -820,7 +830,62 @@ public Action EventRoundEnd(Event event, const char[] name, bool dontBroadcast)
 		CapEventRoundEnd(event);
 		MatchEventRoundEnd(event);
 		StatsEventRoundEnd(event);
+		
+		if(celebrateweaponSet == 1 && !capFightStarted)
+		{
+			//Choose random weapon
+			char celebrateweapon[32];
+			char celebwparray[24][32]		=
+			{
+				"glock",
+				"usp",
+				"p228",
+				"deagle",
+				"fiveseven",
+				"elite",
+				"mac10",
+				"tmp",
+				"mp5navy",
+				"ump45",
+				"p90",
+				"m3",
+				"xm1014",
+				"galil",
+				"famas",
+				"ak47",
+				"m4a1",
+				"sg552",
+				"aug",
+				"m249",
+				"scout",
+				"g3sg1",
+				"sg550",
+				"awp",
+			}
+			int randint = GetRandomInt(0, sizeof(celebwparray[])-1);
+			celebrateweapon = celebwparray[randint];
+			Format(celebrateweapon, sizeof(celebrateweapon), "weapon_%s", celebrateweapon);
+			
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player) && IsPlayerAlive(player)) 
+				{
+					//Disable Godmode
+					SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
+					//Enable Teamdamage
+					Handle hConvar;
+					hConvar = FindConVar("mp_friendlyfire");
+					if (hConvar == INVALID_HANDLE)	return Plugin_Continue;
+					changeConvar(hConvar, "mp_friendlyfire", "1")
+					
+					//Give weapon
+					GivePlayerItem(player, celebrateweapon);
+				}
+			}
+		}
 	}
+	
+	return Plugin_Continue;
 }
 
 public Action Player_Decal(const char[] name, const int[] clients, int count, float delay)
@@ -833,6 +898,17 @@ public Action Player_Decal(const char[] name, const int[] clients, int count, fl
 	GetClientAuthId(client, AuthId_Engine, sprayID[client], 32);
 	
 	//PrintToChatAll("Spray by %s (%s)", sprayName[client], sprayID[client]);
+}
+
+public Action EventUserMessage(UserMsg msg_id, Handle msg, const int[] players, int playersNum, bool reliable, bool init)
+{
+	char usermessage[256];
+	BfReadString(msg, usermessage, sizeof(usermessage));
+	if(StrContains(usermessage, "teammate_attack") != -1)
+	{
+		return Plugin_Handled;
+	}
+	return Plugin_Continue;
 }
 
 // ******************************************************************************************************************
@@ -1256,4 +1332,33 @@ public void ClearTimer(Handle timer)
 		KillTimer(timer);
 		timer = null;
 	}
+}
+
+
+
+stock int changeConvar(Handle hConvar, char[] strCvarName, char[] strValue)
+{
+	int flags;
+	flags = GetCommandFlags(strCvarName);
+	SetCommandFlags(strCvarName, 0);
+	
+	if ( StrContains(strValue, "$$")==0 )
+		ReplaceStringEx(strValue, 512, "$$", "$");
+	else if ( StrContains(strValue, "$")==0 )
+	{
+		ReplaceStringEx(strValue, 512, "$", "");
+		Handle newCvar = FindConVar(strValue);
+		if (newCvar == INVALID_HANDLE)
+		{
+			return 0;
+		}
+		GetConVarString(newCvar, strValue, 512);
+		SetConVarString(hConvar, strValue, true);
+		SetCommandFlags(strCvarName, flags);
+		return 2;
+	}
+	
+	SetConVarString(hConvar, strValue, true);
+	SetCommandFlags(strCvarName, flags);
+	return 1;
 }

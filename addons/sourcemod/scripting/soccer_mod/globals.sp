@@ -72,6 +72,8 @@ Handle g_cJumpTimer[MAXPLAYERS+1] = {null,...};
 ArrayList groupArray;
 ArrayList lcPanelArray;
 
+UserMsg TextMsg;
+
 // INTEGER
 int djbenabled					= 1;
 int publicmode		 			= 1;
@@ -85,6 +87,7 @@ int joinclassSet				= 0;
 int defaultSet					= 1;
 int killfeedSet					= 0;
 int jump_count[MAXPLAYERS+1]	= {0, ...};
+int celebrateweaponSet			= 0;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
