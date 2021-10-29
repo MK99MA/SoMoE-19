@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.9.5"
+#define PLUGIN_VERSION "1.2.9.6"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -512,6 +512,7 @@ public void OnGameFrame()
 			}
 		}
 	}
+	
 	//JumpReset
 	if(djbenabled == 2)
 	{
@@ -522,6 +523,44 @@ public void OnGameFrame()
 				if (GetGameTime() > jump_time[i] + fJUMP_TIMER)
 				{
 					//PrintToChatAll("reset %.1f", GetGameTime());
+					g_bJump[i] = false;
+					jump_time[i] = 0.0;
+				}
+				else if(GetEntityFlags(i) & FL_ONGROUND)
+				{
+					// reset if true
+					//PrintToChatAll("groundreset");
+					g_bJump[i] = false;
+					jump_time[i] = 0.0;
+				}
+			}
+		}
+	}
+	else if (djbenabled == 3)
+	{
+		for(int i = 1; i <= MaxClients; i++)
+		{
+			if(IsClientInGame(i) && jump_time[i] > 0.0)
+			{
+				if (GetGameTime() == jump_time[i]) 
+				{
+					//PrintToChatAll("Block");
+					g_bJump[i] = true;
+				}
+				if (GetGameTime() > jump_time[i] + 0.05)
+				{
+					/*float vecPosition[3] = 0.0;
+					float jump_test[MAXPLAYERS+1];
+					GetClientAbsOrigin(i, vecPosition);
+					if (vecPosition[2] > playerMaxHeight[i])
+					{
+						playerMaxHeight[i] = vecPosition[2];
+					}
+					else playerMaxHeight[i] = vecPosition[2];
+					
+					jump_test[i] = GetGameTime() - (jump_time[i]-0.05);
+					PrintToChatAll("Jump %.5f - Height %.3f", jump_test[i], playerMaxHeight[i]);*/
+					
 					g_bJump[i] = false;
 					jump_time[i] = 0.0;
 				}

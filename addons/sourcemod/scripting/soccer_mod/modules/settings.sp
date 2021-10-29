@@ -102,7 +102,8 @@ public void OpenMenuMiscSettings(int client)
 	
 	if(djbenabled == 0)					DJString = "DuckJumpBlock: OFF";
 	else if (djbenabled == 1)			DJString = "DuckJumpBlock: ON";
-	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON (NEW)";
+	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON v2";
+	else if (djbenabled == 3)			DJString = "DuckJumpBlock: ON v3";
 	
 	if(joinclassSet == 0)				JoinString = "ClassChoice: OFF";
 	else if (joinclassSet == 1)			JoinString = "ClassChoice: ON";
@@ -125,14 +126,6 @@ public void OpenMenuMiscSettings(int client)
 	
 	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
 	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
-	
-	// gk skin saves only toggle x
-	// wenn aktiv und gk skin in team aktiv -> nur gk mit saves, sonst jeder ? x
-	// 1 gk skin per team x
-	// pts / runden teilen x
-	// pos menu  x
-	// rounds tracking ?
-	// reset rank problems ? x
 	
 	Format(RankString, sizeof(RankString), "!rank Cooldown: %i", rankingCDTime);
 	
@@ -226,7 +219,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
 				OpenMenuMiscSettings(client);
 			}
-			else if(djbenabled >= 2)
+			else if(djbenabled == 2)
+			{
+				djbenabled = 3;
+				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
+				OpenMenuMiscSettings(client);
+			}
+			else if(djbenabled >= 3)
 			{
 				djbenabled = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);

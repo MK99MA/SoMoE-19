@@ -20,7 +20,7 @@ public Action DJBOnPlayerRunCmd(int client, int& buttons, int& impulse, float ve
 		}
 		return view_as<Action>(0);
 	}
-	else if (djbenabled == 2)
+	else if (djbenabled >= 2)
 	{
 		/*if(buttons & IN_JUMP)
 		{
@@ -50,6 +50,7 @@ public Action DJBOnPlayerRunCmd(int client, int& buttons, int& impulse, float ve
 				
 		return Plugin_Continue;
 	}
+	
 	//else return view_as<Action>(0);
 	
 	return Plugin_Continue;
@@ -67,6 +68,13 @@ public Action EventPlayerJump(Event event, const char[] name, bool dontBroadcast
 		//PrintToChatAll("Jump %.1f", jump_time[client]);
 		//reset jumpstate
 		//g_cJumpTimer[client] = CreateTimer(0.1, Timer_ResetJump, client);//fJUMP_TIMER, Timer_ResetJump, client);
+	}
+	else if(djbenabled == 3)
+	{
+		int client = GetClientOfUserId(event.GetInt("userid"));
+		
+		//get gametime of jump
+		jump_time[client] = GetGameTime() + 0.33;
 	}
 	
 	return Plugin_Handled;
