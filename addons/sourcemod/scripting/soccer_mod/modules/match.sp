@@ -7,6 +7,7 @@ public void MatchOnAwakened(int caller, int activator)
 	if (matchStarted && !matchKickOffTaken)
 	{
 		matchKickOffTaken = true;
+		if(KickoffWallSet == 1) KillWalls();
 		KillMatchTimer();
 
 		if (matchGoldenGoalActive) matchTimer = CreateTimer(0.0, MatchGoldenGoalTimer, matchTime);
@@ -23,6 +24,12 @@ public void MatchOnStartTouch(int caller, int activator)
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
 // ************************************************************************************************************
+public void MatchOnPluginStart()
+{
+	if (!IsModelPrecached("models/props_hydro/metal_barrier03.mdl")) PrecacheModel("models/props_hydro/metal_barrier03.mdl");
+	//if (!IsModelPrecached("models/props/cs_office/vending_machine.mdl")) PrecacheModel("models/props/cs_office/vending_machine.mdl");
+}
+
 public void MatchOnMapStart()
 {
 	MatchReset();
@@ -42,6 +49,8 @@ public void MatchEventRoundStart(Event event)
 			CreateTimer(10.0, matchStartTimer);
 		}
 		matchKickOffTaken = false;
+
+		KickOffWall();
 
 		if (matchPaused || matchPeriodBreak) FreezeAll();
 
@@ -2048,6 +2057,7 @@ public void MatchStop(int client)
 		MatchReset();
 		NameReset();
 		UnfreezeAll();
+		if(KickoffWallSet == 1)	KillWalls();
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
@@ -2174,4 +2184,271 @@ public Action RRCheckTimer(Handle timer)
 public Action matchStartTimer(Handle timer)
 {
 	matchStart = false;
+}
+
+public void KickOffWall()
+{
+	if(KickoffWallSet == 1)
+	{
+		//wall on line
+		if(xorientation) //orientation of the middle line
+		{
+			//PrintToChatAll("y true");
+			//create first half
+			CreateInvisWall(-1300.0, 0.0, 0.0, -250.0, 0.0, 500.0, "wallminus", 0); 
+			
+			//create second half
+			CreateInvisWall(250.0, 0.0, 0.0, 1300.0, 0.0, 500.0, "wallplus", 1);
+			
+			//create box to allow kickoff
+			if(matchLastScored > 1)
+			{
+				if (matchLastScored == 2) //ct scored
+				{
+					// check coords
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback",4);
+					}
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback",4);
+					}
+				}
+				else //t scored
+				{
+					// check coords
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1", 2); 
+						
+						//second side
+						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3); 
+						
+						//backside
+						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback", 4); 
+					}
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						
+						//second side
+						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						
+						//backside
+						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+					}
+				}
+			}
+			else
+			{
+				if (matchToss == 2)	//ct starts
+				{
+					// check coords
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						
+						//second side
+						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						
+						//backside
+						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+					}
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback",4);
+					}
+				}
+				else		//t starts
+				{
+					// check coords
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1", 2); 
+						
+						//second side
+						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3); 
+						
+						//backside
+						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback", 4); 
+					}
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						
+						//second side
+						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						
+						//backside
+						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+					}
+				}
+			}
+		}
+		else //yorient
+		{
+			//create first half
+			CreateInvisWall(0.0, -1300.0, 0.0, 0.0, -250.0, 500.0, "wallminus", 0); 
+			
+			//create second half
+			CreateInvisWall(0.0, 250.0, 0.0, 0.0, 1300.0, 500.0, "wallplus", 1); 
+			
+			//create box to allow kickoff
+			if(matchLastScored > 1)
+			{
+				if (matchLastScored == 2) //ct scored
+				{
+					// check coords
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+					}
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+					}
+				}
+				else //t scored
+				{
+					// check coords
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+					}
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+					}
+				}
+			}
+			else
+			{
+				if (matchToss == 2)	//ct starts
+				{
+					// check coords
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+					}
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+					}
+				}
+				else //t starts
+				{
+					// check coords
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					{
+						//first side
+						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+					}
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					{
+						//first side
+						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						
+						//second side		
+						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						
+						//backside				
+						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+					}
+				}
+			}
+		}
+		
+	}
+}
+
+public void KillWalls()
+{
+	int entityid[5]
+	entityid[0] = GetEntityIndexByName("wallminus", "func_brush");
+	entityid[1] = GetEntityIndexByName("wallplus", "func_brush");
+	entityid[2] = GetEntityIndexByName("boxside1", "func_brush");
+	entityid[3] = GetEntityIndexByName("boxside2", "func_brush");
+	entityid[4] = GetEntityIndexByName("boxback", "func_brush");
+	for(int i = 0; i <= 4; i++)
+	{
+		if (entityid[i] != -1)
+		{
+			AcceptEntityInput(entityid[i], "Kill");
+		}
+	}
 }

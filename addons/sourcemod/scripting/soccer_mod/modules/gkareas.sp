@@ -48,7 +48,7 @@ public void GetFieldOrientation()
 	// cross laser
 	//DrawLaser("gk_area_beam", vec_tgoal_origin[0], vec_tgoal_origin[1], vec_tgoal_origin[2], vec_ctgoal_origin[0], vec_ctgoal_origin[1], vec_ctgoal_origin[2], "255 255 255");
 	
-	// Find out map orientation
+	// Find out map orientation (middle line)
 	if ((vec_tgoal_origin[0] > (vec_ctgoal_origin[0] - 100.0)) && (vec_tgoal_origin[0] < (vec_ctgoal_origin[0] + 100.0)))
 	{
 		xorientation = true;

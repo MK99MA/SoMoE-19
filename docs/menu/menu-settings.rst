@@ -183,7 +183,10 @@ The following features are toggleable or changeable:
  - **Class Choice** - *Toggle* - Enables or Disables the class selection screen after joining a team.
  - **Load Map Defaults** - *Toggle* - Enable or Disable loading per map defaults when loading that map.
  - **Remove Ragdoll** - *Toggle* - Select 1 of 3 modes of ragdoll handling (Do nothing / Remove ragdoll / Dissolve ragdoll).
- - **Duckjump Block** - *Toggle* - Enable or Disable the Duckjump preventions. Features 2 attempts at doing so.
+ - **Duckjump Block** - *Toggle* - Enable or Disable the Duckjump preventions. Features 3 attempts at doing so.
+ 1st attempt was created by Marco Boogers and relies on the player position.
+ 2nd attempt blocks ducking for a configurable amount of time after jumping (autoreset as soon as you hit ground).
+ 3rd attempt tries to block duck only at the highest point of the jump, but requires alot of testing to see its usefulness.
  - **Hostname Info** - *Toggle* - Enable or Disable status updates in the servers name.
  - **!rank cooldown** - *Value* - Change the cooldown between !rank usages - 0 to disable.
  - **Ready Check** - *Toggle* - Select 1 of 3 modes of unpause handling (Default / Auto-Unpause if everyone ready / Block unpause unless everyone is ready).
@@ -191,6 +194,7 @@ The following features are toggleable or changeable:
  - **Killfeed** - *Toggle* - Enable or Disable the killfeed in the upper right corner.
  - **GK saves only** - *Toggle* - Enable or Disable save tracking only for players using the gk skin. If this option is enabled and no player of the team is using the gk skin, everyone will be able to earn saves in the gk area.
  - **Rank Mode** - *Toggle* - Select 1 of 3 ranking modes ( pts/matches, pts/rounds, pts).
+ - **Celebration** - *Toggle* - Enable or Disable celebration weapons for the winning team. Also enables friendly fire and surpresses friendlyfire messages.
  
 ----
 

@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.9.6"
+#define PLUGIN_VERSION "1.2.9.7"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 
@@ -136,7 +136,8 @@ public void OnPluginStart()
 	RegisterServerCommands();
 
 	CapOnPluginStart();
-	DeadChatOnPluginStart()
+	DeadChatOnPluginStart();
+	MatchOnPluginStart();
 	RefereeOnPluginStart();
 	SkinsOnPluginStart();
 	SprintOnPluginStart();
@@ -1334,7 +1335,47 @@ public void ClearTimer(Handle timer)
 	}
 }
 
+// ************************************************************************************************************
+// *************************************************** MISC ***************************************************
+// ************************************************************************************************************
 
+public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index) //int orient)
+{
+	int entindex[5]
+	entindex[index] = CreateEntityByName("func_brush"); //trigger_push");
+	if (entindex[index] != -1)
+	{
+		DispatchKeyValue(entindex[index], "Solidity", "2");
+		DispatchKeyValue(entindex[index], "targetname", targetname);
+	}
+
+	float minbounds[3], maxbounds[3];
+	minbounds[0] = minX;
+	minbounds[1] = minY;
+	minbounds[2] = minZ;
+	maxbounds[0] = maxX;
+	maxbounds[1] = maxY;
+	maxbounds[2] = maxZ;
+
+	DispatchSpawn(entindex[index]);
+	ActivateEntity(entindex[index]);
+
+	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
+
+	SetEntityModel(entindex[index], "models/props_hydro/metal_barrier03.mdl");	//"models/props/cs_office/vending_machine.mdl");
+	
+	SetEntPropVector(entindex[index], Prop_Send, "m_vecMins", minbounds);
+	SetEntPropVector(entindex[index], Prop_Send, "m_vecMaxs", maxbounds);
+	
+	SetEntProp(entindex[index], Prop_Send, "m_nSolidType", 2);
+
+	int enteffects = GetEntProp(entindex[index], Prop_Send, "m_fEffects");
+	enteffects |= 32;
+	SetEntProp(entindex[index], Prop_Send, "m_fEffects", enteffects); 
+	
+	/*int testid = GetEntityIndexByName(targetname, "func_brush");
+	if (testid != -1)	PrintToChatAll("wall %s created", targetname);*/
+}
 
 stock int changeConvar(Handle hConvar, char[] strCvarName, char[] strValue)
 {

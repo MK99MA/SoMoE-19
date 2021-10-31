@@ -88,7 +88,7 @@ public void OpenMenuMiscSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Misc");
 
-	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32]; //, DebugString[32];
+	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32], WallString[32]; //, DebugString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -104,6 +104,9 @@ public void OpenMenuMiscSettings(int client)
 	else if (djbenabled == 1)			DJString = "DuckJumpBlock: ON";
 	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON v2";
 	else if (djbenabled == 3)			DJString = "DuckJumpBlock: ON v3";
+	
+	if(KickoffWallSet == 0)				WallString = "Kickoff Wall: OFF";
+	else if (KickoffWallSet == 1)		WallString = "Kickoff Wall: ON";
 	
 	if(joinclassSet == 0)				JoinString = "ClassChoice: OFF";
 	else if (joinclassSet == 1)			JoinString = "ClassChoice: ON";
@@ -136,6 +139,7 @@ public void OpenMenuMiscSettings(int client)
 	menu.AddItem("loaddefaults", DefaultString);
 	menu.AddItem("dissolve", DissolveString);
 	menu.AddItem("djblock", DJString);
+	menu.AddItem("kickoffwall", WallString);
 	menu.AddItem("hostname", HostString);
 	menu.AddItem("rankspam", RankString);
 	menu.AddItem("ready", ReadyString);
@@ -233,6 +237,21 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				djbenabled = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
+				OpenMenuMiscSettings(client);
+			}
+		}
+		else if(StrEqual(menuItem, "kickoffwall")) 
+		{
+			if(KickoffWallSet == 0)
+			{
+				KickoffWallSet = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_kickoffwall", KickoffWallSet);
+				OpenMenuMiscSettings(client);
+			}
+			else if(KickoffWallSet == 1)
+			{
+				KickoffWallSet = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_kickoffwall", KickoffWallSet);
 				OpenMenuMiscSettings(client);
 			}
 		}
