@@ -26,8 +26,6 @@ public void MatchOnStartTouch(int caller, int activator)
 // ************************************************************************************************************
 public void MatchOnPluginStart()
 {
-	if (!IsModelPrecached("models/props_hydro/metal_barrier03.mdl")) PrecacheModel("models/props_hydro/metal_barrier03.mdl");
-	//if (!IsModelPrecached("models/props/cs_office/vending_machine.mdl")) PrecacheModel("models/props/cs_office/vending_machine.mdl");
 }
 
 public void MatchOnMapStart()
@@ -81,6 +79,8 @@ public void MatchEventRoundStart(Event event)
 
 public void MatchEventRoundEnd(Event event)
 {
+	if(KickoffWallSet == 1) KillWalls();
+
 	if (matchGoldenGoalActive) CreateTimer(0.1, DelayMatchEnd);
 	else if (matchStarted && !matchPeriodBreak && !matchPaused)
 	{
@@ -1731,7 +1731,7 @@ public Action MatchPeriodBreakTimer(Handle timer, any time)
 		HostName_Change_Status("Halftime");
 	}
 	
-	HostName_Change_Status("Halftime");
+	//HostName_Change_Status("Halftime");
 
 	char timeString[16];
 	getTimeString(timeString, time);
@@ -1834,7 +1834,8 @@ public Action DelayMatchEnd(Handle timer)
 	LogMessage("Final score: %s %i - %i %s", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 
 	AddMatchStat("add");
-	ShowManOfTheMatch();
+	//ShowManOfTheMatch();
+	ShowTop3(true);
 	MatchReset();
 	NameReset();
 	ForfeitReset();
@@ -2119,6 +2120,9 @@ public void EndStoppageTime()
 			
 			PrintCenterTextAll("Halftime break");
 			
+			//print current match top3
+			ShowTop3(false);
+			
 			FreezeAll();
 			matchTimer = CreateTimer(0.0, MatchPeriodBreakTimer, matchPeriodBreakLength);
 		}
@@ -2157,7 +2161,8 @@ public void EndStoppageTime()
 				LogMessage("Final score: %s %i - %i %s", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t);
 
 				AddMatchStat("add");
-				ShowManOfTheMatch();
+				//ShowManOfTheMatch();
+				ShowTop3(true);
 				MatchReset();
 				NameReset();
 				ForfeitReset();
@@ -2193,66 +2198,81 @@ public void KickOffWall()
 		//wall on line
 		if(xorientation) //orientation of the middle line
 		{
-			//PrintToChatAll("y true");
-			//create first half
-			CreateInvisWall(-1300.0, 0.0, 0.0, -250.0, 0.0, 500.0, "wallminus", 0); 
-			
-			//create second half
-			CreateInvisWall(250.0, 0.0, 0.0, 1300.0, 0.0, 500.0, "wallplus", 1);
-			
+			//PrintToChatAll("y true");			
 			//create box to allow kickoff
 			if(matchLastScored > 1)
 			{
-				if (matchLastScored == 2) //ct scored
+				if (matchLastScored == 2) //t scored
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
+
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
+					
+					//xsl_stadium close wall
+					char map[128];
+					GetCurrentMap(map, sizeof(map));
+					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, true);
+					
 					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3);
+						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
 					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, true);
 					}
 				}
-				else //t scored
+				else //ct scored
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
+					
+					//xsl_stadium close wall
+					char map[128];
+					GetCurrentMap(map, sizeof(map));
+					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, false);
+					
 					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1", 2); 
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, false); 
 						
 						//second side
-						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3); 
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, false); 
 						
 						//backside
-						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback", 4); 
+						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, false); 
 					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, false); 
 						
 						//second side
-						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false); 
 						
 						//backside
-						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false); 
 					}
 				}
 			}
@@ -2260,119 +2280,147 @@ public void KickOffWall()
 			{
 				if (matchToss == 2)	//ct starts
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
+					
+					//xsl_stadium close wall
+					char map[128];
+					GetCurrentMap(map, sizeof(map));
+					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, true);
+					
 					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, true); 
 						
 						//second side
-						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true); 
 						
 						//backside
-						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true); 
 					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, true);
 					}
 				}
 				else		//t starts
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
+					
+					//xsl_stadium close wall
+					char map[128];
+					GetCurrentMap(map, sizeof(map));
+					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, false);
+					
 					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t+ ct-
+					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-250.0, -150.0, 0.0, -250.0, 0.0, 500.0, "boxside1", 2); 
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, false); 
 						
 						//second side
-						CreateInvisWall(250.0, -150.0, 0.0, 250.0, 0.0, 500.0, "boxside2", 3); 
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, false); 
 						
 						//backside
-						CreateInvisWall(-250.0, -150.0, 0.0, 250.0, -150.0, 500.0, "boxback", 4); 
+						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, false); 
 					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct+
+					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-250.0, 0.0, 0.0, -250.0, 150.0, 500.0, "boxside1", 2); 
+						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, false); 
 						
 						//second side
-						CreateInvisWall(250.0, 0.0, 0.0, 250.0, 150.0, 500.0, "boxside2", 3); 
+						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false); 
 						
 						//backside
-						CreateInvisWall(-250.0, 150.0, 0.0, 250.0, 150.0, 500.0, "boxback", 4); 
+						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false); 
 					}
 				}
 			}
 		}
 		else //yorient
 		{
-			//create first half
-			CreateInvisWall(0.0, -1300.0, 0.0, 0.0, -250.0, 500.0, "wallminus", 0); 
-			
-			//create second half
-			CreateInvisWall(0.0, 250.0, 0.0, 0.0, 1300.0, 500.0, "wallplus", 1); 
-			
 			//create box to allow kickoff
 			if(matchLastScored > 1)
 			{
-				if (matchLastScored == 2) //ct scored
+				if (matchLastScored == 2) //t scored
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
+					
 					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
 					{
 						//first side
-						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
 					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, true);
 					}
 				}
-				else //t scored
+				else //ct scored
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
+					
 					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, false);
 						
 						//second side		
-						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, false);
 						
 						//backside				
-						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, false);
 					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
 					{
 						//first side
-						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, false);
 						
 						//second side		
-						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false);
 						
 						//backside				
-						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false);
 					}
 				}
 			}
@@ -2380,75 +2428,96 @@ public void KickOffWall()
 			{
 				if (matchToss == 2)	//ct starts
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
+					
 					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
 					{
 						//first side
-						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
 					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
 					{
 						//first side
-						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, true);
 						
 						//second side		
-						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, true);
 						
 						//backside				
-						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, true);
 					}
 				}
 				else //t starts
 				{
+					//create first half		
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
+					
+					//create second half
+					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
+					
 					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t+ ct-
+					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
 					{
 						//first side
-						CreateInvisWall(-150.0, -250.0, 0.0, 0.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, false);
 						
 						//second side		
-						CreateInvisWall(-150.0, 250.0, 0.0, 0.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, false);
 						
 						//backside				
-						CreateInvisWall(-150.0, -250.0, 0.0, -150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, false);
 					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct+
+					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
 					{
 						//first side
-						CreateInvisWall(0.0, -250.0, 0.0, 150.0, -250.0, 500.0, "boxside1",2);
+						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, false);
 						
 						//second side		
-						CreateInvisWall(0.0, 250.0, 0.0, 150.0, 250.0, 500.0, "boxside2", 3);
+						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false);
 						
 						//backside				
-						CreateInvisWall(150.0, -250.0, 0.0, 150.0, 250.0, 500.0, "boxback",4);
+						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false);
 					}
 				}
 			}
 		}
-		
 	}
 }
 
 public void KillWalls()
 {
-	int entityid[5]
-	entityid[0] = GetEntityIndexByName("wallminus", "func_brush");
-	entityid[1] = GetEntityIndexByName("wallplus", "func_brush");
-	entityid[2] = GetEntityIndexByName("boxside1", "func_brush");
-	entityid[3] = GetEntityIndexByName("boxside2", "func_brush");
-	entityid[4] = GetEntityIndexByName("boxback", "func_brush");
-	for(int i = 0; i <= 4; i++)
+	int entityid[6]
+	entityid[0] = GetEntityIndexByName("wallminus", "prop_dynamic");
+	entityid[1] = GetEntityIndexByName("wallplus", 	"prop_dynamic");
+	entityid[2] = GetEntityIndexByName("boxside1", 	"prop_dynamic");
+	entityid[3] = GetEntityIndexByName("boxside2", 	"prop_dynamic");
+	entityid[4] = GetEntityIndexByName("boxback", 	"prop_dynamic");
+	entityid[5] = GetEntityIndexByName("entrywall", "prop_dynamic");
+	
+	for(int i = 0; i <= 5; i++)
 	{
 		if (entityid[i] != -1)
 		{
 			AcceptEntityInput(entityid[i], "Kill");
 		}
 	}
+	
+	int index;
+	while ((index = GetEntityIndexByName("wallminus", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
+	while ((index = GetEntityIndexByName("wallplus", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
+	while ((index = GetEntityIndexByName("boxside1", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
+	while ((index = GetEntityIndexByName("boxside2", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
+	while ((index = GetEntityIndexByName("boxback", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
+	while ((index = GetEntityIndexByName("entrywall", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
 }

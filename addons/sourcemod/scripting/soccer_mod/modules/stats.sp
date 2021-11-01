@@ -1352,6 +1352,166 @@ public void ShowManOfTheMatch()
 	}
 }
 
+public void ShowTop3(bool final)
+{
+	int highestScore1 = 0;
+	int highestScore2 = 0;
+	int highestScore3 = 0;
+	int buf1, buf2;
+	char htMVP1[MAX_NAME_LENGTH], htMVP2[MAX_NAME_LENGTH], htMVP3[MAX_NAME_LENGTH], buffer1[MAX_NAME_LENGTH], buffer2[MAX_NAME_LENGTH];
+	char steamidMVP[32];
+
+	statsKeygroupMatch.GotoFirstSubKey();
+
+	do
+	{
+		int keyValue = statsKeygroupMatch.GetNum("points", 0);
+		
+		if (keyValue > highestScore1)
+		{
+			//check if someone was placed in 1st pos already
+			if (!StrEqual(htMVP1, ""))
+			{
+				//save name & pts in tempvar
+				buffer1 = htMVP1;
+				buf1 = highestScore1;
+			}
+			//set new name & pts for MVP1
+			statsKeygroupMatch.GetString("name", htMVP1, sizeof(htMVP1));
+			statsKeygroupMatch.GetSectionName(steamidMVP, sizeof(steamidMVP));
+			highestScore1 = keyValue;
+			
+			//check if MVP2 already exists
+			if (!StrEqual(htMVP2, ""))
+			{
+				//save name & pts of MVP2 in tempvar
+				buffer2 = htMVP2;
+				buf2 = highestScore2;
+				
+				//save former MVP1 in MVP2
+				htMVP2 = buffer1;
+				highestScore2 = buf1;
+			}
+			else
+			{
+				htMVP2 = buffer1;
+				highestScore2 = buf1;
+			}
+			
+			//save former MVP2 in MVP3
+			htMVP3 = buffer2;
+			highestScore3 = buf2;
+		}
+		else if (keyValue > highestScore2)
+		{
+			//check if MVP2 already exists
+			if (!StrEqual(htMVP2, ""))
+			{
+				//save name & pts of MVP2 in tempvar
+				buffer1 = htMVP2;
+				buf1 = highestScore2;
+			}
+			//set new name & pts for MVP2
+			statsKeygroupMatch.GetString("name", htMVP2, sizeof(htMVP2));
+			highestScore2 = keyValue;
+			
+			//save former MVP2 in MVP3
+			htMVP3 = buffer1;
+			highestScore3 = buf1;
+		}
+		else if (keyValue > highestScore3)
+		{
+			//set new name & pts for MVP3
+			statsKeygroupMatch.GetString("name", htMVP3, sizeof(htMVP3));
+			highestScore3 = keyValue;
+		}
+	}
+	while (statsKeygroupMatch.GotoNextKey());
+
+	statsKeygroupMatch.Rewind();
+		
+	if (final)
+	{
+		
+		if (highestScore1)
+		{
+			// keygroup = new KeyValues("matchStatistics");
+			// keygroup.ImportFromFile(statsKeygroupMatch);
+
+			statsKeygroupMatch.JumpToKey(steamidMVP, true);
+
+			int keyValue = statsKeygroupMatch.GetNum("motm", 0);
+			statsKeygroupMatch.SetNum("motm", keyValue + 1);
+
+			statsKeygroupMatch.Rewind();
+			// keygroup.ExportToFile(statsKeygroupMatch);
+			// keygroup.Close();
+
+			char table[32];
+			char queryString[1024];
+
+			if (matchStarted) table = "soccer_mod_match_stats";
+			else table = "soccer_mod_public_stats";
+
+			if (EnoughPlayers())
+			{
+				Format(queryString, sizeof(queryString), "UPDATE %s SET motm = (motm + 1), points = (points + %i) WHERE steamid = '%s'", 
+					table, rankingPointsForMOTM, steamidMVP);
+				ExecuteQuery(queryString);
+			}
+			
+			if (StrEqual(htMVP2, "")) htMVP2 = "Noone";
+			if (StrEqual(htMVP3, "")) htMVP3 = "Noone";
+			
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}The man of the match was %s with %i points", prefixcolor, prefix, textcolor, htMVP1, highestScore1);
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}In second place was %s following with %i points", prefixcolor, prefix, textcolor, htMVP2, highestScore2);
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s was in third place with %i points", prefixcolor, prefix, textcolor, htMVP3, highestScore3);
+			}	
+			if (StrEqual(htMVP2, "Noone")) htMVP2 = "";
+			if (StrEqual(htMVP3, "Noone")) htMVP3 = "";
+
+			LogMessage("The man of the match was %s <%s> with %i points", htMVP1, steamidMVP, highestScore1);
+		}
+		else
+		{
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}MOTM: No player scored more than 0 points this match", prefixcolor, prefix, textcolor);
+			}
+		}	
+	}
+	else
+	{
+		if (highestScore1)
+		{
+			if (StrEqual(htMVP2, "")) htMVP2 = "Noone";
+			if (StrEqual(htMVP3, "")) htMVP3 = "Noone";
+			
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}Currently leading the MVP ranking is %s with %i points", prefixcolor, prefix, textcolor, htMVP1, highestScore1);
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}In second place %s is following with %i points", prefixcolor, prefix, textcolor, htMVP2, highestScore2);
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%s is currently in third place with %i points", prefixcolor, prefix, textcolor, htMVP3, highestScore3);
+			}
+			
+			if (StrEqual(htMVP2, "Noone")) htMVP2 = "";
+			if (StrEqual(htMVP3, "Noone")) htMVP3 = "";
+		}
+		else
+		{
+			for (int player = 1; player <= MaxClients; player++)
+			{
+				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}MOTM: No player scored more than 0 points so far.", prefixcolor, prefix, textcolor);
+			}
+		}
+	}
+	
+	
+
+}
+
 public void AddStatisticsMenuItem(int client, Menu menu, char menuString[32], char text[32], int value, char item[32])
 {
 	Format(menuString, sizeof(menuString), "%s: %i", text, value);

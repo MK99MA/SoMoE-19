@@ -1339,15 +1339,63 @@ public void ClearTimer(Handle timer)
 // *************************************************** MISC ***************************************************
 // ************************************************************************************************************
 
-public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index) //int orient)
+/*public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index, bool unused) //int orient)
 {
-	int entindex[5]
+	int entindex[6]
 	entindex[index] = CreateEntityByName("func_brush"); //trigger_push");
+	
 	if (entindex[index] != -1)
 	{
 		DispatchKeyValue(entindex[index], "Solidity", "2");
 		DispatchKeyValue(entindex[index], "targetname", targetname);
 	}
+
+	float minbounds[3], maxbounds[3];//, startpos[3];
+	minbounds[0] = minX;
+	minbounds[1] = minY;
+	minbounds[2] = minZ;
+	maxbounds[0] = maxX;
+	maxbounds[1] = maxY;
+	maxbounds[2] = maxZ;
+	
+	DispatchSpawn(entindex[index]);
+	ActivateEntity(entindex[index]);
+
+	//TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
+
+	SetEntityModel(entindex[index], "models/props/cs_office/address.mdl");
+	//"models/props/cs_assault/dryer_box.mdl");	//"models/props/cs_office/vending_machine.mdl");
+	
+	SetEntPropVector(entindex[index], Prop_Send, "m_vecMins", minbounds);
+	SetEntPropVector(entindex[index], Prop_Send, "m_vecMaxs", maxbounds);
+	
+	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
+	
+	SetEntProp(entindex[index], Prop_Send, "m_nSolidType", 2);
+
+	int enteffects = GetEntProp(entindex[index], Prop_Send, "m_fEffects");
+	enteffects |= 32;
+	SetEntProp(entindex[index], Prop_Send, "m_fEffects", enteffects); 
+	
+}*/
+
+public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index, bool bteam) //int orient)
+{
+	int entindex[6]
+	entindex[index] = CreateEntityByName("prop_dynamic");//_override");
+	
+	if (entindex[index] != -1)
+	{
+		DispatchKeyValue(entindex[index], "solid", "6");
+		DispatchKeyValue(entindex[index], "targetname", targetname);
+	}
+	if (!IsModelPrecached("models/props/cs_office/address.mdl")) PrecacheModel("models/props/cs_office/address.mdl");
+	SetEntityModel(entindex[index], "models/props/cs_office/address.mdl");
+	
+	DispatchSpawn(entindex[index]);
+	ActivateEntity(entindex[index]);
+
+	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
 
 	float minbounds[3], maxbounds[3];
 	minbounds[0] = minX;
@@ -1357,13 +1405,6 @@ public void CreateInvisWall(float minX, float minY, float minZ, float maxX, floa
 	maxbounds[1] = maxY;
 	maxbounds[2] = maxZ;
 
-	DispatchSpawn(entindex[index]);
-	ActivateEntity(entindex[index]);
-
-	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
-
-	SetEntityModel(entindex[index], "models/props_hydro/metal_barrier03.mdl");	//"models/props/cs_office/vending_machine.mdl");
-	
 	SetEntPropVector(entindex[index], Prop_Send, "m_vecMins", minbounds);
 	SetEntPropVector(entindex[index], Prop_Send, "m_vecMaxs", maxbounds);
 	
@@ -1373,8 +1414,58 @@ public void CreateInvisWall(float minX, float minY, float minZ, float maxX, floa
 	enteffects |= 32;
 	SetEntProp(entindex[index], Prop_Send, "m_fEffects", enteffects); 
 	
-	/*int testid = GetEntityIndexByName(targetname, "func_brush");
-	if (testid != -1)	PrintToChatAll("wall %s created", targetname);*/
+	int team;
+	if (bteam) team = 2
+	else team = 3;
+	
+	KickOffLaser(targetname, minX, minY, minZ, maxX, maxY, maxZ, index, team);
+}
+
+public void KickOffLaser(char targetname[32], float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int index, int team)
+{
+	char color[32];
+	if(team == 2) color = "0 0 255"
+	else color = "255 0 0"
+	
+	//vert laser
+	DrawLaser(targetname, minX, minY, mapBallStartPosition[2]-18, minX, minY, mapBallStartPosition[2]+110.0, color);
+	DrawLaser(targetname, maxX, maxY, mapBallStartPosition[2]-18, maxX, maxY, mapBallStartPosition[2]+110.0, color);
+	if(index <= 1) 
+	{
+		// vert borders
+		DrawLaser(targetname, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]+110.0, color);
+		DrawLaser(targetname, mapBallStartPosition[0]+640.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+640.0, maxY, mapBallStartPosition[2]+110.0, color);
+		DrawLaser(targetname, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]+110.0, color);
+		DrawLaser(targetname, mapBallStartPosition[0]-640.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-640.0, maxY, mapBallStartPosition[2]+110.0, color);
+	}
+	//horiz laser
+	char map[128];
+	GetCurrentMap(map, sizeof(map));
+	if(StrEqual(map, "ka_soccer_xsl_stadium_b1"))
+	{
+		//wall
+		if (index == 0)
+		{
+			DrawLaser(targetname, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
+		}
+		else if (index == 1)
+		{
+			DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]+110.0, color);
+		}
+		else 
+		{
+			DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
+		}
+		//box sides
+		DrawLaser(targetname, minX, minY, mapBallStartPosition[2]+110.0, minX, maxY, mapBallStartPosition[2]+110.0, color);
+	}
+	else
+	{
+		// walls
+		DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
+		// sides
+		DrawLaser(targetname, minX, minY, mapBallStartPosition[2]+110.0, minX, maxY, mapBallStartPosition[2]+110.0, color);
+	}
 }
 
 stock int changeConvar(Handle hConvar, char[] strCvarName, char[] strValue)

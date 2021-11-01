@@ -46,6 +46,7 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_tag", Command_GetTag, ADMFLAG_RCON, "[RCONFLAG] Prints your current clantag - Test");
 	RegAdminCmd("sm_ungk", Command_UnGK, ADMFLAG_GENERIC, "[GENERICFLAG]Remove the gk skin from your target");
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
+	RegAdminCmd("sm_walls", Command_WallRemove, ADMFLAG_GENERIC, "[GENERICFLAG]Removes Kickoff walls forcefully.");
 	RegAdminCmd("sm_wiperanks", Command_WipeRanks, ADMFLAG_RCON, "[RCONFLAG]Wipes the given ranking table");
 	
 	
@@ -268,6 +269,7 @@ public Action MatchRRCommand(int client, int args)
 				matchStarted = true;
 				matchStart = true;
 				matchKickOffTaken = true;
+				matchToss = GetRandomInt(2, 3);
 				
 				for (int player = 1; player <= MaxClients; player++)
 				{
@@ -905,6 +907,21 @@ public Action Command_UnGK(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action Command_WallRemove(int client, int args)
+{
+	if (currentMapAllowed)
+	{
+		if(KickoffWallSet == 1) 
+		{
+			KillWalls();
+			CPrintToChatAll("{%s}[%s] {%s}Kickoff walls have been removed by %N.", prefixcolor, prefix, textcolor, client);
+		}
+		else CPrintToChat(client, "{%s}[%s] {%s}Kickoff walls are not currently enabled.", prefixcolor, prefix, textcolor);
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Soccer Mod is not allowed on this map", prefixcolor, prefix, textcolor);
+	
+	return Plugin_Handled;
+}
 
 /*public Action Command_Test(int client, int args)
 {
