@@ -48,7 +48,9 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │  ├─ Cap (*)
 		 │  │  ├─ Put all players to spectator
 		 │  │  ├─ Add random player
-		 │  │  └─ Start cap fight
+		 │  │  ├─ Start cap fight (weapon)
+		 │  │  └─ Cap weaponchoice
+		 │  │	  └─ Weaponlist
 		 │  │
 		 │  ├─ Referee (*)
 		 │  │  ├─ Yellow Card
@@ -104,13 +106,15 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ Load Map Defaults Toggle
 		 │     │  ├─ Remove Ragdoll Toggle
 		 │     │  ├─ Duckjump Block Toggle
+		 │     │  ├─ Kickoffwall Toggle
 		 │     │  ├─ Hostname Updater Toggle
 		 │     │  ├─ !rank Cooldown Setting
 		 │     │  ├─ Readycheck Toggle
 		 │     │  ├─ Damage Sound Toggle
 		 │     │  ├─ Killfeed Toggle
 		 │     │  ├─ GK saves only Toggle
-		 │     │  └─ Rankmode Toggle
+		 │     │  ├─ Rankmode Toggle
+		 │     │  └─ Celebration Toggle
 		 │     │  
 		 │     ├─ Skin Settings (^)
 		 │     │  ├─ CT Skin
@@ -126,6 +130,10 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  │
 		 │     │  ├─ MVP Message Toggle (^)
 		 │     │  └─ DeadChat Toggle (^)
+		 │     │
+		 │     ├─ Sound Control (^)
+		 │     │  ├─ Remove Sound
+		 │     │  └─ Add Sound
 		 │     │
 		 │     ├─ Lock Settings (^)
 		 │     │  ├─ Enable Serverlock

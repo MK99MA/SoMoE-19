@@ -18,6 +18,7 @@ The structure of this menu looks like this:
 	 - :ref:`misc-settings`
 	 - :ref:`skin-settings`
 	 - :ref:`chat-settings`
+	 - :ref:`sound-control`
 	 - :ref:`lock-settings`
 	 - :ref:`shout-plugin` (#)
 	 
@@ -230,6 +231,20 @@ The structure of this menu looks like this:
 	 - **MVP Messages** - Enable or Disable the display of MVP / MOTM messages and MVP stars.
 	 - **DeadChat** - Enable or Disable the display of messages written by spectators and dead players to everyone. Features 3 modes and additional visibility options.
 	 
+----
+
+.. _sound-control:
+
+-------------
+Sound Control
+-------------
+
+This menu allows you to disable and re-enable ambient_generic sounds embedded in the map file.
+
+A sound disabled this way will be only enabled at the specific map and will stay disabled until it gets reenabled again or is removed from the configfile. Removed sounds are stored in the mapdefault.cfg.
+
+Re-enabling a sound will require a new round to start.
+
 ----
 
 .. _lock-settings:

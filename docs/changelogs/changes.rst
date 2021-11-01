@@ -3,6 +3,40 @@
 =========
 Changelog
 =========
+-----
+1.2.9.*
+-----
+
+***
+New
+***
+
+ - Added weaponchoice for capfights (1.2.9.3)
+ - Added random option to capfight weapon selection (1.2.9.4)
+ - Added third alternative duckjump-block method (1.2.9.6)
+ - Added option to enable celebration weapons after scoring a goal (1.2.9.6)
+ - Added toggleable invisible walls at kickoff (1.2.9.7)
+ - Added top3 player display at halftime (1.2.9.7)
+ - Added Mapsound control (Disable / Enable ambient_generic sounds per map) (1.2.9.7)
+
+*******
+Changes
+*******
+
+ - Caps won't lose their knife if the weapon of choice is a gun (1.2.9.3 fix)
+ - Cap HP during a HE-Grenade fight set to 98 to allow 1-hit kills (1.2.9.3 fix)
+ - Removed Smokegrenade from capfight weapon selection (1.2.9.4)
+ - Improved toggleable walls at kickoff (laser indicating borders, coloring) (1.2.9.7)
+ - Changed final matchmessage to show top3 instead of only MOTM (1.2.9.7)
+ 
+*****
+Fixes
+*****
+
+ - Fixed sprint config section resetting (1.2.9.1)
+ - Fixed sprint re-enabling itself after a cap fight even if it was disabled (1.2.9.2)
+ - Fixed "set position"-Spam at capstart if no position set (1.2.9.4)
+ - Fixed misplaced duckjump-reset function (1.2.9.5)
 
 -----
 1.2.9

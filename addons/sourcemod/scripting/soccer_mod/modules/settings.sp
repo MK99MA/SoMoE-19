@@ -39,6 +39,7 @@ public void OpenMenuSettings(int client)
 	menu.AddItem("miscset", "Misc Settings");
 	menu.AddItem("skinsmenu", "Skin Settings");
 	menu.AddItem("chatset", "Chat Settings");
+	menu.AddItem("mapsounds", "Sound Control");
 	menu.AddItem("lockenabled", "Lock Settings");
 	if (shoutplugin != INVALID_HANDLE)
 	{
@@ -62,6 +63,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "skinsmenu"))		OpenSkinsMenu(client);
 		else if (StrEqual(menuItem, "miscset"))			OpenMenuMiscSettings(client);
 		else if (StrEqual(menuItem, "shoutplug"))		FakeClientCommandEx(client, "sm_shoutset");
+		else if(StrEqual(menuItem, "mapsounds")) 		OpenMenuMapSounds(client);
 		else if(StrEqual(menuItem, "lockenabled"))
 		{
 			if(!pwchange) OpenMenuLockSet(client);
@@ -72,6 +74,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 			}
 		}
 		else if(StrEqual(menuItem, "adminset")) if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))		OpenMenuAdminSet(client);
+		
 		
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdmin(client);
@@ -717,6 +720,189 @@ public int MenuHandlerMapsRemove(Menu menu, MenuAction action, int client, int c
 		OpenMenuMaps(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMaps(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+// *********************************************************************************************************************
+// ************************************************ SOUND CONTROL MENU *************************************************
+// *********************************************************************************************************************
+public void OpenMenuMapSounds(int client)
+{
+	Menu menu = new Menu(MenuHandlerMapSounds);
+
+	menu.SetTitle("Soccer Mod - Admin - Map Sounds");
+
+	menu.AddItem("rem", "Disable Sound");
+	menu.AddItem("add", "Enable Sound");
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerMapSounds(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char menuItem[32];
+		menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+		if(StrEqual(menuItem, "rem")) 		OpenMenuMapSoundsRem(client);
+		else if(StrEqual(menuItem, "add"))	OpenMenuMapSoundsAdd(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuMapSoundsRem(int client)
+{
+	Menu menu = new Menu(MenuHandlerMapSoundsRem);
+
+	menu.SetTitle("Soccer Mod - Admin - Map Sounds");
+
+	int index = -1;
+	char entityName[64];
+	
+	while ((index = FindEntityByClassname(index, "ambient_generic")) != INVALID_ENT_REFERENCE)
+	{
+		GetEntPropString(index, Prop_Data, "m_iName", entityName, sizeof(entityName));
+		menu.AddItem(entityName, entityName);
+	}
+	
+	if(menu.ItemCount == 0) 
+	{
+		menu.AddItem("nosounds", "No sounds found");
+	}
+	
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerMapSoundsRem(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char sound[32], entitytype[32];
+		menu.GetItem(choice, sound, sizeof(sound));
+		
+		if(StrEqual(sound, "nosounds"))
+		{
+			OpenMenuMapSounds(client);
+		}
+		else
+		{
+			entitytype = "ambient_generic";
+			int entityid
+			entityid = GetEntityIndexByName(sound, entitytype);
+			if (entityid != -1)
+			{
+				AcceptEntityInput(entityid, "StopSound");
+				AcceptEntityInput(entityid, "Kill");
+				PrintToServer("Entity %s of type %s killed!", sound, entitytype);
+			}
+			
+			// get current map
+			char map[128];
+			GetCurrentMap(map, sizeof(map));
+			
+			//write to file
+			if(!FileExists(mapDefaults)) CreateMapDefaultsConfig()
+			mapdefaultKV = new KeyValues("Soccer Mod Config");
+			mapdefaultKV.ImportFromFile(mapDefaults);
+			mapdefaultKV.JumpToKey(map, true);
+			if(mapdefaultKV.JumpToKey("removed sounds", true))
+			{
+				mapdefaultKV.JumpToKey(sound, true);
+				mapdefaultKV.SetString("type", entitytype);
+			}
+			
+			mapdefaultKV.Rewind();
+			mapdefaultKV.ExportToFile(mapDefaults);
+			mapdefaultKV.Close();
+			
+			CPrintToChat(client, "{%s}[%s] {%s}Sound %s was disabled.", prefixcolor, prefix, textcolor, sound);
+
+			OpenMenuMapSounds(client);
+		}
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMapSounds(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+public void OpenMenuMapSoundsAdd(int client)
+{
+	Menu menu = new Menu(MenuHandlerMapSoundsAdd);
+
+	menu.SetTitle("Soccer Mod - Admin - Map Sounds");
+
+	char map[128];
+	GetCurrentMap(map, sizeof(map));
+	
+	mapdefaultKV = new KeyValues("Map Defaults");
+	mapdefaultKV.ImportFromFile(mapDefaults);
+	
+	if (mapdefaultKV.JumpToKey(map, false))
+	{
+		if (mapdefaultKV.JumpToKey("removed sounds", false))
+		{
+			char sound[32];
+			mapdefaultKV.GotoFirstSubKey()
+			do
+			{
+				//retrieve soundname & type
+				mapdefaultKV.GetSectionName(sound, sizeof(sound));
+				
+				menu.AddItem(sound, sound);
+				
+			}	
+			while mapdefaultKV.GotoNextKey();
+			
+			mapdefaultKV.Rewind();
+			mapdefaultKV.Close();
+		}
+		else
+		{
+			menu.AddItem("nosounds", "No sounds found");
+		}
+	}
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerMapSoundsAdd(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char map[128];
+		GetCurrentMap(map, sizeof(map));
+		
+		//remove sound from file
+		char sound[32];
+		menu.GetItem(choice, sound, sizeof(sound));
+		
+		if(StrEqual(sound, "nosounds"))
+		{
+			OpenMenuMapSounds(client);
+		}
+		else
+		{
+			mapdefaultKV = new KeyValues("Soccer Mod Config");
+			mapdefaultKV.ImportFromFile(mapDefaults);
+			mapdefaultKV.JumpToKey(map, true);
+			mapdefaultKV.JumpToKey("removed sounds", true);
+			mapdefaultKV.JumpToKey(sound, true);
+			mapdefaultKV.DeleteThis();
+			
+			mapdefaultKV.Rewind();
+			mapdefaultKV.ExportToFile(mapDefaults);
+			mapdefaultKV.Close();
+			
+			CPrintToChat(client, "{%s}[%s] {%s}Sound %s will be reenabled with the next round.", prefixcolor, prefix, textcolor, sound);
+
+			OpenMenuMapSounds(client);
+		}
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuMapSounds(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
 

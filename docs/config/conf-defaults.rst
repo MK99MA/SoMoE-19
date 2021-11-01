@@ -13,6 +13,8 @@ At the time of writing this documentation there are 3 supported values:
  - default_periodlength
  - default_breaklength
  - default_periods
+ 
+It is also used to store disabled mapsounds. While the ingame menu only allows the handling of "ambient_generic" sounds, manual addition should allow other type of entities too.
 	
 The structure of the file should look like this:
 
@@ -25,6 +27,15 @@ The structure of the file should look like this:
 				"default_periodlength"    "900"
 				"default_breaklength"     "5"
 				"default_periods"         "2"
+				{
+					"removed sounds"
+					{
+						"soundname"
+						{
+							"type"		  "ambient_generic"
+						}
+					}
+				}
 			}
 			"ka_soccer_avalon_v8"
 			{

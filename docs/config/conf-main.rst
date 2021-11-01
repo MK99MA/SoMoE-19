@@ -205,6 +205,7 @@ This section features miscellaneous settings that do not fit into any of the oth
 			"soccer_mod_respawn_delay"      "10.000000"
 			"soccer_mod_blockdj_enable"     "1"
 			"soccer_mod_blockdj_time"		"0.45"
+			"soccer_mod_kickoffwall"		"0"
 			"soccer_mod_damagesounds"       "0"
 			"soccer_mod_dissolver"          "2"
 			"soccer_mod_joinclass"          "0"
@@ -212,6 +213,7 @@ This section features miscellaneous settings that do not fit into any of the oth
 			"soccer_mod_rrchecktime"        "90.0"
 			"soccer_mod_loaddefaults"       "1"
 			"soccer_mod_killfeed"           "0"
+			"soccer_mod_celebrate"			"0"
 		}
 		
 .. attention:: Most keys in this section are changeable ingame. Exceptions are *soccer_mod_health_godmode* and *soccer_mod_respawn_delay* which usually should not be changed at all.

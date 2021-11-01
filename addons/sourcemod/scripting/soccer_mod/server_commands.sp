@@ -100,6 +100,11 @@ public void RegisterServerCommands()
 		ServerCommands,
 		"Enable/Disable Duckjump Block - default: 1"
 	);
+	RegServerCmd(
+		"soccer_mod_remove_snd",
+		ServerCommands,
+		"Remove a sound with the given name from the map. Best used in autoexec.cfg."
+	);
 
 	RegisterServerCommandsHealth();
 	RegisterServerCommandsMatch();
@@ -387,6 +392,40 @@ public Action ServerCommands(int args)
 			PrintToServer("[%s] Duckjumpblock disabled", prefix);
 			CPrintToChatAll("{%s}[%s] {%s}Duckjumpblock disabled", prefixcolor, prefix, textcolor);
 		}
+	}
+	else if (StrEqual(serverCommand, "soccer_mod_remove_snd"))
+	{
+		char sound[32];
+		sound = cmdArg1;
+		char entitytype[32];
+		if (StrEqual(cmdArg2, "")) entitytype = "ambient_generic"
+		else entitytype = cmdArg2;
+		
+		int entityid
+		entityid = GetEntityIndexByName(sound, entitytype);
+		if (entityid != -1)
+		{
+			AcceptEntityInput(entityid, "StopSound");
+			AcceptEntityInput(entityid, "Kill");
+			PrintToServer("Entity %s of type %s killed!", sound, entitytype);
+		}
+		
+		// get current map
+		char map[128];
+		GetCurrentMap(map, sizeof(map));
+		
+		//write to file
+		if(!FileExists(mapDefaults)) CreateMapDefaultsConfig()
+		mapdefaultKV = new KeyValues("Soccer Mod Config");
+		mapdefaultKV.ImportFromFile(mapDefaults);
+		mapdefaultKV.JumpToKey(map, true);
+		mapdefaultKV.JumpToKey("removed sounds", true);
+		mapdefaultKV.JumpToKey(sound, true);
+		mapdefaultKV.SetString("type", entitytype);
+		
+		mapdefaultKV.Rewind();
+		mapdefaultKV.ExportToFile(mapDefaults);
+		mapdefaultKV.Close();
 	}
 
 	return Plugin_Handled;

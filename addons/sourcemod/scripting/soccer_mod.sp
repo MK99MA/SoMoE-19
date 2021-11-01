@@ -414,7 +414,7 @@ public void OnConfigsExecuted()
 	GetFieldOrientation();	
 	
 	// Set Defaults if existing
-	if(defaultSet == 1) SetDefaultValues();
+	if(defaultSet == 1) SetDefaultValues(0);
 	
 	// Get hostname
 	g_hostname = FindConVar("hostname");
@@ -444,7 +444,7 @@ public void OnMapStart()
 	
 	//Get the server password from server.cfg
 	GetDefaultPassword(defaultpw, sizeof(defaultpw));
-	
+		
 	//Get the available Admin Groups from admin_groups.cfg
 	groupArray = CreateArray(8);
 	ParseAdminGroups(groupArray);
@@ -799,6 +799,8 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 		hConvar = FindConVar("mp_friendlyfire");
 		if (hConvar == INVALID_HANDLE)	return Plugin_Continue;
 		changeConvar(hConvar, "mp_friendlyfire", "0")
+		
+		SetDefaultValues(1);
 
 		if (!matchStarted)
 		{
@@ -863,7 +865,7 @@ public Action EventRoundEnd(Event event, const char[] name, bool dontBroadcast)
 				"sg550",
 				"awp",
 			}
-			int randint = GetRandomInt(0, sizeof(celebwparray[])-1);
+			int randint = GetRandomInt(0, sizeof(celebwparray)-1);
 			celebrateweapon = celebwparray[randint];
 			Format(celebrateweapon, sizeof(celebrateweapon), "weapon_%s", celebrateweapon);
 			
@@ -1338,46 +1340,6 @@ public void ClearTimer(Handle timer)
 // ************************************************************************************************************
 // *************************************************** MISC ***************************************************
 // ************************************************************************************************************
-
-/*public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index, bool unused) //int orient)
-{
-	int entindex[6]
-	entindex[index] = CreateEntityByName("func_brush"); //trigger_push");
-	
-	if (entindex[index] != -1)
-	{
-		DispatchKeyValue(entindex[index], "Solidity", "2");
-		DispatchKeyValue(entindex[index], "targetname", targetname);
-	}
-
-	float minbounds[3], maxbounds[3];//, startpos[3];
-	minbounds[0] = minX;
-	minbounds[1] = minY;
-	minbounds[2] = minZ;
-	maxbounds[0] = maxX;
-	maxbounds[1] = maxY;
-	maxbounds[2] = maxZ;
-	
-	DispatchSpawn(entindex[index]);
-	ActivateEntity(entindex[index]);
-
-	//TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
-
-	SetEntityModel(entindex[index], "models/props/cs_office/address.mdl");
-	//"models/props/cs_assault/dryer_box.mdl");	//"models/props/cs_office/vending_machine.mdl");
-	
-	SetEntPropVector(entindex[index], Prop_Send, "m_vecMins", minbounds);
-	SetEntPropVector(entindex[index], Prop_Send, "m_vecMaxs", maxbounds);
-	
-	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
-	
-	SetEntProp(entindex[index], Prop_Send, "m_nSolidType", 2);
-
-	int enteffects = GetEntProp(entindex[index], Prop_Send, "m_fEffects");
-	enteffects |= 32;
-	SetEntProp(entindex[index], Prop_Send, "m_fEffects", enteffects); 
-	
-}*/
 
 public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index, bool bteam) //int orient)
 {

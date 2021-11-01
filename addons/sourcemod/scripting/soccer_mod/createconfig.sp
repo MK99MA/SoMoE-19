@@ -281,6 +281,8 @@ public void CreateMapDefaultsConfig()
 	mapdefaultKV.SetNum("default_periodlength", 900);
 	mapdefaultKV.SetNum("default_breaklength", 5);
 	mapdefaultKV.SetNum("default_periods", 2);
+	//mapdefaultKV.JumpToKey("removed sounds", true);
+	//mapdefaultKV.SetString("name", "type");
 	
 	mapdefaultKV.Rewind();
 	mapdefaultKV.ExportToFile(mapDefaults);
