@@ -15,6 +15,7 @@ At the time of writing this documentation there are 3 supported values:
  - default_periods
  
 It is also used to store disabled mapsounds. While the ingame menu only allows the handling of "ambient_generic" sounds, manual addition should allow other type of entities too.
+The "removed sounds" section is also independent from the mapdefaults setting and will always be used.
 	
 The structure of the file should look like this:
 
