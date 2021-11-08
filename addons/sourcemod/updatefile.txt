@@ -4,13 +4,16 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.9.5"
-			"Previous"	"1.2.9.3"
+			"Latest"	"1.2.9.7"
+			"Previous"	"1.2.9.5"
 		}
 		
-		"Notes"	"Removed Smokegrenade from capfight weapons"
-		"Notes"	"Added random option to capfight weapons"
-		"Notes"	"Fixed set position spam on capstart"
+		"Notes"	"Added third alternative duckjump-block method (Not working properly in this version)"
+		"Notes"	"Added option to enable celebration weapons after scoring a goal"
+		"Notes"	"Added toggleable invisible walls at kickoff"
+		"Notes" "Added top3 player display at halftime"
+		"Notes" "Added Mapsound control (Disable / Enable ambient_generic sounds per map)"
+		"Notes"	"Changed final matchmessage to show top3 instead of only MOTM"
 	}
 	
 	"Files"
