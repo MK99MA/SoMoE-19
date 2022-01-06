@@ -8,8 +8,6 @@ public void OpenMenuSoccer(int client)
 	SetMenuPagination(menu, MENU_NO_PAGINATION);
 	SetMenuExitButton(menu, true);
 
-	Handle shoutplugin = FindPluginByFile("shout.smx");	
-
 	if(publicmode == 0)
 	{
 		if (CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC) || IsSoccerAdmin(client, "menu"))
@@ -32,10 +30,7 @@ public void OpenMenuSoccer(int client)
 	
 	menu.AddItem("sprintinfo", "Sprintsettings");
 	
-	if (shoutplugin != INVALID_HANDLE)
-	{
-		menu.AddItem("shout", "Shouts");
-	}
+	if(shoutMode != -1) menu.AddItem("shout", "Shouts");
 
 	menu.AddItem("credits", "Credits");
 
@@ -67,7 +62,7 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		else if (StrEqual(menuItem, "help"))		OpenMenuHelp(client);
 		else if (StrEqual(menuItem, "credits"))	 	OpenMenuCredits(client);
 		else if (StrEqual(menuItem, "sprintinfo"))  OpenInfoPanel(client); //FakeClientCommandEx(client, "sm_sprintinfo");
-		else if (StrEqual(menuItem, "shout"))		FakeClientCommandEx(client, "sm_shout");
+		else if (StrEqual(menuItem, "shout"))		OpenMenuShout(client);
 		else if (currentMapAllowed)
 		{
 			if (StrEqual(menuItem, "positions"))	OpenCapPositionMenu(client);
@@ -393,6 +388,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("menu", "!menu");
 	menu.AddItem("gk", "!gk");
 	menu.AddItem("cap", "!cap");
+	menu.AddItem("spec", "!spec");
 	menu.AddItem("match", "!match");
 	menu.AddItem("start", "!start");
 	menu.AddItem("pause", "!pause, !p");
@@ -411,6 +407,7 @@ public void OpenMenuCommands(int client)
 	menu.AddItem("prank", "!prank");
 	menu.AddItem("adminlist", "!admins");
 	menu.AddItem("lc", "!lc, !late");
+	menu.AddItem("profile", "!profile <name>");
 	menu.AddItem("help", "!help");
 	menu.AddItem("credits", "!credits");
 
@@ -434,6 +431,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "pick"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap picking menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "admin"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod admin menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "cap"))		 	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap match menu", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "spec"))		 	CPrintToChat(client, "{%s}[%s] {%s}Move every player to spectator", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "maprr"))		CPrintToChat(client, "{%s}[%s] {%s}Reload the current map", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "match"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod match menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "matchrr"))		CPrintToChat(client, "{%s}[%s] {%s}Restart the match", prefixcolor, prefix, textcolor);
@@ -447,6 +445,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "stop"))		CPrintToChat(client, "{%s}[%s] {%s}Stop a Match", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "rdy"))			CPrintToChat(client, "{%s}[%s] {%s}Bring back the ready menu if you closed it by accident", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "lc"))			CPrintToChat(client, "{%s}[%s] {%s}Opens the last connected panel", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "profile"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the steamprofile of a matching target in the motd window", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "adminlist"))	
 		{
 			if(publicmode == 2)						CPrintToChat(client, "{%s}[%s] {%s}Publicmode is set to everyone. Try using !menu yourself", prefixcolor, prefix, textcolor);

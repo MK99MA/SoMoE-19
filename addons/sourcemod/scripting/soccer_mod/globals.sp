@@ -98,6 +98,7 @@ char cardReceiver[MAX_NAME_LENGTH];
 char cardString[32];
 char sprayName[MAXPLAYERS + 1][64];
 char sprayID[MAXPLAYERS + 1][32];
+char wallmodel[128]				= "models/soccer_mod/wall.mdl";
 
 // **************************************************** ADMIN ***************************************************
 
@@ -420,6 +421,44 @@ int afk_Matches[MAXPLAYERS+1];
 // STRINGS
 char defaultpw[256];
 
+
+// **************************************************** SHOUT ***************************************************
+//PATHS
+char shoutConfigFile[PLATFORM_MAX_PATH]		= "cfg/sm_soccermod/soccer_mod_shoutlist.cfg";
+char shoutSetFile[PLATFORM_MAX_PATH]		= "cfg/sm_soccermod/soccer_mod_shoutsettings.cfg";
+
+//BOOL
+bool DupRename;
+
+//CHAR
+char gFilebuffer[PLATFORM_MAX_PATH];
+char gNamebuffer[64];
+char cdStatus[MAXPLAYERS+1];
+
+//KEYVALUE
+KeyValues kvConfigShout;
+KeyValues kvSettings;
+
+//INT
+int shoutCD 		= 1;
+int shoutCommand	= 0;
+int shoutMode		= 0;
+int shoutPitch 		= 100;
+int shoutVolume		= 100;
+int shoutMessage	= 2;
+int shoutRadius		= 400; //25 feet
+int shoutDebug		= 0;
+
+//HANDLE
+Handle fileArray;
+Handle nameArray;
+Handle fileArray_Added;
+Handle nameArray_Added;
+
+Handle shoutCDs[MAXPLAYERS+1];
+Handle shoutAdvert[MAXPLAYERS+1];
+
+
 // **************************************************** SKINS ***************************************************
 
 // BOOL
@@ -541,6 +580,19 @@ char statsScorerSteamid[32]				= "";
 
 // BOOL
 bool trainingGoalsEnabled		= true;
+bool accessgranted[MAXPLAYERS+1]= {false, ...};
+//bool minigameActive				= false;
+bool tgoaltarget				= false;
+bool ctgoaltarget				= false;
+//bool tgoalgk					= false;
+//bool ctgoalgk					= false;
+bool trainingModeEnabled		= false;
+bool coneDynamic				= false;
+bool autoToggle[2]				= {false, ...};
+bool hitHelper[2]				= {false, ...};
+bool g_pInRotationMode[MAXPLAYERS + 1];
+bool g_pWasInNoclip[MAXPLAYERS + 1];
+bool g_eReleaseFreeze[MAXPLAYERS + 1] =  { true, ... };
 
 // FLOATS
 float trainingCannonFireRate	= 2.5;
@@ -553,16 +605,60 @@ float pers_trainingCannonPower[MAXPLAYERS+1]		= {10000.0, ...};
 float pers_trainingCannonRandomness[MAXPLAYERS+1]	= {0.0, ...};
 float pers_trainingCannonAim[MAXPLAYERS+1][3];
 float pers_trainingCannonPosition[MAXPLAYERS+1][3];
+float ctTriggerVecMin[3];
+float ctTriggerVecMax[3];
+float ctTriggerOrigin[3];
+float tTriggerVecMin[3];
+float tTriggerVecMax[3];
+float tTriggerOrigin[3];
+float ballPortPosT[3]							= {0.0, ...};
+float ballPortPosCT[3]							= {0.0, ...};
+float targetResetTime							= 3.0;
+float g_pLastButtonPress[MAXPLAYERS + 1];
+float g_fGrabOffset[MAXPLAYERS + 1][3];
+float g_fGrabDistance[MAXPLAYERS + 1];
 
 // HANDLES
 Handle trainingCannonTimer	  					= null;
 Handle pers_trainingCannonTimer[MAXPLAYERS+1]	= {null, ...};
+Handle trainingBallResetTimer[2]				= {null, ...};
+Handle g_eGrabTimer[MAXPLAYERS+1];
 
 // INTEGER
+int t_trigger_id								= -1;
+int ct_trigger_id								= -1;
+int lastTargetBallId[2]							= {-1, ...};
 int trainingCannonBallIndex	 					= -1;
 int pers_trainingCannonBallIndex[MAXPLAYERS+1]	= {-1, ...};
 int trainingballCD[MAXPLAYERS+1] 				= {-1, ...};
 int cdTemp[MAXPLAYERS+1];
+int AdvTrain_PWReqSet							= 0;
+int conecounter									= 0;
+int staticconehelper[MAXCONES_STA+MAXCONES_DYN]	= {-1, ...};
+int trainingPropType[MAXPLAYERS+1]				= {0, ...};
+int pers_hoopIndex[MAXPLAYERS+1]				= {-1, ...};
+int pers_canIndex[MAXPLAYERS+1]					= {-1, ...};
+int pers_plateIndex[MAXPLAYERS+1]				= {-1, ...};
+int respawnIndex[2]								= {-1, ...};
+int g_pGrabbedEnt[MAXPLAYERS+1];
+int g_eRotationAxis[MAXPLAYERS + 1] 			=  { -1, ... };
+int g_eOriginalColor[MAXPLAYERS + 1][4];
+int g_BeamSprite; 
+int g_HaloSprite;
+int target_randint[2]							= {0, 0};
+int targetmode									= 0;
+int targetcounter[2]							= {0, 0};
+//int trailset									= 0;
+
 
 // STRINGS
 char trainingModelBall[128] = "models/soccer_mod/ball_2011.mdl";
+char trainingModelHoop[128] = "models/soccer_mod/training_hoop.mdl"; 
+char trainingModelCan[128] = "models/soccer_mod/training_can.mdl"; 
+char trainingModelPlate[128] = "models/soccer_mod/training_plate.mdl"; 
+char trainingModelTarget[128] = "models/soccer_mod/training_goaltarget.mdl";
+char trainingModelBlock[128] = "models/soccer_mod/training_goalblock.mdl";
+//char trainingModelPass[128] = "models/soccer_mod/training_pass.mdl";
+//char trainingModel1v1[128] = "models/soccer_mod/training_1v1.mdl";
+char trainingModelCone[128] = "models/props_junk/trafficcone001a.mdl";
+char AdvTrain_PW[32]							= "coaching";

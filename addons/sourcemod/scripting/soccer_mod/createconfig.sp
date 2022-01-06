@@ -195,6 +195,9 @@ public void CreateSoccerModConfig()
 	
 	kvConfig.JumpToKey("Training Settings", true);
 	kvConfig.SetString("soccer_mod_training_model_ball",			trainingModelBall);
+	kvConfig.SetNum("soccer_mod_training_advpwreq",					AdvTrain_PWReqSet);
+	kvConfig.SetString("soccer_mod_training_advpw",					AdvTrain_PW);
+	kvConfig.SetFloat("soccer_mod_training_advresettime",			targetResetTime);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Debug Settings", true);
@@ -206,7 +209,7 @@ public void CreateSoccerModConfig()
 	kvConfig.Close();
 }
 
-public void UpdateConfig(char section[32], char type[32], char value[32])
+public void UpdateConfig(char section[32], char type[50], char value[32])
 {
 	if(!FileExists(configFileKV)) CreateSoccerModConfig();
 	kvConfig = new KeyValues("Soccer Mod Config");
@@ -232,7 +235,7 @@ public void UpdateConfigInt(char section[32], char type[50], int value)
 	kvConfig.Close();
 }
 
-public void UpdateConfigFloat(char section[32], char type[32], float value)
+public void UpdateConfigFloat(char section[32], char type[50], float value)
 {
 	if(!FileExists(configFileKV)) CreateSoccerModConfig();
 	kvConfig = new KeyValues("Soccer Mod Config");
@@ -245,7 +248,7 @@ public void UpdateConfigFloat(char section[32], char type[32], float value)
 	kvConfig.Close();
 }
 
-public void UpdateConfigModels(char section[32], char type[32], char value[128])
+public void UpdateConfigModels(char section[32], char type[50], char value[128])
 {
 	if(!FileExists(configFileKV)) CreateSoccerModConfig();
 	kvConfig = new KeyValues("Soccer Mod Config");
@@ -545,6 +548,9 @@ public void ReadFromConfig()
 	
 	kvConfig.JumpToKey("Training Settings", true);
 	kvConfig.GetString("soccer_mod_training_model_ball", trainingModelBall, sizeof(trainingModelBall), "models/soccer_mod/ball_2011.mdl");
+	AdvTrain_PWReqSet 				= kvConfig.GetNum("soccer_mod_training_advpwreq");
+	kvConfig.GetString("soccer_mod_training_advpw",	AdvTrain_PW, sizeof(AdvTrain_PW));
+	targetResetTime 				= kvConfig.GetFloat("soccer_mod_training_advresettime",	2.0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Debug Settings", true);

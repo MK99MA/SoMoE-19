@@ -21,10 +21,13 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_pause", PauseCommand, "Pauses a match");	
 	RegConsoleCmd("sm_pick", PickCommand, "Opens the Soccer Mod pick menu");
 	RegConsoleCmd("sm_pos", PosCommand, "Opens the Soccer Mod Positions menu"); 
-	RegConsoleCmd("sm_prank", PRankCommand, "Displays your public rank in the chat");	
+	RegConsoleCmd("sm_prank", PRankCommand, "Displays your public rank in the chat");
+	RegConsoleCmd("sm_profile", ProfileCommand, "Display Steamprofile of the target");
 	RegConsoleCmd("sm_rank", RankCommand, "Displays your match rank in the chat");	
 	RegConsoleCmd("sm_ref", RefCommand, "Opens the Soccer Mod referee menu");
 	RegConsoleCmd("sm_rr", rrCommand, "rr the round");
+	RegConsoleCmd("sm_shout", ShoutMenu, "Opens the Shout list");
+	RegConsoleCmd("sm_spec", SpecCommand, "Puts all players to Spectator");
 	RegConsoleCmd("sm_start", StartCommand, "Starts a match");
 	RegConsoleCmd("sm_stats", StatsCommand, "Opens the Soccer Mod stats menu");
 	RegConsoleCmd("sm_stop", StopCommand, "Stops a match");
@@ -48,19 +51,50 @@ public void RegisterClientCommands()
 	RegAdminCmd("sm_timetest", Command_TimeTest, ADMFLAG_RCON, "[RCONFLAG]Check if matchlog would be created if a match is started now");
 	RegAdminCmd("sm_walls", Command_WallRemove, ADMFLAG_GENERIC, "[GENERICFLAG]Removes Kickoff walls forcefully.");
 	RegAdminCmd("sm_wiperanks", Command_WipeRanks, ADMFLAG_RCON, "[RCONFLAG]Wipes the given ranking table");
-	
+	RegAdminCmd("sm_shoutset", ShoutSettings, ADMFLAG_GENERIC, "Opens the Shout settings menu");
 	
 	//RegAdminCmd("sm_test", Command_Test, ADMFLAG_RCON, "[RCONFLAG]Test command");
-
+	//RegAdminCmd("sm_ball", Command_Test, ADMFLAG_RCON, "[RCONFLAG]Test command");
 }
 
 // *******************************************************************************************************************
 // ************************************************ CLIENT COMMANDS **************************************************
 // *******************************************************************************************************************
+public Action ProfileCommand(int client, int args)
+{
+	if(args < 1)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_profile <user>");
+		return Plugin_Handled;
+	}
+
+	char username[128];
+	GetCmdArg(1, username, sizeof(username));
+	TrimString(username);
+	StripQuotes(username);
+	
+	int iTarget = FindTarget(client, username, true, false);
+	
+	if(iTarget == -1) return Plugin_Handled;
+	
+	char steamID[32];
+	GetClientAuthId(iTarget, AuthId_Steam2, steamID, sizeof(steamID));
+	DisplayProfileTo(client, steamID);
+	
+	return Plugin_Handled;
+}
+
 
 public Action JoinlistCommand(int client, int args)
 {
 	OpenJoinlistPanel(client);
+	
+	return Plugin_Handled;
+}
+
+public Action SpecCommand(int client, int args)
+{
+	CapPutAllToSpec(client);
 	
 	return Plugin_Handled;
 }
@@ -923,24 +957,6 @@ public Action Command_WallRemove(int client, int args)
 	return Plugin_Handled;
 }
 
-/*public Action Command_Test(int client, int args)
-{
-	
-	OpenGKAreaPanel(client);
-	if(xorientation) PrintToChatAll("X");
-	else PrintToChatAll("Y");
-	
-	if(lcPanelArray.FindValue(client) != -1)		
-	{
-		PrintToChatAll("in list");
-	}
-	AdvMOTD_ShowMOTDPanel(client, "SoMoE-19 Documentation", "https://somoe-19.readthedocs.io/en/latest/index.html", MOTDPANEL_TYPE_URL, true, true, true, OnMOTDFailure)
-	
-	CapStartFight(client);
-	
-	return Plugin_Handled;
-}*/
-
 // *******************************************************************************************************************
 // *********************************************** UTILITY FUNCTIONS *************************************************
 // *******************************************************************************************************************
@@ -1209,3 +1225,109 @@ public void RandPass()
 	
 	//return Plugin_Handled;
 }
+
+// *********************************************** PROFILE FUNCTIONS ************************************************
+
+public void DisplayProfileTo(int client, char[] steamid)
+{
+	char szLink[128];
+	char szCommunityID[18];
+
+	GetCommunityIDString(steamid, szCommunityID, sizeof(szCommunityID)); 
+	Format(szLink, sizeof(szLink), "http://steamcommunity.com/profiles/%s", szCommunityID);
+	
+	if (client)
+	{
+		//ShowMOTDPanel(iClient, "Steam Profile", szLink, MOTDPANEL_TYPE_URL);
+		AdvMOTD_ShowMOTDPanel(client, "Steam Profile", szLink, MOTDPANEL_TYPE_URL, true, false, true);
+	}
+	else
+	{
+		PrintToServer("%s", szLink);
+	}
+}
+
+stock bool GetCommunityIDString(char[] steamID, char[] CommunityID, int CommunityIDSize) 
+{ 
+	char SteamIDParts[3][11]; 
+	char Identifier[] = "76561197960265728"; 
+
+	if ((CommunityIDSize < 1) || (ExplodeString(steamID, ":", SteamIDParts, sizeof(SteamIDParts), sizeof(SteamIDParts[])) != 3)) 
+	{ 
+		CommunityID[0] = '\0'; 
+		return false; 
+	} 
+
+	int Current, CarryOver = (SteamIDParts[1][0] == '1'); 
+	for (int i = (CommunityIDSize - 2), j = (strlen(SteamIDParts[2]) - 1), k = (strlen(Identifier) - 1); i >= 0; i--, j--, k--) 
+	{ 
+		Current = (j >= 0 ? (2 * (SteamIDParts[2][j] - '0')) : 0) + CarryOver + (k >= 0 ? ((Identifier[k] - '0') * 1) : 0); 
+		CarryOver = Current / 10; 
+		CommunityID[i] = (Current % 10) + '0'; 
+	} 
+
+	CommunityID[CommunityIDSize - 1] = '\0'; 
+	return true; 
+}
+
+/*public Action Command_Test(int client, int args)
+{
+	char model[128] = "models/soccer_mod/brazuca_test.mdl";
+
+	if (FileExists(model, true))
+	{
+		char entityName[32];
+		Format(entityName, sizeof(entityName), "soccer_mod_ball_%i", client);
+
+		int index;
+		bool ballSpawned = false;	
+
+		while ((index = FindEntityByClassname(index, "prop_physics")) != INVALID_ENT_REFERENCE)
+		{
+			char entPropString[32];
+			GetEntPropString(index, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
+
+			if (StrEqual(entPropString, entityName))
+			{
+				ballSpawned = true;
+				AcceptEntityInput(index, "Kill");
+			}
+		}
+
+		if (!ballSpawned)
+		{
+			index = CreateEntityByName("prop_physics");
+			if (index)
+			{
+				if (!IsModelPrecached(model)) PrecacheModel(model);
+
+				DispatchKeyValue(index, "targetname", entityName);
+				DispatchKeyValue(index, "model", model);
+
+				float aimPosition[3];
+				GetAimOrigin(client, aimPosition);
+				DispatchKeyValueVector(index, "origin", aimPosition);
+
+				DispatchSpawn(index);
+			}
+		}
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Cant spawn model %s", prefixcolor, prefix, textcolor, model);
+	
+	return Plugin_Handled;
+}*/
+
+/*public Action Command_Test(int client, int args)
+{	
+	float radius;
+	
+	char map[128];
+	GetCurrentMap(map, sizeof(map));
+	if(StrEqual(map, "ka_soccer_xsl_stadium_b1"))	radius = 252.5;
+	else if(StrEqual(map, "ka_xsl_indoorcup"))		radius = 150.0;
+	else if(StrEqual(map, "ka_parkhead"))			radius = 350.0;
+		
+	CreateInvisWallCircle("wallcircle", CS_TEAM_T, radius);
+	
+	return Plugin_Handled;
+}*/

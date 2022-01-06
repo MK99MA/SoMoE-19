@@ -73,8 +73,10 @@ public Action EventPlayerJump(Event event, const char[] name, bool dontBroadcast
 	{
 		int client = GetClientOfUserId(event.GetInt("userid"));
 		
-		//get gametime of jump
-		jump_time[client] = GetGameTime() + 0.33;
+		g_bJump[client] = true;
+		
+		//when should the block start?
+		jump_time[client] = GetGameTime() + 0.20; //was 0.33
 	}
 	
 	return Plugin_Handled;

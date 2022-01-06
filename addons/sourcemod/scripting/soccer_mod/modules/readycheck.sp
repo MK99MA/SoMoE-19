@@ -316,12 +316,13 @@ public void ReadyCheckOnClientDisconnect(int client)
 
 public Action cmd_jointeam(int client, const char[] command, int iArgs)
 {
+	char arg[4];
+	int team = 0;
+
 	if(FileExists(tempReadyFileKV))
 	{
-		int team = 0;
 		if(StrEqual(command, "jointeam"))
 		{
-			char arg[3];
 			GetCmdArg(1, arg, sizeof(arg));
 			team = StringToInt(arg);
 		}
@@ -352,6 +353,20 @@ public Action cmd_jointeam(int client, const char[] command, int iArgs)
 			if(startplayers != 6 && startplayers != 12) startplayers++;
 		}
 	}
+	if(trainingModeEnabled)
+	{
+		if(StrEqual(command, "jointeam"))
+		{
+			GetCmdArg(1, arg, sizeof(arg));
+			team = StringToInt(arg);
+		}
+		if(StrEqual(arg, "") || StrEqual(arg, "3") || StrEqual(arg, "ct"))
+		{
+			CPrintToChat(client,"{%s}[%s] {%s}Training mode enabled. Joining the CT team is blocked.", prefixcolor, prefix, textcolor);
+			return Plugin_Stop;
+		}
+	}
+	
 	return Plugin_Continue;
 }
 

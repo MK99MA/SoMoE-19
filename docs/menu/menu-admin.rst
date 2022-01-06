@@ -11,6 +11,7 @@ It is divided into the following sub-menus:
  - :ref:`cap-sub`
  - :ref:`referee-sub`
  - :ref:`training-sub`
+ - :ref:`adv_training-sub`
  - :ref:`spec-sub`
  - :ref:`map-sub`
  - :ref:`set-sub`
@@ -201,8 +202,8 @@ The structure of the menu looks like this:
 Training sub-menu
 -----------------
 
-This menu provides tools to train your skills. You can create a **global or personal ball cannon, can spawn or despawn an additional ball and disable or enable the goals**.
-The ball cannons can be customized regarding their *fire rate*, *randomness* or *power*. You can also freely change their *position* and *aim*.
+This menu provides tools to train your skills. You can create a **global or personal ball cannon, can spawn or despawn an additional ball, as well as other props and can also disable or enable the goals**.
+The ball cannons can be customized regarding their *fire rate*, *randomness* or *power*. You can also freely change their *position* and *aim*. The training props can be positioned freely aswell.
 
 The structure of the menu looks like this:
 
@@ -210,11 +211,30 @@ The structure of the menu looks like this:
 	
 		 - Cannon
 		 - Personal Cannon
-		 - Disable Goals
-		 - Enable Goals
+		 - Enable / Disable Goals
 		 - Spawn / Remove Ball
+		 - Spawn Prop Menu (only visible if at least 1 of the files exist)
+		 - Advanced Training
 		 
 Both Cannon menus provide submenus to customize their settings.
+
+----
+
+.. _adv_training-sub:
+
+--------------------------
+Advanced Training sub-menu
+--------------------------
+
+**WIP** This menu provides additional tools to train your skills. Currently it allows spawning up to 30 cones and the use of 1 of 2 target training modes. It can also be used to enable a training mode which will lock the CT team to prevent players joining it and causing the round to restart.
+
+The structure of the menu looks like this:
+
+	.. admonition:: Advanced Training menu
+	
+		 - Training Mode Toggle
+		 - Goaltarget Submenu (Spawn / Remove and QoL functions related to it)
+		 - Cone Manager
 
 ----
 

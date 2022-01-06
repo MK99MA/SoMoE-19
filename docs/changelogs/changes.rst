@@ -3,6 +3,39 @@
 =========
 Changelog
 =========
+
+-----
+1.3.0 BETA
+-----
+
+***
+New
+***
+
+ - Added Advanced Training Mode (Lockable with a password in settings)
+ - Added Training Mode
+ - Added spawnable training props (Can, Hoop, Plate) (options won't show up without the files)
+ - Added option to spawn static or dynamic cones
+ - Added 2 target training modes (configurable ball respawn)
+ - Added "!profile <name>" command to quickly display the steamprofile of a target
+ - Added !spec command
+ - Added built-in Shout support
+
+*******
+Changes
+*******
+
+ - Minor cleanup
+ - Added cancel option to some cannon settings
+ 
+*****
+Fixes
+*****
+
+ - Fixed Duckjumpblock v3
+
+
+
 -----
 1.2.9.*
 -----

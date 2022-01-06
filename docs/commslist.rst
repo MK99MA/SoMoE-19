@@ -316,3 +316,9 @@ General commands
 	.. code-block:: none
 	
 		Starts a forfeit vote if forfeits are enabled
+		
+**sm_profile <name> / !profile <name>**
+
+	.. code-block:: none
+	
+		Opens the steamprofile of the target in the MOTD window

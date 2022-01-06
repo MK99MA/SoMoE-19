@@ -228,6 +228,8 @@ This section features miscellaneous settings that do not fit into any of the oth
  - **soccer_mod_hostname** controls whether SoMoE-19 should update the servers name under certain conditions (Cap started, Match running etc.)
  - **soccer_mod_rrchecktime** controls the number of seconds a player got to rejoin the server before it won't be considered a "rr" in the connection list.
  - **soccer_mod_loaddefaults** controls whether SoMoE-19 should load default mapvalues in its *soccer_mod_mapdefaults.cfg* file.
+  - **soccer_mod_killfeed** controls whether SoMoE-19 will block or allow the killfeed messages in the upper right corner.
+  - **soccer_mod_celebrate** controls whether alive players will receive weapons after scoring a goal. Alive players will be able to hurt each other in this mode.
  
 ----
 
@@ -336,11 +338,17 @@ As the name suggests, this section features settings related to the stats system
 		"Training Settings"
 		{
 			"soccer_mod_training_model_ball"   "models/soccer_mod/ball_2011.mdl"
+			"soccer_mod_training_advpwreq"     "0"
+			"soccer_mod_training_advpw"        ""
+			"soccer_mod_training_advresettime  "2.0"
 		}
 		
-.. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file. This is however only necessary if you want to use a different model for the spawnable training ball.
+.. attention:: These ballmodel key is not changeable ingame. If you want to change its settings you have to manually edit this file. 
 	
  - **soccer_mod_training_model_ball** controls which model should be used for the spawnable training ball.
+ - **soccer_mod_training_advpwreq** controls whether the Advanced Training Menu requires a password to access it or not.
+ - **soccer_mod_training_advpw** controls the password if the above setting is active.
+ - **soccer_mod_training_advresettime** controls the time in seconds before a ball will autorespawn during the goaltarget training (if enabled).
  
 ----
 

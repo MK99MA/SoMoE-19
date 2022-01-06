@@ -1,9 +1,12 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.2.9.7"
+#define PLUGIN_VERSION "1.3.0-Beta6"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
+#define MAXCONES_DYN 15
+#define MAXCONES_STA 15
+#define CLIENT_SHOUTCD  (1<<1)
 
 // **************************************************************************************************************
 // ************************************************** INCLUDES **************************************************
@@ -40,6 +43,7 @@
 #include "soccer_mod\modules\health.sp"
 #include "soccer_mod\modules\readycheck.sp"
 #include "soccer_mod\modules\match.sp"
+#include "soccer_mod\modules\kickoffwall.sp"
 #include "soccer_mod\modules\ranking.sp"
 #include "soccer_mod\modules\referee.sp"
 #include "soccer_mod\modules\respawn.sp"
@@ -56,6 +60,8 @@
 #include "soccer_mod\modules\joinlist.sp"
 #include "soccer_mod\modules\mapdefaults.sp"
 #include "soccer_mod\modules\gkareas.sp"
+#include "soccer_mod\modules\training_adv.sp"
+#include "soccer_mod\modules\shout.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -105,6 +111,8 @@ public void OnPluginStart()
 	HookEntityOutput("prop_physics",	"OnAwakened",	   OnAwakened);
 	HookEntityOutput("trigger_hurt",	"OnStartTouch",	 OnStartTouch);
 	HookEntityOutput("trigger_once",	"OnStartTouch",	 OnStartTouch);
+	HookEntityOutput("trigger_multiple", "OnStartTouch", OnStartTouch);
+	HookEntityOutput("trigger_multiple", "OnEndTouch", 	 OnEndTouch);
 	HookEntityOutput("func_physbox",	"OnDamaged",		OnTakeDamage);
 	HookEntityOutput("prop_physics",	"OnTakeDamage",	 OnTakeDamage);
 
@@ -144,9 +152,11 @@ public void OnPluginStart()
 	StatsOnPluginStart();
 	TrainingOnPluginStart();
 	ConnectlistOnPluginStart();
+	ShoutOnPluginStart();
 
 	LoadJoinTeamFix();
 	LoadRadioCommandsFix();
+	AddDownloads();
 }
 
 public void OnPluginEnd()
@@ -273,7 +283,22 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		{
 			ChatSet(client, "TextCol", custom_tag);
 			return Plugin_Handled;			
+		}
+		else if (StrEqual(changeSetting[client], "AdvTrainingPW"))
+		{
+			AdvTrainSet(client, "AdvTrainingPW", custom_tag);
+			return Plugin_Handled;			
+		}		
+		else if (StrEqual(changeSetting[client], "AdvTrainingPWInput"))
+		{
+			AdvTrainSet(client, "AdvTrainingPWInput", custom_tag);
+			return Plugin_Handled;			
 		}	
+		else if (StrEqual(changeSetting[client], "AdvTrainingTime"))
+		{
+			AdvTrainSetFloat(client, "AdvTrainingTime", number);
+			return Plugin_Handled;			
+		}						
 		else if (StrEqual(changeSetting[client], "LockServerNum"))
 		{
 			LockSet(client, "LockServerNum", intnumber, 4, 20);
@@ -318,6 +343,11 @@ public Action SayCommandListener(int client, char[] command, int argc)
 		{
 			AdminSetListener(client, "AdminImmunityValue", admin_value, 0, 2);
 			return Plugin_Handled;
+		}
+		else if (StrEqual(changeSetting[client], "CustomName"))
+		{
+			ShoutNameSet(client, "CustomShoutName", admin_value, 3, 64);
+			return Plugin_Handled;			
 		}
 	}
 
@@ -378,6 +408,77 @@ public void OnStartTouch(char[] output, int caller, int activator, float delay)
 		{
 			MatchOnStartTouch(caller, activator);
 		}
+		
+		if (StrEqual(callerClassname, "trigger_multiple")) 
+		{
+			if(StrEqual(callerName, "soccer_mod_training_targettrigger_2")) //T
+			{
+				TargetOnStartTouch(caller, activator, CS_TEAM_T);
+			}
+			if(StrEqual(callerName, "soccer_mod_training_targettrigger_3")) //CT
+			{
+				TargetOnStartTouch(caller, activator, CS_TEAM_CT);
+			}
+			
+			for(int i = 0; i < MaxClients; i++)
+			{
+				if (IsValidClient(i))
+				{
+					char plateName[64], canName[64];
+					Format(canName, sizeof(canName), "soccer_mod_training_cantrigger_%i", i);
+					Format(plateName, sizeof(plateName), "soccer_mod_training_platetrigger_%i", i);
+					
+					if (StrEqual(callerClassname, "trigger_multiple") && StrEqual(callerName, canName))
+					{
+						PropOnStartTouch(caller, activator, i, canName, "can");
+					}
+					if (StrEqual(callerClassname, "trigger_multiple") && StrEqual(callerName, plateName))
+					{
+						PropOnStartTouch(caller, activator, i, plateName, "plate");
+					}
+				}
+			}
+		}
+		
+		if(StrEqual(callerClassname, "trigger_once") && ((StrContains(callerName, "soccer_mod_training_targettrigger_2_") != -1) || (StrContains(callerName, "soccer_mod_training_targettrigger_3_") != -1)))
+		{
+			if(StrContains(callerName, "soccer_mod_training_targettrigger_2_") != -1) //T
+			{
+				TargetOnStartTouch(caller, activator, CS_TEAM_T);
+			}
+			if(StrContains(callerName, "soccer_mod_training_targettrigger_3_") != -1) //CT
+			{
+				TargetOnStartTouch(caller, activator, CS_TEAM_CT);
+			}
+		}
+	}
+}
+
+public void OnEndTouch(char[] output, int caller, int activator, float delay)
+{
+	char callerClassname[64];
+	GetEntityClassname(caller, callerClassname, sizeof(callerClassname));
+
+	char callerName[64];
+	GetEntPropString(caller, Prop_Data, "m_iName", callerName, sizeof(callerName));
+	
+	for(int i = 0; i < MaxClients; i++)
+	{
+		if (IsValidClient(i))
+		{
+			char plateName[64], canName[64];
+			Format(canName, sizeof(canName), "soccer_mod_training_cantrigger_%i", i);
+			Format(plateName, sizeof(plateName), "soccer_mod_training_platetrigger_%i", i);
+			
+			if (StrEqual(callerClassname, "trigger_multiple") && StrEqual(callerName, canName))
+			{
+				PropOnEndTouch(caller, activator, i, canName, "can");
+			}
+			if (StrEqual(callerClassname, "trigger_multiple") && StrEqual(callerName, plateName))
+			{
+				PropOnEndTouch(caller, activator, i, plateName, "plate");
+			}
+		}
 	}
 }
 
@@ -386,12 +487,53 @@ public void OnTakeDamage(char[] output, int caller, int activator, float delay)
 	if (currentMapAllowed)
 	{
 		PrintEntityOutput(output, caller, activator);
-
+		
+		char callerClassname[64];
+		GetEntityClassname(caller, callerClassname, sizeof(callerClassname));
 		// DispatchKeyValue(caller, "physdamagescale", "-1");
 
-		if (activator >= 1 && activator <= MaxClients && !roundEnded)
+		if (activator >= 1 && activator <= MaxClients && !roundEnded && !StrEqual(callerClassname, "prop_dynamic"))
 		{
 			StatsOnTakeDamage(caller, activator);
+		}
+		
+		if(trainingModeEnabled && (StrEqual(callerClassname, "func_physbox") || StrEqual(callerClassname, "prop_physics")))
+		{
+			if(autoToggle[0])
+			{
+				//caller = ball
+				if(lastTargetBallId[0] == caller)
+				{
+					if(!hitHelper[0])
+					{
+						if (trainingCannonTimer == null && pers_trainingCannonTimer[activator] == null)
+						{
+							hitHelper[0] = true;
+							DataPack pack = new DataPack();
+							trainingBallResetTimer[0] = CreateDataTimer(targetResetTime, AutoResetBall, pack);
+							WritePackCell(pack, CS_TEAM_T);
+							WritePackCell(pack, caller);
+						}
+					}
+				}
+			}
+			if(autoToggle[1])
+			{
+				if(lastTargetBallId[1] == caller)
+				{
+					if(!hitHelper[1])
+					{
+						if (trainingCannonTimer == null && pers_trainingCannonTimer[activator] == null)
+						{
+							hitHelper[1] = true;
+							DataPack pack = new DataPack();
+							trainingBallResetTimer[1] = CreateDataTimer(targetResetTime, AutoResetBall, pack);
+							WritePackCell(pack, CS_TEAM_CT);
+							WritePackCell(pack, caller);
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -411,7 +553,7 @@ public void OnConfigsExecuted()
 	//After every Config was executed change the tags to include soccer tags
 	//AddSoccerTags();
 	
-	GetFieldOrientation();	
+	//GetFieldOrientation();	
 	
 	// Set Defaults if existing
 	if(defaultSet == 1) SetDefaultValues(0);
@@ -428,6 +570,15 @@ public void OnConfigsExecuted()
 
 public void OnMapStart()
 {
+	g_BeamSprite = PrecacheModel("materials/sprites/laser.vmt", true);
+	g_HaloSprite = PrecacheModel("materials/sprites/halo01.vmt", true);
+	
+	if(FileExists("addons/sourcemod/plugins/shout.smx"))
+	{
+		ServerCommand("sm plugins unload shout");
+		RenameFile("addons/sourcemod/plugins/disabled/shout.smx", "addons/sourcemod/plugins/shout.smx");
+	}
+	
 	//Create missing ConfigFiles and/or read them
 	if (!FileExists(configFileKV) || !FileExists(adminFileKV) || !FileExists("cfg/sm_soccermod/soccer_mod_downloads.cfg") || !FileExists(allowedMapsConfigFile) || !FileExists(statsKeygroupGoalkeeperAreas) || !FileExists(skinsKeygroup) || !FileExists(pathCapPositionsFile) || !FileExists(mapDefaults))
 	{
@@ -439,6 +590,13 @@ public void OnMapStart()
 		ReadFromConfig();
 	}
 	if (FileExists(tempReadyFileKV)) DeleteTempFile();
+	
+	if(!FileExists(shoutConfigFile))		ShoutCreateConfig();
+	if(!FileExists(shoutSetFile))			ShoutCreateSettings();
+	
+	ShoutReadSettings();
+	ShoutReadConfig();
+	
 	ReadMatchlogSettings();
 	//CreateDCListFile(false);
 	
@@ -455,6 +613,8 @@ public void OnMapStart()
 	
 	LoadAllowedMaps();
 	currentMapAllowed = IsCurrentMapAllowed();
+	
+	GetFieldOrientation();
 	
 	if (currentMapAllowed)
 	{
@@ -482,13 +642,21 @@ public void OnMapStart()
 	TrainingOnMapStart();
 	PersonalTrainingOnMapStart();
 	
+	//shoutset
+	for (int player = 1; player <= MaxClients; player++)
+	{
+		if(GetClientMenu(player) != MenuSource_None )	CancelClientMenu(player,true);
+		ShoutSetDefaultClientSettings(player);
+	}
+	
 	// Kill possibly running ForfeitTimer
 	ForfeitReset();
 }
 
 public void OnAllPluginsLoaded()
 {
-	AddDirToDownloads("sound/soccermod");
+	AddDownloads();
+	/*AddDirToDownloads("sound/soccermod");
 	AddDirToDownloads("materials/models/soccer_mod");
 	AddDirToDownloads("models/soccer_mod");
 	
@@ -501,7 +669,7 @@ public void OnAllPluginsLoaded()
 	{
 		AddDirToDownloads("materials/models/player/soccermod");
 		AddDirToDownloads("models/player/soccermod");
-	}
+	}*/
 }
 
 public void OnGameFrame()
@@ -546,25 +714,14 @@ public void OnGameFrame()
 		{
 			if(IsClientInGame(i) && jump_time[i] > 0.0)
 			{
-				if (GetGameTime() == jump_time[i]) 
+				/*if (GetGameTime() == jump_time[i]) 
 				{
 					//PrintToChatAll("Block");
 					g_bJump[i] = true;
-				}
-				if (GetGameTime() > jump_time[i] + 0.05)
+				}*/
+				// how long should the block last?
+				if (GetGameTime() > jump_time[i] + 0.20) //was 0.05 not working?
 				{
-					/*float vecPosition[3] = 0.0;
-					float jump_test[MAXPLAYERS+1];
-					GetClientAbsOrigin(i, vecPosition);
-					if (vecPosition[2] > playerMaxHeight[i])
-					{
-						playerMaxHeight[i] = vecPosition[2];
-					}
-					else playerMaxHeight[i] = vecPosition[2];
-					
-					jump_test[i] = GetGameTime() - (jump_time[i]-0.05);
-					PrintToChatAll("Jump %.5f - Height %.3f", jump_test[i], playerMaxHeight[i]);*/
-					
 					g_bJump[i] = false;
 					jump_time[i] = 0.0;
 				}
@@ -584,6 +741,7 @@ public void OnGameFrame()
 public void OnClientConnected(int client)
 {	
 	SetDefaultClientSettings(client);
+	ShoutOnClientConnected(client);
 	return;
 }
 
@@ -681,6 +839,7 @@ public void OnClientDisconnect(int client)
 	DatabaseCheckPlayer(client);
 
 	RespawnOnClientDisconnect(client);
+	TrainingOnClientDisconnect(client);
 	
 	GKSkinOnClientDisconnect(client);
 
@@ -697,6 +856,8 @@ public void OnClientDisconnect_Post(int client)
 {
 	rankingPlayerCDTimes[client] = 0;
 	rankingPlayerSpammed[client] = false;
+	
+	accessgranted[client] = false;
 
 	if((pwchange == true) && (passwordlock == 1) && (GetClientCount() == PWMAXPLAYERS))
 	{
@@ -712,7 +873,13 @@ public void OnClientDisconnect_Post(int client)
 	if(GetClientCount() == 0 && !matchStarted)
 	{
 		HostName_Change_Status("Reset");
+		if(trainingModeEnabled) trainingModeEnabled = false;
 	}
+	
+	ResetTrainingIndex(client);
+	pers_hoopIndex[client] = -1;
+	pers_canIndex[client] = -1;
+	pers_plateIndex[client] = -1;
 }
 
 public Action EventCSWinPanelMatch(Event event, const char[] name, bool dontBroadcast)
@@ -794,6 +961,7 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 	{
 		roundEnded = false;
 		goalScored = false;
+		ResetAdvTrainingStates();
 		
 		Handle hConvar;
 		hConvar = FindConVar("mp_friendlyfire");
@@ -836,55 +1004,7 @@ public Action EventRoundEnd(Event event, const char[] name, bool dontBroadcast)
 		
 		if(celebrateweaponSet == 1 && !capFightStarted)
 		{
-			//Choose random weapon
-			char celebrateweapon[32];
-			char celebwparray[24][32]		=
-			{
-				"glock",
-				"usp",
-				"p228",
-				"deagle",
-				"fiveseven",
-				"elite",
-				"mac10",
-				"tmp",
-				"mp5navy",
-				"ump45",
-				"p90",
-				"m3",
-				"xm1014",
-				"galil",
-				"famas",
-				"ak47",
-				"m4a1",
-				"sg552",
-				"aug",
-				"m249",
-				"scout",
-				"g3sg1",
-				"sg550",
-				"awp",
-			}
-			int randint = GetRandomInt(0, sizeof(celebwparray)-1);
-			celebrateweapon = celebwparray[randint];
-			Format(celebrateweapon, sizeof(celebrateweapon), "weapon_%s", celebrateweapon);
-			
-			for (int player = 1; player <= MaxClients; player++)
-			{
-				if (IsClientInGame(player) && IsClientConnected(player) && IsPlayerAlive(player)) 
-				{
-					//Disable Godmode
-					SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
-					//Enable Teamdamage
-					Handle hConvar;
-					hConvar = FindConVar("mp_friendlyfire");
-					if (hConvar == INVALID_HANDLE)	return Plugin_Continue;
-					changeConvar(hConvar, "mp_friendlyfire", "1")
-					
-					//Give weapon
-					GivePlayerItem(player, celebrateweapon);
-				}
-			}
+			GiveCelebrationWeapons();
 		}
 	}
 	
@@ -1341,94 +1461,24 @@ public void ClearTimer(Handle timer)
 // *************************************************** MISC ***************************************************
 // ************************************************************************************************************
 
-public void CreateInvisWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, char targetname[32], int index, bool bteam) //int orient)
+public void AddDownloads()
 {
-	int entindex[6]
-	entindex[index] = CreateEntityByName("prop_dynamic");//_override");
+	AddDirToDownloads("sound/soccermod");
+	AddDirToDownloads("materials/models/soccer_mod");
+	AddDirToDownloads("models/soccer_mod");
 	
-	if (entindex[index] != -1)
+	if (StrEqual(gamevar, "cstrike"))
 	{
-		DispatchKeyValue(entindex[index], "solid", "6");
-		DispatchKeyValue(entindex[index], "targetname", targetname);
-	}
-	if (!IsModelPrecached("models/props/cs_office/address.mdl")) PrecacheModel("models/props/cs_office/address.mdl");
-	SetEntityModel(entindex[index], "models/props/cs_office/address.mdl");
-	
-	DispatchSpawn(entindex[index]);
-	ActivateEntity(entindex[index]);
-
-	TeleportEntity(entindex[index], mapBallStartPosition, NULL_VECTOR, NULL_VECTOR);
-
-	float minbounds[3], maxbounds[3];
-	minbounds[0] = minX;
-	minbounds[1] = minY;
-	minbounds[2] = minZ;
-	maxbounds[0] = maxX;
-	maxbounds[1] = maxY;
-	maxbounds[2] = maxZ;
-
-	SetEntPropVector(entindex[index], Prop_Send, "m_vecMins", minbounds);
-	SetEntPropVector(entindex[index], Prop_Send, "m_vecMaxs", maxbounds);
-	
-	SetEntProp(entindex[index], Prop_Send, "m_nSolidType", 2);
-
-	int enteffects = GetEntProp(entindex[index], Prop_Send, "m_fEffects");
-	enteffects |= 32;
-	SetEntProp(entindex[index], Prop_Send, "m_fEffects", enteffects); 
-	
-	int team;
-	if (bteam) team = 2
-	else team = 3;
-	
-	KickOffLaser(targetname, minX, minY, minZ, maxX, maxY, maxZ, index, team);
-}
-
-public void KickOffLaser(char targetname[32], float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int index, int team)
-{
-	char color[32];
-	if(team == 2) color = "0 0 255"
-	else color = "255 0 0"
-	
-	//vert laser
-	DrawLaser(targetname, minX, minY, mapBallStartPosition[2]-18, minX, minY, mapBallStartPosition[2]+110.0, color);
-	DrawLaser(targetname, maxX, maxY, mapBallStartPosition[2]-18, maxX, maxY, mapBallStartPosition[2]+110.0, color);
-	if(index <= 1) 
-	{
-		// vert borders
-		DrawLaser(targetname, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]+640.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+640.0, maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]-640.0, maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-640.0, maxY, mapBallStartPosition[2]+110.0, color);
-	}
-	//horiz laser
-	char map[128];
-	GetCurrentMap(map, sizeof(map));
-	if(StrEqual(map, "ka_soccer_xsl_stadium_b1"))
-	{
-		//wall
-		if (index == 0)
-		{
-			DrawLaser(targetname, mapBallStartPosition[0]-1280.0, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
-		}
-		else if (index == 1)
-		{
-			DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, mapBallStartPosition[0]+1280.0, maxY, mapBallStartPosition[2]+110.0, color);
-		}
-		else 
-		{
-			DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
-		}
-		//box sides
-		DrawLaser(targetname, minX, minY, mapBallStartPosition[2]+110.0, minX, maxY, mapBallStartPosition[2]+110.0, color);
+		AddDirToDownloads("materials/models/player/soccer_mod/termi/2011");
+		AddDirToDownloads("models/player/soccer_mod/termi/2011");
 	}
 	else
 	{
-		// walls
-		DrawLaser(targetname, minX, maxY, mapBallStartPosition[2]+110.0, maxX, maxY, mapBallStartPosition[2]+110.0, color);
-		// sides
-		DrawLaser(targetname, minX, minY, mapBallStartPosition[2]+110.0, minX, maxY, mapBallStartPosition[2]+110.0, color);
+		AddDirToDownloads("materials/models/player/soccermod");
+		AddDirToDownloads("models/player/soccermod");
 	}
 }
+
 
 stock int changeConvar(Handle hConvar, char[] strCvarName, char[] strValue)
 {

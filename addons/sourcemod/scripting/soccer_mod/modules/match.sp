@@ -49,6 +49,7 @@ public void MatchEventRoundStart(Event event)
 		matchKickOffTaken = false;
 
 		KickOffWall();
+		//SideWall();
 
 		if (matchPaused || matchPeriodBreak) FreezeAll();
 
@@ -62,10 +63,10 @@ public void MatchEventRoundStart(Event event)
 	}
 	else LoadConfigPublic();
 
-	CS_SetTeamScore(2, matchScoreT);
-	CS_SetTeamScore(3, matchScoreCT);
-	SetTeamScore(2, matchScoreT);
-	SetTeamScore(3, matchScoreCT);
+	CS_SetTeamScore(CS_TEAM_T, matchScoreT);
+	CS_SetTeamScore(CS_TEAM_CT, matchScoreCT);
+	SetTeamScore(CS_TEAM_T, matchScoreT);
+	SetTeamScore(CS_TEAM_CT, matchScoreCT);
 
 	int index = GetEntityIndexByName("ball", "prop_physics");
 	if (index == -1) {
@@ -93,23 +94,23 @@ public void MatchEventRoundEnd(Event event)
 		int winner = event.GetInt("winner");
 		if (winner > 1)
 		{
-			if (winner == 2)
+			if (winner == CS_TEAM_T)
 			{
 				matchScoreT++;
-				matchLastScored = 2;
+				matchLastScored = CS_TEAM_T;
 			}
 			else
 			{
 				matchScoreCT++;
-				matchLastScored = 3;
+				matchLastScored = CS_TEAM_CT;
 			}
 		}
 	}
 
-	CS_SetTeamScore(2, matchScoreT);
-	CS_SetTeamScore(3, matchScoreCT);
-	SetTeamScore(2, matchScoreT);
-	SetTeamScore(3, matchScoreCT);
+	CS_SetTeamScore(CS_TEAM_T, matchScoreT);
+	CS_SetTeamScore(CS_TEAM_CT, matchScoreCT);
+	SetTeamScore(CS_TEAM_T, matchScoreT);
+	SetTeamScore(CS_TEAM_CT, matchScoreCT);
 }
 
 public void MatchEventCSWinPanelMatch(Event event)
@@ -134,7 +135,6 @@ public void OpenMatchMenu(int client)
 	else if(matchlog == 0) leaguestate = "No";
 	
 	Format(currentMatchSet, sizeof(currentMatchSet), "Period length: %i | Break length: %i", matchPeriodLength, matchPeriodBreakLength);
-	//Format(currentMatchSet2, sizeof(currentMatchSet2), "Player per Team(max): %i | GoldenGoal: %s", matchMaxPlayers , goldenstate);
 	Format(currentMatchSet2, sizeof(currentMatchSet2), "GoldenGoal: %s | Match Log: %s", goldenstate, leaguestate);
 	Format(currentMatchSet3, sizeof(currentMatchSet3), "T team name: %s | CT team name: %s", custom_name_t , custom_name_ct);
 	Menu menu = new Menu(MatchMenuHandler);
@@ -1007,7 +1007,7 @@ public void OpenMenuTeamName(int client)
 	Menu menu = new Menu(MenuHandlerTeam);
 	//menu.SetTitle("Team Names");
 
-	if(teamIndicator == 2)
+	if(teamIndicator == CS_TEAM_T)
 	{
 		menu.SetTitle("Terrorists Name");
 		menu.AddItem("tag_name_t", "Clan Tag for Name");
@@ -1016,7 +1016,7 @@ public void OpenMenuTeamName(int client)
 
 		menu.AddItem("def_name_t", "T");
 	}
-	else if(teamIndicator == 3)
+	else if(teamIndicator == CS_TEAM_CT)
 	{
 		menu.SetTitle("Counter-Terrorists Name");
 		menu.AddItem("tag_name_ct", "Clan Tag for Name");
@@ -1135,7 +1135,7 @@ public void OpenMenuTeamNameList(int client, char type[8])
 	if (StrEqual(type, "perm"))	menu = new Menu(MenuHandlerTeamMenuList);
 	else if (StrEqual(type, "match")) menu = new Menu(MenuHandlerTeamMenuList_Match);	
 
-	if(teamIndicator == 2)
+	if(teamIndicator == CS_TEAM_T)
 	{
 		menu.SetTitle("Select Name for T");
 
@@ -1149,7 +1149,7 @@ public void OpenMenuTeamNameList(int client, char type[8])
 			}
 		}
 	}
-	else if(teamIndicator == 3)
+	else if(teamIndicator == CS_TEAM_CT)
 	{	
 		menu.SetTitle("Select Name for CT");
 		for (tagindex = 1; tagindex <= MaxClients; tagindex++)
@@ -1173,7 +1173,7 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 	{
 		if (action == MenuAction_Select)
 		{
-			if(teamIndicator == 2)
+			if(teamIndicator == CS_TEAM_T)
 			{
 				menu.GetItem(choice, tagName, sizeof(tagName));
 				custom_name_t = tagName;
@@ -1181,7 +1181,7 @@ public int MenuHandlerTeamMenuList(Menu menu, MenuAction action, int client, int
 				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists to %s", prefixcolor, prefix, textcolor, client, tagName);
 				OpenMenuTeamName(client);
 			}
-			else if(teamIndicator == 3)
+			else if(teamIndicator == CS_TEAM_CT)
 			{
 				menu.GetItem(choice, tagName, sizeof(tagName));
 				custom_name_ct = tagName;
@@ -1204,7 +1204,7 @@ public int MenuHandlerTeamMenuList_Match(Menu menu, MenuAction action, int clien
 	{
 		if (action == MenuAction_Select)
 		{
-			if(teamIndicator == 2)
+			if(teamIndicator == CS_TEAM_T)
 			{
 				default_name_t = custom_name_t;
 				menu.GetItem(choice, tagName, sizeof(tagName));
@@ -1212,7 +1212,7 @@ public int MenuHandlerTeamMenuList_Match(Menu menu, MenuAction action, int clien
 				CPrintToChatAll("{%s}[%s] {%s}%N has set the name of the Terrorists for this match to %s", prefixcolor, prefix, textcolor, client, tagName);
 				OpenMenuNameSettings(client);
 			}
-			else if(teamIndicator == 3)
+			else if(teamIndicator == CS_TEAM_CT)
 			{
 				default_name_ct = custom_name_ct;
 				menu.GetItem(choice, tagName, sizeof(tagName));
@@ -1593,7 +1593,7 @@ public Action MatchDisplayTimerMessage(Handle timer)
 		{
 			if (matchLastScored > 1)
 			{
-				if (matchLastScored == 2)
+				if (matchLastScored == CS_TEAM_T)
 				{
 					for (int player = 1; player <= MaxClients; player++)
 					{
@@ -1616,7 +1616,7 @@ public Action MatchDisplayTimerMessage(Handle timer)
 			}
 			else
 			{
-				if (matchToss == 2)
+				if (matchToss == CS_TEAM_CT)
 				{
 					for (int player = 1; player <= MaxClients; player++)
 					{
@@ -1675,19 +1675,21 @@ public Action MatchPeriodTimer(Handle timer, any time)
 			float maxbounds[3]
 			if(xorientation)
 			{
-				float xminbounds[3] = {-2000.0, -1.0, -10.0};
-				float xmaxbounds[3] = {2000.0, 1.0, 5000.0};
-				
-				minbounds = xminbounds;
-				maxbounds = xmaxbounds;
+				minbounds[0] = -2000.0;
+				minbounds[1] = 0.0;
+				minbounds[2] = -10.0;
+				maxbounds[0] = 2000.0;
+				maxbounds[1] = 0.0;
+				maxbounds[2] = 5000.0;
 			}
-			else
+			else //yorient
 			{
-				float yminbounds[3] = {-1.0, -2000.0, -10.0};
-				float ymaxbounds[3] = {1.0, 2000.0, 5000.0};
-				
-				minbounds = yminbounds;
-				maxbounds = ymaxbounds;
+				minbounds[0] = 0.0;
+				minbounds[1] = -2000.0;
+				minbounds[2] = -10.0;
+				maxbounds[0] = 0.0;
+				maxbounds[1] = 2000.0;
+				maxbounds[2] = 5000.0;
 			}
 			SetEntPropVector(index, Prop_Send, "m_vecMins", minbounds);
 			SetEntPropVector(index, Prop_Send, "m_vecMaxs", maxbounds);
@@ -1725,13 +1727,16 @@ public Action MatchPeriodBreakTimer(Handle timer, any time)
 		matchTimerMessage = "Period break: ";
 		HostName_Change_Status("Periodbreak");
 	}
+	else if(matchPeriods == 2 && matchGoldenGoalActive)
+	{
+		matchTimerMessage = "Golden Goal break: ";
+		HostName_Change_Status("Pre-Golden Goal");
+	}
 	else 
 	{
 		matchTimerMessage = "Half time: ";
 		HostName_Change_Status("Halftime");
 	}
-	
-	//HostName_Change_Status("Halftime");
 
 	char timeString[16];
 	getTimeString(timeString, time);
@@ -1747,8 +1752,8 @@ public Action MatchPeriodBreakTimer(Handle timer, any time)
 		
 		HostName_Change_Status("Match");
 
-		if (matchToss == 2) matchToss = 3;
-		else matchToss = 2;
+		if (matchToss == CS_TEAM_T) matchToss = CS_TEAM_CT;
+		else matchToss = CS_TEAM_T;
 	}
 	else matchTimer = CreateTimer(1.0, MatchPeriodBreakTimer, time - 1);
 }
@@ -1860,7 +1865,7 @@ public void MatchReset()
 	matchPeriod = 1;
 	KillMatchTimer();
 
-	matchToss = 2;
+	matchToss = CS_TEAM_T;
 	matchLastScored = 0;
 
 	matchScoreT = 0;
@@ -2058,7 +2063,11 @@ public void MatchStop(int client)
 		MatchReset();
 		NameReset();
 		UnfreezeAll();
-		if(KickoffWallSet == 1)	KillWalls();
+		if(KickoffWallSet == 1)	
+		{
+			KillWalls();
+			//KillSideWall();
+		}
 
 		for (int player = 1; player <= MaxClients; player++)
 		{
@@ -2142,8 +2151,14 @@ public void EndStoppageTime()
 				{
 					if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}The match ended in a draw and will continue with a golden goal", prefixcolor, prefix, textcolor);
 				}
-
-				ServerCommand("mp_restartgame 5");
+				
+				PrintCenterTextAll("Golden Goal break");
+			
+				//print current match top3
+				ShowTop3(false);
+				
+				matchTimer = CreateTimer(0.0, MatchPeriodBreakTimer, 5);
+				//ServerCommand("mp_restartgame 5");
 			}
 			else
 			{
@@ -2191,333 +2206,3 @@ public Action matchStartTimer(Handle timer)
 	matchStart = false;
 }
 
-public void KickOffWall()
-{
-	if(KickoffWallSet == 1)
-	{
-		//wall on line
-		if(xorientation) //orientation of the middle line
-		{
-			//PrintToChatAll("y true");			
-			//create box to allow kickoff
-			if(matchLastScored > 1)
-			{
-				if (matchLastScored == 2) //t scored
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
-
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
-					
-					//xsl_stadium close wall
-					char map[128];
-					GetCurrentMap(map, sizeof(map));
-					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, true);
-					
-					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
-					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, true);
-					}
-				}
-				else //ct scored
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
-					
-					//xsl_stadium close wall
-					char map[128];
-					GetCurrentMap(map, sizeof(map));
-					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, false);
-					
-					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, false); 
-						
-						//second side
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, false); 
-						
-						//backside
-						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, false); 
-					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, false); 
-						
-						//second side
-						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false); 
-						
-						//backside
-						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false); 
-					}
-				}
-			}
-			else
-			{
-				if (matchToss == 2)	//ct starts
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
-					
-					//xsl_stadium close wall
-					char map[128];
-					GetCurrentMap(map, sizeof(map));
-					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, true);
-					
-					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, true); 
-						
-						//second side
-						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true); 
-						
-						//backside
-						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true); 
-					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, true);
-					}
-				}
-				else		//t starts
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
-					
-					//xsl_stadium close wall
-					char map[128];
-					GetCurrentMap(map, sizeof(map));
-					if(StrEqual(map, "ka_soccer_xsl_stadium_b1")) CreateInvisWall(-1280.0, -130.0, 0.0, -1280.0, 130.0, 1000.0, "entrywall", 5, false);
-					
-					// check coords
-					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, false); 
-						
-						//second side
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 0.0, 1300.0, "boxside2", 3, false); 
-						
-						//backside
-						CreateInvisWall(-130.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxback", 4, false); 
-					}
-					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, false); 
-						
-						//second side
-						CreateInvisWall(130.0, 0.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false); 
-						
-						//backside
-						CreateInvisWall(-130.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false); 
-					}
-				}
-			}
-		}
-		else //yorient
-		{
-			//create box to allow kickoff
-			if(matchLastScored > 1)
-			{
-				if (matchLastScored == 2) //t scored
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
-					
-					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
-					{
-						//first side
-						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
-					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, true);
-					}
-				}
-				else //ct scored
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
-					
-					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, false);
-						
-						//second side		
-						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, false);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, false);
-					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
-					{
-						//first side
-						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, false);
-						
-						//second side		
-						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false);
-						
-						//backside				
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false);
-					}
-				}
-			}
-			else
-			{
-				if (matchToss == 2)	//ct starts
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, true); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, true);
-					
-					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
-					{
-						//first side
-						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, true);
-					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, true);
-						
-						//second side		
-						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, true);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, true);
-					}
-				}
-				else //t starts
-				{
-					//create first half		
-					CreateInvisWall(-4000.0, 0.0, -1000.0, -130.0, 0.0, 1000.0, "wallminus", 0, false); 			
-					
-					//create second half
-					CreateInvisWall(130.0, 0.0, -1000.0, 4000.0, 0.0, 1000.0, "wallplus", 1, false);
-					
-					// check coords
-					if (vec_tgoal_origin[0] > vec_ctgoal_origin[0]) //t ct-
-					{
-						//first side
-						CreateInvisWall(-130.0, -130.0, 0.0, 0.0, -130.0, 1300.0, "boxside1", 2, false);
-						
-						//second side		
-						CreateInvisWall(-130.0, 130.0, 0.0, 0.0, 130.0, 1300.0, "boxside2", 3, false);
-						
-						//backside				
-						CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 130.0, 1300.0, "boxback", 4, false);
-					}
-					else if (vec_tgoal_origin[0] < vec_ctgoal_origin[0]) //t- ct
-					{
-						//first side
-						CreateInvisWall(0.0, -130.0, 0.0, 130.0, -130.0, 1300.0, "boxside1", 2, false);
-						
-						//second side		
-						CreateInvisWall(0.0, 130.0, 0.0, 130.0, 130.0, 1300.0, "boxside2", 3, false);
-						
-						//backside				
-						CreateInvisWall(130.0, -130.0, 0.0, 130.0, 130.0, 1300.0, "boxback", 4, false);
-					}
-				}
-			}
-		}
-	}
-}
-
-public void KillWalls()
-{
-	int entityid[6]
-	entityid[0] = GetEntityIndexByName("wallminus", "prop_dynamic");
-	entityid[1] = GetEntityIndexByName("wallplus", 	"prop_dynamic");
-	entityid[2] = GetEntityIndexByName("boxside1", 	"prop_dynamic");
-	entityid[3] = GetEntityIndexByName("boxside2", 	"prop_dynamic");
-	entityid[4] = GetEntityIndexByName("boxback", 	"prop_dynamic");
-	entityid[5] = GetEntityIndexByName("entrywall", "prop_dynamic");
-	
-	for(int i = 0; i <= 5; i++)
-	{
-		if (entityid[i] != -1)
-		{
-			AcceptEntityInput(entityid[i], "Kill");
-		}
-	}
-	
-	int index;
-	while ((index = GetEntityIndexByName("wallminus", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-	while ((index = GetEntityIndexByName("wallplus", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-	while ((index = GetEntityIndexByName("boxside1", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-	while ((index = GetEntityIndexByName("boxside2", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-	while ((index = GetEntityIndexByName("boxback", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-	while ((index = GetEntityIndexByName("entrywall", "env_beam")) != -1) AcceptEntityInput(index, "Kill");
-}

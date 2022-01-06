@@ -81,9 +81,25 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │  │  │     ├─ Fire rate
 		 │  │  │     └─ Power
 		 │  │  │
-		 │  │  ├─ Disable Goals
-		 │  │  ├─ Enable Goals
-		 │  │  └─ Spawn / Remove Ball
+		 │  │  ├─ Toggle Goals
+		 │  │  ├─ Spawn / Remove Ball
+		 │  │  ├─ Prop Menu
+		 │  │  └─ Advanced Training
+		 │  │     ├─ Training Mode
+		 │  │     ├─ Goaltargets
+		 │  │     │   ├─ Mode (Single / Multi)
+		 │  │     │   ├─ Toggle T Goal Target
+		 │  │     │   ├─ Toggle CT Goal Target
+		 │  │     │   ├─ Move Ball to closest spawnpoint
+		 │  │     │   ├─ Toggle autorespawn for closest spawnpoint
+		 │  │     │   ├─ Select Ball / Set spawnpoint (T Side)
+		 │  │     │   └─ Select Ball / Set spawnpoint (CT Side)
+		 │  │     │
+		 │  │     │
+		 │  │     └─ Cone Manager
+		 │  │        ├─ Cone Type (Dynamic / Static)
+		 │  │        ├─ Spawn / Remove selected cone
+		 │  │        └─ Remove all cones of the selected type
 		 │  │
 		 │  ├─ Spec Player (*)
 		 │  ├─ Change Map (*)

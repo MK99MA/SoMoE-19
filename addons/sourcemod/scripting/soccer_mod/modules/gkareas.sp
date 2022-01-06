@@ -2,12 +2,12 @@
 public void GetFieldOrientation()
 {
 	// Get goaltrigger entity IDs
-	int t_trigger_id = GetEntityIndexByName("terro_But", "trigger_once");
+	t_trigger_id = GetEntityIndexByName("terro_But", "trigger_once");
 	if (t_trigger_id == -1)
 	{
 		t_trigger_id = GetEntityIndexByName("goal_t", "trigger_once");
 	}
-	int ct_trigger_id = GetEntityIndexByName("ct_But", "trigger_once");
+	ct_trigger_id = GetEntityIndexByName("ct_But", "trigger_once");
 	if (ct_trigger_id == -1)
 	{
 		ct_trigger_id = GetEntityIndexByName("goal_ct", "trigger_once");
@@ -28,42 +28,55 @@ public void GetFieldOrientation()
 		soccerball_id = GetEntityIndexByName("ballon", "prop_physics");
 	}
 	if (soccerball_id != -1) GetEntPropVector(soccerball_id, Prop_Send, "m_vecOrigin", mapBallStartPosition);
+	//PrintToServer("X: %.f | Y: %.f | Z: %.f | ", mapBallStartPosition[0], mapBallStartPosition[1], mapBallStartPosition[2]);
 	
 	// Error if an entity is not found
-	/*if(t_trigger_id <= 0 || ct_trigger_id <= 0 || soccerball_id <= 0)
+	if(t_trigger_id <= 0 || ct_trigger_id <= 0 || soccerball_id <= 0)
 	{
 		LogError("Entity not found (BL %i, TG %i, CTG %i)",
              soccerball_id, t_trigger_id, ct_trigger_id);
 		
 		return;
-	}*/
-
-	// calculate fieldsize
-	int goaltrig_t_ref = EntIndexToEntRef(t_trigger_id);
-	int goaltrig_ct_ref = EntIndexToEntRef(ct_trigger_id);
-
-	GetEntPropVector(goaltrig_t_ref, Prop_Data, "m_vecAbsOrigin", vec_tgoal_origin);
-	GetEntPropVector(goaltrig_ct_ref, Prop_Data, "m_vecAbsOrigin", vec_ctgoal_origin);
-	
-	// cross laser
-	//DrawLaser("gk_area_beam", vec_tgoal_origin[0], vec_tgoal_origin[1], vec_tgoal_origin[2], vec_ctgoal_origin[0], vec_ctgoal_origin[1], vec_ctgoal_origin[2], "255 255 255");
-	
-	// Find out map orientation (middle line)
-	if ((vec_tgoal_origin[0] > (vec_ctgoal_origin[0] - 100.0)) && (vec_tgoal_origin[0] < (vec_ctgoal_origin[0] + 100.0)))
-	{
-		xorientation = true;
-		//DrawLaser("gk_area_beam", -10000.0, mapBallStartPosition[1], vec_tgoal_origin[2], 10000.0, mapBallStartPosition[1], vec_ctgoal_origin[2], "255 255 255");
-	}
-	else if ((vec_tgoal_origin[1] > (vec_ctgoal_origin[1] - 100.0)) && (vec_tgoal_origin[1] < (vec_ctgoal_origin[1] + 100.0)))
-	{
-		xorientation = false;
-		//DrawLaser("gk_area_beam", mapBallStartPosition[0], -10000.0, vec_tgoal_origin[2], mapBallStartPosition[0], 10000.0, vec_ctgoal_origin[2], "255 255 255");
 	}
 
-	// reference field size is defined as REFERENCE_FIELD_SIZE
-	//float field_size = GetVectorDistance(vec_tgoal_origin, vec_ctgoal_origin);
+	if(ct_trigger_id != -1 && t_trigger_id != -1)	
+	{
+		GetGoalTriggerInfo(ct_trigger_id, t_trigger_id);
+		
+		// calculate fieldsize
+		int goaltrig_t_ref = EntIndexToEntRef(t_trigger_id);
+		int goaltrig_ct_ref = EntIndexToEntRef(ct_trigger_id);
+
+		GetEntPropVector(goaltrig_t_ref, Prop_Data, "m_vecAbsOrigin", vec_tgoal_origin);
+		GetEntPropVector(goaltrig_ct_ref, Prop_Data, "m_vecAbsOrigin", vec_ctgoal_origin);
+		
+		// Find out map orientation (middle line)
+		if ((vec_tgoal_origin[0] > (vec_ctgoal_origin[0] - 100.0)) && (vec_tgoal_origin[0] < (vec_ctgoal_origin[0] + 100.0)))
+		{
+			xorientation = true;
+			//DrawLaser("gk_area_beam", -10000.0, mapBallStartPosition[1], vec_tgoal_origin[2], 10000.0, mapBallStartPosition[1], vec_ctgoal_origin[2], "255 255 255");
+		}
+		else if ((vec_tgoal_origin[1] > (vec_ctgoal_origin[1] - 100.0)) && (vec_tgoal_origin[1] < (vec_ctgoal_origin[1] + 100.0)))
+		{
+			xorientation = false;
+			//DrawLaser("gk_area_beam", mapBallStartPosition[0], -10000.0, vec_tgoal_origin[2], mapBallStartPosition[0], 10000.0, vec_ctgoal_origin[2], "255 255 255");
+		}
+
+		// reference field size is defined as REFERENCE_FIELD_SIZE
+		//float field_size = GetVectorDistance(vec_tgoal_origin, vec_ctgoal_origin);
+	}
 }
 
+public void GetGoalTriggerInfo(int ct_goal_id, int t_goal_id)
+{
+	GetEntPropVector(ct_goal_id, Prop_Send, "m_vecMins", ctTriggerVecMin);
+	GetEntPropVector(ct_goal_id, Prop_Send, "m_vecMaxs", ctTriggerVecMax);
+	GetEntPropVector(ct_goal_id, Prop_Send, "m_vecOrigin", ctTriggerOrigin);
+	
+	GetEntPropVector(t_goal_id, Prop_Send, "m_vecMins", tTriggerVecMin);
+	GetEntPropVector(t_goal_id, Prop_Send, "m_vecMaxs", tTriggerVecMax);
+	GetEntPropVector(t_goal_id, Prop_Send, "m_vecOrigin", tTriggerOrigin);
+}
 
 public void OpenGKAreaPanel(int client)
 {

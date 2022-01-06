@@ -530,6 +530,8 @@ public Action GrenadeRefillTimer(Handle timer)
 // ***************************************************************************************************************
 public void CapPutAllToSpec(int client)
 {
+	if(trainingModeEnabled) trainingModeEnabled = false;
+	
 	for (int player = 1; player <= MaxClients; player++)
 	{
 		if (IsClientInGame(player) && IsClientConnected(player))

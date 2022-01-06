@@ -27,8 +27,8 @@ public void StatsOnTakeDamage(int ball, int client)
 	GetClientName(client, name, sizeof(name));
 
 	int team = GetClientTeam(client);
-	if (team == 2) statsHitsT++;
-	else if (team == 3) statsHitsCT++;
+	if (team == CS_TEAM_T) statsHitsT++;
+	else if (team == CS_TEAM_CT) statsHitsCT++;
 
 	// AddPlayerStatInt(name, steamid, "hits", rankingPointsForHit);
 
@@ -93,12 +93,12 @@ public void StatsOnTakeDamage(int ball, int client)
 		statsSaver = 0;
 	}
 	// vorheriger hit von einem gegner?
-	if (team == 3 && 
+	if (team == CS_TEAM_CT && 
 		statsCTGKAreaMinX <= ballPosition[0] <= statsCTGKAreaMaxX && 
 		statsCTGKAreaMinY <= ballPosition[1] <= statsCTGKAreaMaxY && 
 		statsCTGKAreaMinZ <= ballPosition[2] <= statsCTGKAreaMaxZ)
 	{
-		if (prevhitteam == 2) 
+		if (prevhitteam == CS_TEAM_T) 
 		{
 			if (gksavesSet == 1 && bCTGoalkeeper)
 			{
@@ -111,12 +111,12 @@ public void StatsOnTakeDamage(int ball, int client)
 		}
 		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the CT gk area", prefixcolor, prefix, textcolor, client);
 	}
-	else if (team == 2 && 
+	else if (team == CS_TEAM_T && 
 		statsTGKAreaMinX <= ballPosition[0] <= statsTGKAreaMaxX && 
 		statsTGKAreaMinY <= ballPosition[1] <= statsTGKAreaMaxY && 
 		statsTGKAreaMinZ <= ballPosition[2] <= statsTGKAreaMaxZ)
 	{
-		if (prevhitteam == 3) 
+		if (prevhitteam == CS_TEAM_CT) 
 		{
 			if (gksavesSet == 1 && bTGoalkeeper)
 			{
@@ -152,8 +152,8 @@ public void StatsOnTakeDamage(int ball, int client)
 			// GetClientAuthId(client, AuthId_Engine, statsScorerSteamid, sizeof(statsScorerSteamid));
 
 			possession = statsScorerTimestamp - statsAssisterTimestamp;
-			if (statsAssisterTeam == 2) statsPossessionT += possession;
-			else if (statsAssisterTeam == 3) statsPossessionCT += possession;
+			if (statsAssisterTeam == CS_TEAM_T) statsPossessionT += possession;
+			else if (statsAssisterTeam == CS_TEAM_CT) statsPossessionCT += possession;
 			statsPossessionTotal += possession;
 			// AddPlayerStatPossession(statsAssisterSteamid, possession, statsAssisterTeam);
 			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsAssisterName, possession);
@@ -161,8 +161,8 @@ public void StatsOnTakeDamage(int ball, int client)
 			if (team == statsAssisterTeam)
 			{
 				pass = true;
-				if (statsAssisterTeam == 2) statsPassesT++;
-				else if (statsAssisterTeam == 3) statsPassesCT++;
+				if (statsAssisterTeam == CS_TEAM_T) statsPassesT++;
+				else if (statsAssisterTeam == CS_TEAM_CT) statsPassesCT++;
 				// AddPlayerStatInt(statsAssisterName, statsAssisterSteamid, "passes", rankingPointsForPass);
 
 				// Format(queryString, sizeof(queryString), "UPDATE %s SET passes = (passes + 1), points = (points + %i) WHERE steamid = '%s'", 
@@ -175,8 +175,8 @@ public void StatsOnTakeDamage(int ball, int client)
 			else
 			{
 				interception = true;
-				if (team == 2) statsInterceptionsT++;
-				else if (team == 3) statsInterceptionsCT++;
+				if (team == CS_TEAM_T) statsInterceptionsT++;
+				else if (team == CS_TEAM_CT) statsInterceptionsCT++;
 				// AddPlayerStatInt(name, steamid, "interceptions", rankingPointsForInterception);
 
 				// Format(queryString, sizeof(queryString), "UPDATE %s SET interceptions = (interceptions + 1), points = (points + %i) WHERE steamid = '%s'", 
@@ -186,8 +186,8 @@ public void StatsOnTakeDamage(int ball, int client)
 				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has intercepted the ball from %s", prefixcolor, prefix, textcolor, name, statsAssisterName);
 
 				ball_loss = true;
-				if (statsAssisterTeam == 2) statsBallLossesT++;
-				else if (statsAssisterTeam == 3) statsBallLossesCT++;
+				if (statsAssisterTeam == CS_TEAM_T) statsBallLossesT++;
+				else if (statsAssisterTeam == CS_TEAM_CT) statsBallLossesCT++;
 				// AddPlayerStatInt(statsAssisterName, statsAssisterSteamid, "ball_losses", rankingPointsForBallLoss);
 
 				// Format(queryString, sizeof(queryString), "UPDATE %s SET ball_losses = (ball_losses + 1), points = (points + %i) WHERE steamid = '%s'", 
@@ -468,15 +468,15 @@ public void StatsEventRoundEnd(Event event)
 
 			if (statsScorerTeam == winner)
 			{
-				if (statsScorerTeam == 2) statsGoalsT++;
-				else if (statsScorerTeam == 3) statsGoalsCT++;
+				if (statsScorerTeam == CS_TEAM_T) statsGoalsT++;
+				else if (statsScorerTeam == CS_TEAM_CT) statsGoalsCT++;
 
-				if (statsScorerTeam == 2)
+				if (statsScorerTeam == CS_TEAM_T)
 				{
 					statsRoundsLostCT++;
 					statsRoundsWonT++;
 				}
-				else if (statsScorerTeam == 3)
+				else if (statsScorerTeam == CS_TEAM_CT)
 				{
 					statsRoundsLostT++;
 					statsRoundsWonCT++;
@@ -502,8 +502,8 @@ public void StatsEventRoundEnd(Event event)
 
 				if (statsAssisterClientid > 0 && statsAssisterTeam == winner)
 				{
-					if (statsAssisterTeam == 2) statsAssistsT++;
-					else if (statsAssisterTeam == 3) statsAssistsCT++;
+					if (statsAssisterTeam == CS_TEAM_T) statsAssistsT++;
+					else if (statsAssisterTeam == CS_TEAM_CT) statsAssistsCT++;
 
 					AddPlayerStatInt(statsAssisterName, statsAssisterSteamid, "assists", rankingPointsForAssist);
 
@@ -539,15 +539,15 @@ public void StatsEventRoundEnd(Event event)
 			}
 			else
 			{
-				if (statsScorerTeam == 2) statsOwnGoalsT++;
-				else if (statsScorerTeam == 3) statsOwnGoalsCT++;
+				if (statsScorerTeam == CS_TEAM_T) statsOwnGoalsT++;
+				else if (statsScorerTeam == CS_TEAM_CT) statsOwnGoalsCT++;
 
-				if (statsScorerTeam == 2)
+				if (statsScorerTeam == CS_TEAM_T)
 				{
 					statsRoundsLostT++;
 					statsRoundsWonCT++;
 				}
-				else if (statsScorerTeam == 3)
+				else if (statsScorerTeam == CS_TEAM_CT)
 				{
 					statsRoundsLostCT++;
 					statsRoundsWonT++;
@@ -1127,8 +1127,8 @@ public void AddPlayerStatInt(char name[MAX_NAME_LENGTH], char steamid[32], char 
 
 public void AddPlayerStatPossession(char steamid[32], float possession, int team)
 {
-	if (team == 2) statsPossessionT += possession;
-	else if (team == 3) statsPossessionCT += possession;
+	if (team == CS_TEAM_T) statsPossessionT += possession;
+	else if (team == CS_TEAM_CT) statsPossessionCT += possession;
 	statsPossessionTotal += possession;
 
 	// Handle keygroup = new KeyValues("matchStatistics");

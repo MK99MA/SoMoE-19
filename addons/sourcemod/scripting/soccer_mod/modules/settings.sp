@@ -7,31 +7,10 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char ReadyString[32], DamageString[32], PubString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32];
-	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
-	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
-	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
-	
-	if(damageSounds == 0)				DamageString = "Damage Sound: OFF";
-	else if(damageSounds == 1)			DamageString = "Damage Sound: ON";
-	
+	char PubString[32];
 	if(publicmode == 0)					PubString = "Public Mode: Admins";
 	else if(publicmode == 1)			PubString = "Public Mode: !Cap / !Match";
 	else if(publicmode == 2)			PubString = "Public Mode: Free for All";
-	
-	if(dissolveSet == 0)				DissolveString = "Remove Ragdoll: OFF";
-	else if(dissolveSet == 1)			DissolveString = "Remove Ragdoll: YES";
-	else if (dissolveSet == 2)			DissolveString = "Remove Ragdoll: Dissolve";
-	
-	if(djbenabled == 0)					DJString = "DJBlock: OFF";
-	else if (djbenabled == 1)			DJString = "DJBlock: ON";
-	
-	if(joinclassSet == 0)				JoinString = "ClassChoice: OFF";
-	else if (joinclassSet == 1)			JoinString = "ClassChoice: ON";
-	
-	Format(RankString, sizeof(RankString), "!rank Cooldown: %i", rankingCDTime);
-	
-	Handle shoutplugin = FindPluginByFile("shout.smx");	
 
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("maps", "Allowed Maps");
@@ -40,11 +19,9 @@ public void OpenMenuSettings(int client)
 	menu.AddItem("skinsmenu", "Skin Settings");
 	menu.AddItem("chatset", "Chat Settings");
 	menu.AddItem("mapsounds", "Sound Control");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("advtraining", "Training Settings");
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, true)) menu.AddItem("shoutplug", "Shout Control");
 	menu.AddItem("lockenabled", "Lock Settings");
-	if (shoutplugin != INVALID_HANDLE)
-	{
-		if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, true)) menu.AddItem("shoutplug", "Shout Plugin");
-	}
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -62,8 +39,9 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "pubmode"))			OpenMenuPubMode(client);
 		else if (StrEqual(menuItem, "skinsmenu"))		OpenSkinsMenu(client);
 		else if (StrEqual(menuItem, "miscset"))			OpenMenuMiscSettings(client);
-		else if (StrEqual(menuItem, "shoutplug"))		FakeClientCommandEx(client, "sm_shoutset");
-		else if(StrEqual(menuItem, "mapsounds")) 		OpenMenuMapSounds(client);
+		else if (StrEqual(menuItem, "shoutplug"))		OpenMenuShoutSet(client);
+		else if (StrEqual(menuItem, "mapsounds")) 		OpenMenuMapSounds(client);
+		else if (StrEqual(menuItem, "advtraining"))		OpenMenuAdvTrainSet(client);
 		else if(StrEqual(menuItem, "lockenabled"))
 		{
 			if(!pwchange) OpenMenuLockSet(client);
@@ -83,7 +61,7 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 
 
 // *******************************************************************************************************************
-// ************************************************** SETTINGS MENU **************************************************
+// ************************************************** MISC SETTINGS **************************************************
 // *******************************************************************************************************************
 public void OpenMenuMiscSettings(int client)
 {
@@ -171,14 +149,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				matchReadyCheck++;
 				UpdateConfigInt("Match Settings", "soccer_mod_match_readycheck", matchReadyCheck);
-				OpenMenuMiscSettings(client);
 			}
 			else 
 			{
 				matchReadyCheck = 0;
 				UpdateConfigInt("Match Settings", "soccer_mod_match_readycheck", matchReadyCheck);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "damagesound")) 
 		{
@@ -186,14 +163,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				damageSounds = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_damagesounds", damageSounds);
-				OpenMenuMiscSettings(client);
 			}
 			else if(damageSounds >0)
 			{
 				damageSounds = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_damagesounds", damageSounds);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "dissolve")) 
 		{
@@ -201,20 +177,18 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				dissolveSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(dissolveSet == 1)
 			{
 				dissolveSet = 2;
 				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(dissolveSet >= 2)
 			{
 				dissolveSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_dissolver", dissolveSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "djblock")) 
 		{
@@ -222,26 +196,23 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				djbenabled = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
-				OpenMenuMiscSettings(client);
 			}
 			else if(djbenabled == 1)
 			{
 				djbenabled = 2;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
-				OpenMenuMiscSettings(client);
 			}
 			else if(djbenabled == 2)
 			{
 				djbenabled = 3;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
-				OpenMenuMiscSettings(client);
 			}
 			else if(djbenabled >= 3)
 			{
 				djbenabled = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_blockdj_enable", djbenabled);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "kickoffwall")) 
 		{
@@ -249,14 +220,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				KickoffWallSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_kickoffwall", KickoffWallSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(KickoffWallSet == 1)
 			{
 				KickoffWallSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_kickoffwall", KickoffWallSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "classchoice")) 
 		{
@@ -264,14 +234,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				joinclassSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_joinclass", joinclassSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(joinclassSet == 1)
 			{
 				joinclassSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_joinclass", joinclassSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "rankspam"))
 		{
@@ -284,14 +253,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				hostnameToggle = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_hostname", hostnameToggle);
-				OpenMenuMiscSettings(client);
 			}
 			else if(hostnameToggle == 1)
 			{
 				hostnameToggle = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_hostname", hostnameToggle);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "loaddefaults"))
 		{
@@ -299,14 +267,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				defaultSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_loaddefaults", defaultSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(defaultSet == 1)
 			{
 				defaultSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_loaddefaults", defaultSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "killfeed"))
 		{
@@ -314,14 +281,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				killfeedSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_killfeed", killfeedSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(killfeedSet == 1)
 			{
 				killfeedSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_killfeed", killfeedSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "gksaves"))
 		{
@@ -329,14 +295,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				gksavesSet = 1;
 				UpdateConfigInt("Stats Settings", "soccer_mod_gksaves_only", gksavesSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(gksavesSet == 1)
 			{
 				gksavesSet = 0;
 				UpdateConfigInt("Stats Settings", "soccer_mod_gksaves_only", gksavesSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "rankmode")) 
 		{
@@ -344,20 +309,18 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				rankMode = 1;
 				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
-				OpenMenuMiscSettings(client);
 			}
 			else if(rankMode == 1)
 			{
 				rankMode = 2;
 				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
-				OpenMenuMiscSettings(client);
 			}
 			else if(rankMode >= 2)
 			{
 				rankMode = 0;
 				UpdateConfigInt("Stats Settings", "soccer_mod_rankmode", rankMode);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		else if(StrEqual(menuItem, "celebrate"))
 		{
@@ -365,14 +328,13 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				celebrateweaponSet = 1;
 				UpdateConfigInt("Misc Settings", "soccer_mod_celebrate", celebrateweaponSet);
-				OpenMenuMiscSettings(client);
 			}
 			else if(celebrateweaponSet == 1)
 			{
 				celebrateweaponSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_celebrate", celebrateweaponSet);
-				OpenMenuMiscSettings(client);
 			}
+			OpenMenuMiscSettings(client);
 		}
 		/*else if(StrEqual(menuItem, "debugset")) 
 		{
@@ -495,22 +457,20 @@ public int MenuHandlerPubMode(Menu menu, MenuAction action, int client, int choi
 			publicmode = 0;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
 			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to admins only.", prefixcolor, prefix, textcolor);
-			OpenMenuPubMode(client);
 		}
 		else if (StrEqual(menuItem, "pub_com"))
 		{
 			publicmode = 1;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
 			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public !cap and !match.", prefixcolor, prefix, textcolor);
-			OpenMenuPubMode(client);
 		}
 		else if (StrEqual(menuItem, "pub_menu"))
 		{
 			publicmode = 2;
 			UpdateConfigInt("Admin Settings", "soccer_mod_pubmode", publicmode);
 			CPrintToChatAll("{%s}[%s] {%s}Publicmode set to public menu.", prefixcolor, prefix, textcolor);
-			OpenMenuPubMode(client);
 		}
+		OpenMenuPubMode(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -907,6 +867,164 @@ public int MenuHandlerMapSoundsAdd(Menu menu, MenuAction action, int client, int
 }
 
 // *******************************************************************************************************************
+// *************************************************TRAINING SETTINGS ************************************************
+// *******************************************************************************************************************
+
+public void OpenMenuAdvTrainSet(int client)
+{
+	Menu menu = new Menu(MenuHandlerAdvTrainSet);
+
+	menu.SetTitle("Soccer Mod - Training Settings");
+
+	char pwReqString[32], ResetString[32];
+	if(AdvTrain_PWReqSet == 0)				pwReqString = "PW required: OFF";
+	else if(AdvTrain_PWReqSet == 1)			pwReqString = "PW required: ON";
+	
+	Format(ResetString, sizeof(ResetString), "Reset Time: %.1f", targetResetTime);
+
+	menu.AddItem("pwreq", pwReqString);
+	if(AdvTrain_PWReqSet == 1) 	menu.AddItem("setpw", "Set Password");
+	menu.AddItem("rstime", ResetString);
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerAdvTrainSet(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char menuItem[32];
+		menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+		if (StrEqual(menuItem, "pwreq"))
+		{
+			if(AdvTrain_PWReqSet == 0)
+			{
+				AdvTrain_PWReqSet = 1;
+				UpdateConfigInt("Training Settings", "soccer_mod_training_advpwreq", AdvTrain_PWReqSet);
+			}
+			else if (AdvTrain_PWReqSet >= 1)
+			{
+				AdvTrain_PWReqSet = 0;
+				UpdateConfigInt("Training Settings", "soccer_mod_training_advpwreq", AdvTrain_PWReqSet);
+			}
+			OpenMenuAdvTrainSet(client);
+		}
+		else if (StrEqual(menuItem, "rstime"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired respawn time for the ball during training. 0 to cancel.", prefixcolor, prefix, textcolor);
+			changeSetting[client] = "AdvTrainingTime";
+		}
+		else if (StrEqual(menuItem, "setpw")) if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))
+		{
+			//Chat listener
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired password for the advanced training menu or !cancel. Current password is: {%s}[%s].", prefixcolor, prefix, textcolor, prefixcolor, AdvTrain_PW);
+			changeSetting[client] = "AdvTrainingPW";
+		}
+		else if (StrEqual(menuItem, "rstime"))
+		{
+			CPrintToChat(client, "{%s}[%s] {%s}Type in the desired respawn time for the ball during training. 0 to cancel.", prefixcolor, prefix, textcolor);
+			changeSetting[client] = "AdvTrainingTime";
+		}
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
+
+// *******************************************************************************************************************
+// *********************************************** ADVTRAIN LISTENER *************************************************
+// *******************************************************************************************************************
+public void AdvTrainSet(int client, char type[32], char advtrainpw[32])
+{
+	int min = 0;
+	int max = 32;
+	if (strlen(advtrainpw) >= min && strlen(advtrainpw) <= max)
+	{
+		char steamid[32];
+		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+
+		if (StrEqual(type, "AdvTrainingPW"))
+		{
+			if(!StrEqual(advtrainpw, "!cancel"))
+			{
+				AdvTrain_PW = advtrainpw;
+				UpdateConfig("Training Settings", "soccer_mod_training_advpw", AdvTrain_PW);
+
+				CPrintToChat(client, "{%s}[%s] {%s}You set the password to {%s}[%s].", prefixcolor, prefix, textcolor, prefixcolor, advtrainpw);
+
+				LogMessage("%N <%s> has set the advanced training password to %s", client, steamid, advtrainpw);
+				
+				OpenMenuAdvTrainSet(client);
+			}
+			else 
+			{
+				OpenMenuAdvTrainSet(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled changing this value.", prefixcolor, prefix, textcolor);
+			}
+		}
+		if (StrEqual(type, "AdvTrainingPWInput"))
+		{
+			if(!StrEqual(advtrainpw, "!cancel"))
+			{
+				if(StrEqual(advtrainpw, AdvTrain_PW))
+				{
+					accessgranted[client] = true;
+					OpenAdvancedTrainingMenu(client);
+					CPrintToChat(client, "{%s}[%s] {%s}Access for this session granted!.", prefixcolor, prefix, textcolor);
+				}
+				else
+				{
+					OpenTrainingMenu(client);
+					CPrintToChat(client, "{%s}[%s] {%s}Access denied!.", prefixcolor, prefix, textcolor);
+				}
+			}
+			else 
+			{
+				OpenTrainingMenu(client);
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled input.", prefixcolor, prefix, textcolor);
+			}
+		}
+		
+		changeSetting[client] = "";
+	}
+}
+
+public void AdvTrainSetFloat(int client, char type[32], float number)
+{
+	float min = 1.0;
+	float max = 10.0;
+	if (number >= min && number <= max || number == 0.0)
+	{
+		if (StrEqual(type, "AdvTrainingTime"))
+		{
+			if(number != 0.0)
+			{
+				targetResetTime = number;
+				UpdateConfigFloat("Training Settings", "soccer_mod_training_advresettime", number);
+				OpenMenuAdvTrainSet(client);
+					
+				CPrintToChat(client, "{%s}[%s] {%s}Respawn time set to %.1f.", prefixcolor, prefix, textcolor, number);
+			}
+			else 
+			{
+				OpenMenuAdvTrainSet(client)
+				CPrintToChat(client, "{%s}[%s] {%s}Cancelled input.", prefixcolor, prefix, textcolor);
+			}
+		}
+		
+		changeSetting[client] = "";
+	}
+	else 
+	{
+		CPrintToChat(client, "{%s}[%s] {%s}Please enter a value between %.f and %.f.", prefixcolor, prefix, textcolor, min, max);
+		OpenMenuAdvTrainSet(client)
+	}
+}
+
+
+// *******************************************************************************************************************
 // ************************************************* LOCKSET LISTENER ***************************************************
 // *******************************************************************************************************************
 
@@ -1024,4 +1142,63 @@ public void CDSet(int client, char type[32], int intnumber, int min, int max)
 		OpenMenuMiscSettings(client);
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}Type a value between %i and %i.", prefixcolor, prefix, textcolor, min, max);
+}
+
+// ***********************************************************************************************************************
+// ************************************************** CELEBRATE WEAPONS **************************************************
+// ***********************************************************************************************************************
+
+public Action GiveCelebrationWeapons()
+{
+	//Choose random weapon
+	char celebrateweapon[32];
+	char celebwparray[24][32]		=
+	{
+		"glock",
+		"usp",
+		"p228",
+		"deagle",
+		"fiveseven",
+		"elite",
+		"mac10",
+		"tmp",
+		"mp5navy",
+		"ump45",
+		"p90",
+		"m3",
+		"xm1014",
+		"galil",
+		"famas",
+		"ak47",
+		"m4a1",
+		"sg552",
+		"aug",
+		"m249",
+		"scout",
+		"g3sg1",
+		"sg550",
+		"awp",
+	}
+	int randint = GetRandomInt(0, sizeof(celebwparray)-1);
+	celebrateweapon = celebwparray[randint];
+	Format(celebrateweapon, sizeof(celebrateweapon), "weapon_%s", celebrateweapon);
+	
+	for (int player = 1; player <= MaxClients; player++)
+	{
+		if (IsClientInGame(player) && IsClientConnected(player) && IsPlayerAlive(player)) 
+		{
+			//Disable Godmode
+			SetEntProp(player, Prop_Data, "m_takedamage", 2, 1);
+			//Enable Teamdamage
+			Handle hConvar;
+			hConvar = FindConVar("mp_friendlyfire");
+			if (hConvar == INVALID_HANDLE)	return Plugin_Continue;
+			changeConvar(hConvar, "mp_friendlyfire", "1")
+			
+			//Give weapon
+			GivePlayerItem(player, celebrateweapon);
+		}
+	}
+	
+	return Plugin_Continue;
 }

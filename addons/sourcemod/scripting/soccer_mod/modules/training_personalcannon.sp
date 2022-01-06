@@ -4,7 +4,7 @@
 
 public void PersonalTrainingCannonSet(int client, char type[32], float number, float min, float max) 
 {
-	if (number >= min && number <= max)
+	if ((number >= min && number <= max) || number == 0.0)
 	{
 		char steamid[32];
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
