@@ -27,3 +27,7 @@ I incorporated parts of the following plugins and only modified them partially t
 
 If the problem / question remains feel free to create an issue [here](https://github.com/MK99MA/soccermod-2019edit/issues)  
   
+## [>>Grass Replacer<<](https://github.com/MK99MA/SoMoE-19/raw/master/Grassreplacer.zip)  
+
+Use this file & follow it's readme to automatically replace the grass for maps using Lolobubus original grass texture!  
+
