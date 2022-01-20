@@ -1,5 +1,5 @@
-You can add (almost) any texture you want in here, HOWEVER there are a few things to keep in mind:
-	1. Any file added here has to be added to the soccer_mod_replacer.cfg with a name and a path
+You can add (almost) any texture you want as areplacer, HOWEVER there are a few things to keep in mind:
+	1. Any file added has to be added to the soccer_mod_replacer.cfg with a name and a path
 	2. The name does not has to be identical to the file as long as the path is correct, BUT the name in soccer_mod_replacer has to be identical with the one used in a map-config file!
 	3. If a client downloaded a file he's "stuck" with it unless he deletes it himself or you use a different file (name / path / etc)
 
