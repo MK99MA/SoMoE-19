@@ -196,6 +196,7 @@ The following features are toggleable or changeable:
  - **GK saves only** - *Toggle* - Enable or Disable save tracking only for players using the gk skin. If this option is enabled and no player of the team is using the gk skin, everyone will be able to earn saves in the gk area.
  - **Rank Mode** - *Toggle* - Select 1 of 3 ranking modes ( pts/matches, pts/rounds, pts).
  - **Celebration** - *Toggle* - Enable or Disable celebration weapons for the winning team. Also enables friendly fire and surpresses friendlyfire messages.
+ - **First 12 Rule** - *Toggle* - If enabled blocks players who joined in on slot 13+ from being picked.
  
 ----
 

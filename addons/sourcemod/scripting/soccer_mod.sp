@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.3.0-Beta6"
+#define PLUGIN_VERSION "1.3.1"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 #define MAXCONES_DYN 15
@@ -62,6 +62,7 @@
 #include "soccer_mod\modules\gkareas.sp"
 #include "soccer_mod\modules\training_adv.sp"
 #include "soccer_mod\modules\shout.sp"
+#include "soccer_mod\modules\grassreplacer.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -153,6 +154,7 @@ public void OnPluginStart()
 	TrainingOnPluginStart();
 	ConnectlistOnPluginStart();
 	ShoutOnPluginStart();
+	ReplacerOnPluginStart();
 
 	LoadJoinTeamFix();
 	LoadRadioCommandsFix();
@@ -613,9 +615,9 @@ public void OnMapStart()
 	
 	LoadAllowedMaps();
 	currentMapAllowed = IsCurrentMapAllowed();
-	
+
 	GetFieldOrientation();
-	
+
 	if (currentMapAllowed)
 	{
 		LoadConfigSoccer();
@@ -628,11 +630,9 @@ public void OnMapStart()
 			ReadEveryClientCookie();
 		}
 		bLATE_LOAD = false;
-
-		return;
 	}
 	//else LoadConfigNonSoccer();
-
+	
 	g_hostname = FindConVar("hostname");
 	g_hostname.GetString(old_hostname, 250);
 
@@ -641,7 +641,8 @@ public void OnMapStart()
 	StatsOnMapStart();
 	TrainingOnMapStart();
 	PersonalTrainingOnMapStart();
-	
+	ReplacerOnMapStart();
+
 	//shoutset
 	for (int player = 1; player <= MaxClients; player++)
 	{
@@ -651,6 +652,12 @@ public void OnMapStart()
 	
 	// Kill possibly running ForfeitTimer
 	ForfeitReset();
+}
+
+public void OnMapEnd()
+{
+	ClearArray(adt_decal_id);
+	ClearArray(adt_decal_position);
 }
 
 public void OnAllPluginsLoaded()
@@ -745,6 +752,11 @@ public void OnClientConnected(int client)
 	return;
 }
 
+public void OnClientPostAdminCheck(int client) 
+{
+	ReplacerOnClientPostAdminCheck(client); 
+}
+
 public void OnClientAuthorized(int client)
 {	
 	LCOnClientConnected(client);
@@ -794,6 +806,73 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 				FakeClientCommand(client, "say %s", cString);
 				return Plugin_Handled;
 			}
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
+public Action cmd_jointeam(int client, const char[] command, int iArgs)
+{
+	char arg[4];
+	int team = 0;
+	if(StrEqual(command, "jointeam"))
+	{
+		GetCmdArg(1, arg, sizeof(arg));
+		team = StringToInt(arg);
+	}
+
+
+	if(FileExists(tempReadyFileKV))
+	{
+		
+		if((StrEqual(command, "jointeam") && team == 1) || StrEqual(command, "spectate"))
+		{
+			char bSteam[32];
+			GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
+				
+			kvTemp = new KeyValues("Ready Check");
+			kvTemp.ImportFromFile(tempReadyFileKV);
+			
+			kvTemp.JumpToKey(bSteam, false);
+			kvTemp.DeleteThis();
+			
+			kvTemp.Rewind();
+			kvTemp.ExportToFile(tempReadyFileKV);
+			kvTemp.Close();
+			
+			if(GetClientMenu(client) != MenuSource_None)
+			{
+				CancelClientMenu(client,false);
+				InternalShowMenu(client, "\10", 1); 
+			} 
+		}
+		else if(team > 1)
+		{
+			if(startplayers != 6 && startplayers != 12) startplayers++;
+		}
+	}
+	if(trainingModeEnabled)
+	{
+		if(StrEqual(command, "jointeam"))
+		{
+			GetCmdArg(1, arg, sizeof(arg));
+			team = StringToInt(arg);
+		}
+		if(StrEqual(arg, "") || StrEqual(arg, "3") || StrEqual(arg, "ct"))
+		{
+			CPrintToChat(client,"{%s}[%s] {%s}Training mode enabled. Joining the CT team is blocked.", prefixcolor, prefix, textcolor);
+			return Plugin_Stop;
+		}
+	}
+	if((first12Set == 1) && CapPrep)
+	{
+		if(team == 2 || team == 3)
+		{
+			char steamid[32]
+			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		
+			if (ImportJoinNumber(steamid) > 12) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefix, textcolor, client, ImportJoinNumber(steamid));
 		}
 	}
 	
@@ -874,6 +953,11 @@ public void OnClientDisconnect_Post(int client)
 	{
 		HostName_Change_Status("Reset");
 		if(trainingModeEnabled) trainingModeEnabled = false;
+	}
+	
+	if(GetClientCount() == 0 && CapPrep)
+	{
+		CapPrep = false;
 	}
 	
 	ResetTrainingIndex(client);

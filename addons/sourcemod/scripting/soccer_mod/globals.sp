@@ -15,7 +15,7 @@ char pathCapPositionsFile[PLATFORM_MAX_PATH] 			= "cfg/sm_soccermod/soccer_mod_c
 char pathRefCardsFile[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/soccer_mod_referee_cards.txt";
 char matchlogKV[PLATFORM_MAX_PATH] 						= "cfg/sm_soccermod/soccer_mod_last_match.txt";
 char tempReadyFileKV[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/temp_readycheck.txt";
-//char DCListKV[PLATFORM_MAX_PATH] 						= "cfg/sm_soccermod/soccer_mod_dclist.txt";
+char DCListKV[PLATFORM_MAX_PATH] 						= "cfg/sm_soccermod/soccer_mod_dclist.txt";
 char mapDefaults[PLATFORM_MAX_PATH]						= "cfg/sm_soccermod/soccer_mod_mapdefaults.cfg";
 char matchlogSettingsKV[PLATFORM_MAX_PATH] 				= "cfg/sm_soccermod/soccer_mod_matchlogsettings.cfg";
 char personalSettingsKV[PLATFORM_MAX_PATH]				= "cfg/sm_soccermod/soccer_mod_personalCannonSettings.cfg";
@@ -47,12 +47,13 @@ bool xorientation				= true;
 bool g_bIsDuck[MAXPLAYERS+1] 	= {false,...};
 bool g_bDuck[MAXPLAYERS+1] 		= {false,...};
 bool g_bJump[MAXPLAYERS+1] 		= {false,...};
+bool CapPrep					= false;
 
 // FLOATS
 float phys_timescale			= 1.0;
 float respawnDelay 				= 10.0;
 float playerMaxHeight[66];
-float rrchecktime				= 90.0;
+float rrchecktime				= 30.0;//120.0;
 float mapBallStartPosition[3];
 float vec_tgoal_origin[3];
 float vec_ctgoal_origin[3];
@@ -66,7 +67,7 @@ Handle allowedMaps	  			= INVALID_HANDLE;
 Handle db			   			= INVALID_HANDLE;
 Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
-Handle dclistTimer;
+Handle dclistTimer[MAXPLAYERS + 1];
 Handle g_cJumpTimer[MAXPLAYERS+1] = {null,...};
 
 ArrayList groupArray;
@@ -89,6 +90,7 @@ int killfeedSet					= 0;
 int jump_count[MAXPLAYERS+1]	= {0, ...};
 int celebrateweaponSet			= 0;
 int KickoffWallSet				= 1;
+int first12Set					= 0;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -358,7 +360,7 @@ int rankingPlayerCDTimes[MAXPLAYERS+1];
 
 // BOOL
 bool showPanel					= false;
-bool cdMessage[MAXPLAYERS+1]	= false;
+//bool cdMessage[MAXPLAYERS+1]	= false;
 bool tempUnpause 				= false;
 
 // FLOATS

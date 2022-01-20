@@ -1055,6 +1055,7 @@ public Action DelayedffAbort(Handle timer)
 		}
 		
 		//Stop the Match
+		if(matchPaused) 	UnfreezeAll();
 		MatchReset();
 		ForfeitReset();
 		abortTime++;
@@ -1071,7 +1072,7 @@ public Action DelayedffAbort(Handle timer)
 			}
 		}
 		
-		UnfreezeAll();
+		
 	}
 	
 	abortTime--;
@@ -1096,7 +1097,7 @@ public void ForfeitReset()
 	// Kill RR Check timer
 	if(ffRRCheckTimer != null)
 	{
-		KillTimer(ffRRCheckTimer);
+		//KillTimer(ffRRCheckTimer);
 		ffRRCheckTimer = null;
 	}
 }

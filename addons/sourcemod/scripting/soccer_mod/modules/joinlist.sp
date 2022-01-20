@@ -10,6 +10,8 @@
 
 public void ConnectlistOnPluginStart()
 {
+	//if (FileExists(DCListKV)) DeleteFile(DCListKV);
+
 	kvConnectlist = new KeyValues("connectlist");
 }
 
@@ -41,11 +43,6 @@ public void OpenJoinlistPanel(int client)
 	}
 	kvConnectlist.Rewind();
 	
-	// nr 2 fehlte ? -> check ob disctime > 90 sekunden ist, wenn ja auf 0 setzen da somit löschen fehlgeschlagen
-	// picklist nr
-	// chat msg nr
-	// training menu in mode 1?
-	
 	// geh an erste stelle in datei
 	// hole Steamid
 	char bName[MAX_NAME_LENGTH];
@@ -59,6 +56,8 @@ public void OpenJoinlistPanel(int client)
 	{
 		bool bFound = false;
 		
+		currTime = GetTime();
+		
 		kvConnectlist.GetSectionName(buffer, sizeof(buffer));
 		if(bIsOnServer(buffer))
 		{
@@ -67,12 +66,12 @@ public void OpenJoinlistPanel(int client)
 			discTime = kvConnectlist.GetNum("disconnecttime", 0);
 			bFound = true;
 			if(discTime == 0) joinnr++;
-			else if (discTime < currTime-rrchecktime) kvConnectlist.DeleteThis();
+			//else if (discTime < currTime-rrchecktime) kvConnectlist.DeleteThis();
 		}
 		kvConnectlist.GotoNextKey();
 		kvConnectlist.SavePosition();
 		
-		currTime = GetTime();
+		//currTime = GetTime();
 		
 		currTime = currTime - connTime;
 		if (currTime == 0) timeAgo = "just now";
@@ -178,7 +177,6 @@ public void LCOnClientConnected(int client)
 {
 	// someone joins -> add to list
 	// time, steamid, name
-	KillDCListTimer()
 	
 	//kvConnectlist = new KeyValues("connectlist");
 	//kvConnectlist.ImportFromFile(DCListKV);
@@ -193,6 +191,13 @@ public void LCOnClientConnected(int client)
 		GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
 		GetClientName(client, bName, sizeof(bName));
 		
+		if(kvConnectlist.JumpToKey(bSteam, false))
+		{
+			kvConnectlist.JumpToKey(bSteam, false)
+			int oldclient = kvConnectlist.GetNum("client", 0);
+			KillDCListTimer(oldclient)
+			kvConnectlist.GoBack();
+		}
 		// check if entry exists aka rr
 		if (!(kvConnectlist.JumpToKey(bSteam, false)))
 		{	
@@ -200,10 +205,12 @@ public void LCOnClientConnected(int client)
 			kvConnectlist.SetString("name", bName);
 			kvConnectlist.SetNum("connecttime", connTime);
 			kvConnectlist.SetNum("disconnecttime", 0);
+			kvConnectlist.SetNum("client", client);
 			kvConnectlist.GoBack();	
 		}
 		else
 		{	
+			kvConnectlist.JumpToKey(bSteam, false);
 			discTime = kvConnectlist.GetNum("disconnecttime", -1);
 			if (discTime < (connTime-rrchecktime) || discTime == -1) // deletethis & recreate
 			{
@@ -215,7 +222,8 @@ public void LCOnClientConnected(int client)
 			}
 			kvConnectlist.SetString("name", bName);
 			kvConnectlist.SetNum("disconnecttime", 0);
-			//kvConnectlist.GoBack();
+			kvConnectlist.SetNum("client", client);
+			kvConnectlist.GoBack();
 		}
 	}
 	
@@ -240,6 +248,7 @@ public void LCOnClientConnected(int client)
 	//			"name"				"name"
 	// 			"connecttime"		"time"
 	//			"discconnecttime"	"time"
+	//			"client"			"clientid"
 	// 		}
 	// }
 }
@@ -258,6 +267,7 @@ public void LCDisconnect(int client)
 	
 	if (kvConnectlist.JumpToKey(bSteam, false))
 	{
+		kvConnectlist.JumpToKey(bSteam, false)
 		kvConnectlist.SetNum("disconnecttime", discTime);
 		kvConnectlist.GoBack();	
 	}
@@ -284,7 +294,7 @@ public void LCDisconnect(int client)
 	// DataPack for Timer
 	Handle pack = CreateDataPack();
 	// someone leaves -> start timer
-	dclistTimer = CreateTimer(rrchecktime, DCListTimer, pack);
+	dclistTimer[client] = CreateTimer(rrchecktime, DCListTimer, pack);
 	WritePackString(pack, bSteam);
 }
 
@@ -302,21 +312,22 @@ public Action DCListTimer(Handle timer, DataPack pack)
 	kvConnectlist.JumpToKey(bSteam, false);
 	discTime = kvConnectlist.GetNum("disconnecttime", 0);
 	if(discTime != 0)	kvConnectlist.DeleteThis();
+	PrintToServer("%s removed from joinlist.", bSteam);
 	kvConnectlist.GoBack();
 	
 	kvConnectlist.Rewind();
 	//kvConnectlist.ExportToFile(DCListKV); 
 	//kvConnectlist.Close();
 	
-	KillDCListTimer()
+	//KillDCListTimer()
 }
 
-public void KillDCListTimer()
+public void KillDCListTimer(int client)
 {
-	if (dclistTimer != null)
+	if (dclistTimer[client] != null)
 	{
-		KillTimer(dclistTimer);
-		dclistTimer = null;
+		KillTimer(dclistTimer[client]);
+		dclistTimer[client] = null;
 	}
 }
 

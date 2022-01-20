@@ -158,6 +158,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_loaddefaults",					defaultSet);
 	kvConfig.SetNum("soccer_mod_killfeed",						killfeedSet);
 	kvConfig.SetNum("soccer_mod_celebrate", 					celebrateweaponSet);
+	kvConfig.SetNum("soccer_mod_first12",						first12Set);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -284,6 +285,7 @@ public void CreateMapDefaultsConfig()
 	mapdefaultKV.SetNum("default_periodlength", 900);
 	mapdefaultKV.SetNum("default_breaklength", 5);
 	mapdefaultKV.SetNum("default_periods", 2);
+	mapdefaultKV.SetNum("default_kickoffwall", 1);
 	//mapdefaultKV.JumpToKey("removed sounds", true);
 	//mapdefaultKV.SetString("name", "type");
 	
@@ -507,6 +509,7 @@ public void ReadFromConfig()
 	defaultSet				= kvConfig.GetNum("soccer_mod_loaddefaults", 1);
 	killfeedSet				= kvConfig.GetNum("soccer_mod_killfeed", 0);
 	celebrateweaponSet		= kvConfig.GetNum("soccer_mod_celebrate", 0);
+	first12Set				= kvConfig.GetNum("soccer_mod_first12",	0);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);

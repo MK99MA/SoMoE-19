@@ -13,23 +13,29 @@ public void SetDefaultValues(int type)
 		if (type == 0)
 		{
 			//PrintToServer("FOUND");
-			buffer = mapdefaultKV.GetNum("default_periodlength", 0);
-			if(buffer != 0) 
+			buffer = mapdefaultKV.GetNum("default_periodlength", -1);
+			if(buffer != -1) 
 			{
 				matchPeriodLength = buffer;
 				UpdateConfigInt("Match Settings", "soccer_mod_match_period_length", matchPeriodLength);
 			}
-			buffer = mapdefaultKV.GetNum("default_breaklength", 0);
-			if(buffer != 0)
+			buffer = mapdefaultKV.GetNum("default_breaklength", -1);
+			if(buffer != -1)
 			{
 				matchPeriodBreakLength = buffer;
 				UpdateConfigInt("Match Settings", "soccer_mod_match_period_break_length", matchPeriodBreakLength);
 			}
-			buffer = mapdefaultKV.GetNum("default_periods", 0);
-			if(buffer != 0)
+			buffer = mapdefaultKV.GetNum("default_periods", -1);
+			if(buffer != -1)
 			{
 				matchPeriods = buffer;
 				UpdateConfigInt("Match Settings", "soccer_mod_match_periods", matchPeriods);
+			}
+			buffer = mapdefaultKV.GetNum("default_kickoffwall", -1);
+			if(buffer != -1)
+			{
+				KickoffWallSet = buffer;
+				UpdateConfigInt("Misc Settings", "soccer_mod_kickoffwall", KickoffWallSet);
 			}
 		}
 		else if (type == 1)

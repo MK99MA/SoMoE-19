@@ -5,6 +5,31 @@ Changelog
 =========
 
 -----
+1.3.1
+-----
+
+***
+New
+***
+
+ - Added First 12 Rule togge
+ - Added Grassreplacer
+
+*******
+Changes
+*******
+
+ 
+*****
+Fixes
+*****
+
+ - Fixes to joinlist
+ - Minor fixes
+
+
+
+-----
 1.3.0 BETA
 -----
 

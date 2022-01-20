@@ -87,7 +87,7 @@ public void KickOffWall()
 					// check coords
 					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_CT, radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_CT, radius);
 						else 
 						{
 							CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, CS_TEAM_CT);							
@@ -97,7 +97,7 @@ public void KickOffWall()
 					}
 					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_CT, -1*radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_CT, -1*radius);
 						else
 						{
 							CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, CS_TEAM_CT);	
@@ -119,7 +119,7 @@ public void KickOffWall()
 					// check coords
 					if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t ct-
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_T, -1*radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_T, -1*radius);
 						else
 						{
 							CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, CS_TEAM_T); 
@@ -129,7 +129,7 @@ public void KickOffWall()
 					}
 					else if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t- ct
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_T, radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_T, radius);
 						else
 						{
 							CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, CS_TEAM_T); 
@@ -155,7 +155,7 @@ public void KickOffWall()
 					// check coords
 					if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t ct-
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_T, radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_T, radius);
 						else
 						{
 							CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, CS_TEAM_T); 
@@ -165,7 +165,7 @@ public void KickOffWall()
 					}
 					else if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t- ct
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_T, -1*radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_T, -1*radius);
 						else
 						{
 							CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, CS_TEAM_T);
@@ -188,7 +188,7 @@ public void KickOffWall()
 					// check coords
 					if (vec_tgoal_origin[1] < vec_ctgoal_origin[1]) //t ct-
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_CT, -1*radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_CT, -1*radius);
 						else
 						{
 							CreateInvisWall(-130.0, -130.0, 0.0, -130.0, 0.0, 1300.0, "boxside1", 2, CS_TEAM_CT); 
@@ -198,7 +198,7 @@ public void KickOffWall()
 					}
 					else if (vec_tgoal_origin[1] > vec_ctgoal_origin[1]) //t- ct
 					{
-						if(FileExists(wallmodel)) CreateInvisWallCircle("wallcircle", CS_TEAM_CT, radius);
+						if(FileExists(wallmodel)) CreateInvisWallCircleX("wallcircle", CS_TEAM_CT, radius);
 						else
 						{
 							CreateInvisWall(-130.0, 0.0, 0.0, -130.0, 130.0, 1300.0, "boxside1", 2, CS_TEAM_CT);
@@ -211,6 +211,7 @@ public void KickOffWall()
 		}
 		else //yorient
 		{
+			// TODO: WallCircle
 			//create box to allow kickoff
 			if(matchLastScored > 1)
 			{
@@ -416,7 +417,7 @@ public void CreateInvisWall(float minX, float minY, float minZ, float maxX, floa
 	KickOffLaser(targetname, minX, minY, minZ, maxX, maxY, maxZ, index, team);
 }
 
-public void CreateInvisWallCircle(char targetname[32], int team, float radius)
+public void CreateInvisWallCircleX(char targetname[32], int team, float radius)
 {
 	char color[32];
 	if(team == CS_TEAM_CT) color = "0 0 255";
@@ -489,6 +490,77 @@ public void CreateInvisWallCircle(char targetname[32], int team, float radius)
 	DrawLaser(targetname, pos1[0], pos1[1], mapBallStartPosition[2]+110.0, pos2[0], pos2[1], mapBallStartPosition[2]+110.0, color);
 }
 
+/*public void CreateInvisWallCircleY(char targetname[32], int team, float radius)
+{
+	char color[32];
+	if(team == CS_TEAM_CT) color = "0 0 255";
+	else if (team == CS_TEAM_T) color = "255 0 0";
+	
+	float pi = 3.1415926536897932384626433832795;
+	
+	float angle, x, y;
+	float ang[3] = {0.0, 90.0, 0.0};
+	float pos1[3], pos2[3];
+	int entindex[26];
+	int count = 0;
+	
+	
+	pos2[0] = mapBallStartPosition[0] + radius;
+	pos2[1] = mapBallStartPosition[1];
+	pos2[2] = mapBallStartPosition[2] - 18.0;
+	
+	angle += pi/24;
+	ang[1] += 180.0/24;
+	
+	while(angle <= pi)
+	{
+		x = radius * Cosine(angle);
+		y = radius * Sine(angle);			
+		
+		pos1[0] = mapBallStartPosition[0] + x;
+		pos1[1] = mapBallStartPosition[1] + y;
+		pos1[2] = mapBallStartPosition[2] - 18.0;
+		
+		entindex[count] = CreateEntityByName("prop_dynamic");
+		
+		if (!IsModelPrecached(wallmodel)) PrecacheModel(wallmodel);
+		
+		if (entindex[count] != -1)
+		{
+			DispatchKeyValue(entindex[count], "solid", "6");
+			DispatchKeyValue(entindex[count], "targetname", targetname);
+			DispatchKeyValue(entindex[count], "model", wallmodel);
+			DispatchKeyValueVector(entindex[count], "origin", pos1);
+		}	
+		
+		DispatchSpawn(entindex[count]);
+		ActivateEntity(entindex[count]);
+		
+		TeleportEntity(entindex[count], NULL_VECTOR, ang, NULL_VECTOR);
+		
+		int enteffects = GetEntProp(entindex[count], Prop_Send, "m_fEffects");
+		enteffects |= 32;
+		SetEntProp(entindex[count], Prop_Send, "m_fEffects", enteffects);
+		
+		DrawLaser(targetname, pos1[0], pos1[1], mapBallStartPosition[2]-18.0, pos1[0], pos1[1], mapBallStartPosition[2]+110.0, color);
+		DrawLaser(targetname, pos1[0], pos1[1], mapBallStartPosition[2]+110.0, pos2[0], pos2[1], mapBallStartPosition[2]+110.0, color);
+		
+		pos2[0] = pos1[0];
+		pos2[1] = pos1[1];
+		pos2[2] = pos1[2];
+		
+		angle += pi/12;
+		ang[1] += 180.0/12;
+		count += 1;
+	}
+	
+	pos1[0] = mapBallStartPosition[0] - radius;
+	pos1[1] = mapBallStartPosition[1];
+	pos1[2] = mapBallStartPosition[2] - 18.0;
+
+	DrawLaser(targetname, pos1[0], pos1[1], mapBallStartPosition[2]+110.0, pos2[0], pos2[1], mapBallStartPosition[2]+110.0, color);
+}*/
+
 
 public void KickOffLaser(char targetname[32], float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int index, int team)
 {
@@ -501,11 +573,22 @@ public void KickOffLaser(char targetname[32], float minX, float minY, float minZ
 	DrawLaser(targetname, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
 	if(index <= 1) 
 	{
-		// vert borders
-		DrawLaser(targetname, mapBallStartPosition[0]+1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]+640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]-1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
-		DrawLaser(targetname, mapBallStartPosition[0]-640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
+		if(xorientation)
+		{
+			// vert borders
+			DrawLaser(targetname, mapBallStartPosition[0]+1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]+640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]+640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]-1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-1280.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]-640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]-18, mapBallStartPosition[0]-640.0, mapBallStartPosition[1]+maxY, mapBallStartPosition[2]+110.0, color);
+		}
+		else
+		{
+			// vert borders
+			DrawLaser(targetname, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+1280.0, mapBallStartPosition[2]-18, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+1280.0, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+640.0, mapBallStartPosition[2]-18, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]+640.0, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]-1280.0, mapBallStartPosition[2]-18, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]-1280.0, mapBallStartPosition[2]+110.0, color);
+			DrawLaser(targetname, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]-640.0, mapBallStartPosition[2]-18, mapBallStartPosition[0]+maxX, mapBallStartPosition[1]-640.0, mapBallStartPosition[2]+110.0, color);
+		}
 	}
 	//horiz laser
 	char map[128];

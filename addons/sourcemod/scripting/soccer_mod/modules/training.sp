@@ -114,6 +114,45 @@ public void TrainingOnClientDisconnect(int client)
 	g_pWasInNoclip[client] = false;
 	g_pInRotationMode[client] = false;
 	g_eReleaseFreeze[client] = true;
+	
+	//remove props
+	RemoveProp(client, "can");
+	RemoveProp(client, "plate");
+	RemoveProp(client, "hoop");
+}
+
+public void RemoveProp(int client, char type[32])
+{
+	char entityName[32];
+	Format(entityName, sizeof(entityName), "soccer_mod_training_%s_%i", type, client);	
+	char triggerName[64];
+	Format(triggerName, sizeof(triggerName), "soccer_mod_training_%strigger_%i", type, client);
+	
+	int prop, trigger;
+	while ((prop = FindEntityByClassname(prop, "prop_dynamic")) != INVALID_ENT_REFERENCE)
+	{
+		char entPropString[32];
+		GetEntPropString(prop, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
+
+		if (StrEqual(entPropString, entityName))
+		{
+			if(StrEqual(type, "hoop"))			
+			AcceptEntityInput(prop, "Kill");
+		}
+	}
+	while ((trigger = FindEntityByClassname(trigger, "trigger_multiple")) != INVALID_ENT_REFERENCE)
+	{
+		char entPropString[64];
+		GetEntPropString(trigger, Prop_Data, "m_iName", entPropString, sizeof(entPropString));
+
+		if (StrEqual(entPropString, triggerName))
+		{
+			AcceptEntityInput(trigger, "Kill");
+		}
+	}	
+	pers_hoopIndex[client] = -1;
+	pers_canIndex[client] = -1;
+	pers_plateIndex[client] = -1;
 }
 
 public void TrainingEventRoundStart(Event event)

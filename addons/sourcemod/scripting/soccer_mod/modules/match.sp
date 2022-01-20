@@ -2041,8 +2041,11 @@ public void MatchUnpause(int client)
 			if(FileExists(tempReadyFileKV)) DeleteTempFile();
 			
 			char steamid[32];
-			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
-			LogMessage("%N <%s> has unpaused the match", client, steamid);
+			if(client != 0) 
+			{
+				GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+				LogMessage("%N <%s> has unpaused the match", client, steamid);
+			}
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Match already unpaused", prefixcolor, prefix, textcolor);
 	}

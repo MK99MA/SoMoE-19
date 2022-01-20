@@ -69,7 +69,7 @@ public void OpenMenuMiscSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Misc");
 
-	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32], WallString[32]; //, DebugString[32];
+	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32], WallString[32], First12String[32]; //, DebugString[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -111,6 +111,9 @@ public void OpenMenuMiscSettings(int client)
 	if(celebrateweaponSet == 0)			CelebrateString = "Celebration: OFF";
 	else if (celebrateweaponSet == 1)	CelebrateString = "Celebration: ON";
 	
+	if(first12Set == 0)					First12String = "First 12 Rule: OFF";
+	else if(first12Set == 1)			First12String = "Frist 12 Rule: ON";
+	
 	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
 	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
 	
@@ -122,6 +125,7 @@ public void OpenMenuMiscSettings(int client)
 	menu.AddItem("djblock", DJString);
 	menu.AddItem("kickoffwall", WallString);
 	menu.AddItem("hostname", HostString);
+	menu.AddItem("first12", First12String);
 	menu.AddItem("rankspam", RankString);
 	menu.AddItem("ready", ReadyString);
 	menu.AddItem("damagesound", DamageString);
@@ -333,6 +337,20 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			{
 				celebrateweaponSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_celebrate", celebrateweaponSet);
+			}
+			OpenMenuMiscSettings(client);
+		}
+		else if(StrEqual(menuItem, "first12"))
+		{
+			if(first12Set == 0)
+			{
+				first12Set = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_first12", first12Set);
+			}
+			else if(first12Set == 1)
+			{
+				first12Set = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_first12", first12Set);
 			}
 			OpenMenuMiscSettings(client);
 		}

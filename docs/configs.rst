@@ -62,5 +62,8 @@ List of generated files
 | :ref:`conf-skins`
 | *MANUAL CONFIG* - Add skins that are selectable ingame form a menu in here.
 
+| :ref:`conf-replacer`
+| *MANUAL CONFIG* - Add decals to be placed on maps in here.  
+
 .. tip::
    Every file got its own site in this documentation. Make sure to check them out if you're having issues!

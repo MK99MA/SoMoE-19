@@ -40,7 +40,7 @@ public void CapEventPlayerDeath(Event event)
 			{
 				ForfeitEnabled = 1;
 				ForfeitRRCheck = true;
-				CPrintToChatAll("{%s}[%s]CapFight detected. Forfeit vote will be enabled for the match");
+				CPrintToChatAll("{%s}[%s]CapFight detected. Forfeit vote will be enabled for the match", prefixcolor, prefix);
 				UpdateConfigInt("Forfeit Settings", "soccer_mod_forfeitvote", ForfeitEnabled);
 			}
 		}
@@ -542,6 +542,7 @@ public void CapPutAllToSpec(int client)
 	}
 	
 	HostName_Change_Status("Specced");
+	if(first12Set == 1)				CapPrep = true;
 
 	char steamid[32];
 	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -575,6 +576,11 @@ public void CapAddRandomPlayer(int client)
 		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		GetClientAuthId(client, AuthId_Engine, targetSteamid, sizeof(targetSteamid));
 		LogMessage("%N <%s> has forced %N <%s> as random player", client, steamid, randomPlayer, targetSteamid);
+		
+		if((first12Set == 1) && CapPrep)
+		{
+			if (ImportJoinNumber(targetSteamid) > 12) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefixcolor, textcolor, randomPlayer, ImportJoinNumber(targetSteamid));
+		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}No players in spectator", prefixcolor, prefix, textcolor);
 }
@@ -712,7 +718,12 @@ public void CapCreatePickMenu(int client)
 				if (positions[0]) Format(menuString, sizeof(menuString), "[%i] %s %s", posnr, playerName, positions);
 				else Format(menuString, sizeof(menuString), "[%i] %s", posnr, playerName);
 				//menuString = playerName;
-				menu.AddItem(playerid, menuString);
+				if(first12Set == 1)
+				{
+					if(posnr > 12)	menu.AddItem(playerid, menuString, ITEMDRAW_DISABLED);
+					else			menu.AddItem(playerid, menuString);
+				}
+				else				menu.AddItem(playerid, menuString);
 				keygroup.Rewind();
 			}
 		}
@@ -728,6 +739,9 @@ public int ImportJoinNumber(char steamid[32])
 	int nr = 0;
 	int entries = 0;
 	char buffer[32];
+	
+	kvConnectlist = new KeyValues("connectlist");
+	kvConnectlist.ImportFromFile(DCListKV);
 	
 	if (kvConnectlist.GotoFirstSubKey())
 	{
@@ -754,10 +768,12 @@ public int ImportJoinNumber(char steamid[32])
 		if (StrEqual(buffer, steamid)) 
 		{
 			kvConnectlist.Rewind();
+			kvConnectlist.Close();
 			return nr; 
 		}
 	}
 	kvConnectlist.Rewind();
+	kvConnectlist.Close();
 	
 	return 0;
 }

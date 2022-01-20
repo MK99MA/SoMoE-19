@@ -46,5 +46,9 @@ public Action sound_hook(int clients[64], int& numClients, char sample[PLATFORM_
 	{
 		if(StrContains(sample, "player/damage", false) >= 0) 	return Plugin_Handled;
 	}
+	if(StrContains(sample, "player/kevlar", false) >= 0) 		return Plugin_Handled;
+	if(StrContains(sample, "player/bhit_helmet", false) >= 0) 	return Plugin_Handled;
+	if(StrContains(sample, "player/headshot", false) >= 0) 		return Plugin_Handled;
+	
 	return Plugin_Continue;
 }

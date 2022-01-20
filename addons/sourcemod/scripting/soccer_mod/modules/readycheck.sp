@@ -106,13 +106,13 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 	int currentTime = GetTime();
 	if (cooldownTime[client] != -1 && cooldownTime[client] > currentTime)
 	{
-		if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam.", prefixcolor, prefix, textcolor);
-		cdMessage[client] = false;
+		//if(cdMessage[client]) CPrintToChat(client,"{%s}[%s] {%s}Please don't spam.", prefixcolor, prefix, textcolor);
+		//cdMessage[client] = false;
 		OpenReadyPanel(client);
 	}
 	else
 	{
-		if(cooldownTime[client] < currentTime) 		cdMessage[client] = false;
+		//if(cooldownTime[client] < currentTime) 		cdMessage[client] = false;
 		if(showPanel)
 		{
 			if (action == MenuAction_Select)
@@ -143,7 +143,7 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 					kvTemp.Close();
 				}
 				
-				cdMessage[client] = true;
+				//cdMessage[client] = true;
 				cooldownTime[client] = currentTime + 3;
 				RefreshPanel();
 			}
@@ -312,62 +312,6 @@ public void ReadyCheckOnClientDisconnect(int client)
 		kvTemp.ExportToFile(tempReadyFileKV);
 		kvTemp.Close();
 	}
-}
-
-public Action cmd_jointeam(int client, const char[] command, int iArgs)
-{
-	char arg[4];
-	int team = 0;
-
-	if(FileExists(tempReadyFileKV))
-	{
-		if(StrEqual(command, "jointeam"))
-		{
-			GetCmdArg(1, arg, sizeof(arg));
-			team = StringToInt(arg);
-		}
-		
-		if((StrEqual(command, "jointeam") && team == 1) || StrEqual(command, "spectate"))
-		{
-			char bSteam[32];
-			GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
-				
-			kvTemp = new KeyValues("Ready Check");
-			kvTemp.ImportFromFile(tempReadyFileKV);
-			
-			kvTemp.JumpToKey(bSteam, false);
-			kvTemp.DeleteThis();
-			
-			kvTemp.Rewind();
-			kvTemp.ExportToFile(tempReadyFileKV);
-			kvTemp.Close();
-			
-			if(GetClientMenu(client) != MenuSource_None)
-			{
-				CancelClientMenu(client,false);
-				InternalShowMenu(client, "\10", 1); 
-			} 
-		}
-		else if(team > 1)
-		{
-			if(startplayers != 6 && startplayers != 12) startplayers++;
-		}
-	}
-	if(trainingModeEnabled)
-	{
-		if(StrEqual(command, "jointeam"))
-		{
-			GetCmdArg(1, arg, sizeof(arg));
-			team = StringToInt(arg);
-		}
-		if(StrEqual(arg, "") || StrEqual(arg, "3") || StrEqual(arg, "ct"))
-		{
-			CPrintToChat(client,"{%s}[%s] {%s}Training mode enabled. Joining the CT team is blocked.", prefixcolor, prefix, textcolor);
-			return Plugin_Stop;
-		}
-	}
-	
-	return Plugin_Continue;
 }
 
 public Action pauseReadyTimer(Handle timer, any time)

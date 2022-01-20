@@ -4,16 +4,14 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.2.9.7"
+			"Latest"	"1.3.1"
 			"Previous"	"1.2.9.5"
 		}
 		
-		"Notes"	"Added third alternative duckjump-block method (Not working properly in this version)"
-		"Notes"	"Added option to enable celebration weapons after scoring a goal"
-		"Notes"	"Added toggleable invisible walls at kickoff"
-		"Notes" "Added top3 player display at halftime"
-		"Notes" "Added Mapsound control (Disable / Enable ambient_generic sounds per map)"
-		"Notes"	"Changed final matchmessage to show top3 instead of only MOTM"
+		"Notes"	"Fixes to joinlist"
+		"Notes"	"Added first 12 rule option"
+		"Notes"	"Fixes to map orientation detection"
+		"Notes" "Added optional grassreplacer"
 	}
 	
 	"Files"
@@ -28,5 +26,9 @@
 		"Plugin"	"Path_Mod/sound/soccermod/halftime.wav"
 		"Plugin"	"Path_Mod/sound/soccermod/kickoff.wav"
 		"Plugin"	"Path_Mod/sound/soccermod/whistle.wav"
+		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer.vtf"
+		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer.vmt"
+		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer_light.vtf"
+		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer_light.vmt"
 	}
 }
