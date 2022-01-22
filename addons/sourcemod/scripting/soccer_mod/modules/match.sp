@@ -30,7 +30,7 @@ public void MatchOnPluginStart()
 
 public void MatchOnMapStart()
 {
-	MatchReset();
+	//MatchReset();
 	NameReset();
 	ForfeitReset();
 }
@@ -1870,6 +1870,9 @@ public void MatchReset()
 
 	matchScoreT = 0;
 	matchScoreCT = 0;
+	
+	if(first12Set == 1)		nrhelper = GetClientCount();
+	if(first12Set == 2 && tempRule)	tempRule = false;
 }
 
 public void NameReset()

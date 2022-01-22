@@ -112,7 +112,8 @@ public void OpenMenuMiscSettings(int client)
 	else if (celebrateweaponSet == 1)	CelebrateString = "Celebration: ON";
 	
 	if(first12Set == 0)					First12String = "First 12 Rule: OFF";
-	else if(first12Set == 1)			First12String = "Frist 12 Rule: ON";
+	else if(first12Set == 1)			First12String = "First 12 Rule: ON";
+	else if(first12Set == 2)			First12String = "First 12 Rule: Pre-Cap Join";
 	
 	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
 	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
@@ -348,6 +349,11 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 				UpdateConfigInt("Misc Settings", "soccer_mod_first12", first12Set);
 			}
 			else if(first12Set == 1)
+			{
+				first12Set = 2;
+				UpdateConfigInt("Misc Settings", "soccer_mod_first12", first12Set);
+			}
+			else if(first12Set == 2)
 			{
 				first12Set = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_first12", first12Set);

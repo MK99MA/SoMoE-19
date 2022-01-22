@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.3.1"
+#define PLUGIN_VERSION "1.3.2"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 #define MAXCONES_DYN 15
@@ -642,6 +642,7 @@ public void OnMapStart()
 	TrainingOnMapStart();
 	PersonalTrainingOnMapStart();
 	ReplacerOnMapStart();
+	ConnectlistOnMapStart();
 
 	//shoutset
 	for (int player = 1; player <= MaxClients; player++)
@@ -656,6 +657,8 @@ public void OnMapStart()
 
 public void OnMapEnd()
 {
+	ConnectlistOnMapEnd();
+	
 	ClearArray(adt_decal_id);
 	ClearArray(adt_decal_position);
 }
@@ -1441,6 +1444,34 @@ stock bool GetAimOrigin(int client, float aimOrigin[3])
 
 	traceRay.Close();
 	return false;
+}
+
+int GetClientAimTargetEx(int client, float pos[3]) {
+	
+	if (client < 1) {
+		return -1;
+	}
+	
+	float vAngles[3];
+	float vOrigin[3];
+	
+	GetClientEyePosition(client, vOrigin);
+	GetClientEyeAngles(client, vAngles);
+	
+	Handle trace = TR_TraceRayFilterEx(vOrigin, vAngles, MASK_ALL, RayType_Infinite, TraceEntityFilterPlayer);
+	
+	if (TR_DidHit(trace)) {
+		
+		TR_GetEndPosition(pos, trace);
+		int entity = TR_GetEntityIndex(trace);
+		CloseHandle(trace);
+		
+		return entity;
+	}
+	
+	CloseHandle(trace);
+	
+	return -1;
 }
 
 public bool TraceEntityFilterPlayer(int entity, int contentsMask) 

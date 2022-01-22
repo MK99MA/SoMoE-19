@@ -4,14 +4,13 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.3.1"
-			"Previous"	"1.2.9.5"
+			"Latest"	"1.3.2"
+			"Previous"	"1.3.1"
 		}
 		
-		"Notes"	"Fixes to joinlist"
-		"Notes"	"Added first 12 rule option"
-		"Notes"	"Fixes to map orientation detection"
-		"Notes" "Added optional grassreplacer"
+		"Notes"	"More Fixes to joinlist"
+		"Notes"	"Added pre-cap-join option to first 12 rule"
+		"Notes" "Added !aim command"
 	}
 	
 	"Files"

@@ -124,6 +124,7 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ Duckjump Block Toggle
 		 │     │  ├─ Kickoffwall Toggle
 		 │     │  ├─ Hostname Updater Toggle
+		 │     │  ├─ First12 Rule Toggle
 		 │     │  ├─ !rank Cooldown Setting
 		 │     │  ├─ Readycheck Toggle
 		 │     │  ├─ Damage Sound Toggle

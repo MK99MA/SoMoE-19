@@ -15,6 +15,29 @@ public void ConnectlistOnPluginStart()
 	kvConnectlist = new KeyValues("connectlist");
 }
 
+public void ConnectlistOnMapStart()
+{
+	kvConnectlist = new KeyValues("connectlist");
+	
+	if(FileExists(DCListKV))
+	{
+		kvConnectlist.ImportFromFile(DCListKV);
+		//Delete File
+		DeleteFile(DCListKV);
+	}
+}
+
+public void ConnectlistOnMapEnd()
+{
+	if (!FileExists(DCListKV))
+	{
+		File hFile = OpenFile(DCListKV, "w");
+		hFile.Close();
+	}
+	kvConnectlist.ExportToFile(DCListKV);
+	kvConnectlist.Close();
+}
+
 public void OpenJoinlistPanel(int client)
 {
 	char line[128];

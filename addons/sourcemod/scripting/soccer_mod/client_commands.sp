@@ -37,6 +37,7 @@ public void RegisterClientCommands()
 	RegConsoleCmd("sm_unpause", UnpauseCommand, "Unpauses a match");
 
 	RegAdminCmd("sm_addadmin", Command_AddAdmin, ADMFLAG_RCON, "[RCONFLAG]Adds an admin to admins_simple.ini");
+	RegAdminCmd("sm_aim", Command_AimPos, ADMFLAG_RCON, "[RCONFLAG]Prints the position you're looking at to the chat.");
 	RegAdminCmd("sm_dpass", Command_DefPass, ADMFLAG_RCON, "[RCONFLAG]Reset the sv password");
 	RegAdminCmd("sm_forcerdy", Command_ForceRdy, ADMFLAG_RCON, "[RCONFLAG]Forces Ready state for every player");
 	RegAdminCmd("sm_forceunp", Command_ForceUnpause, ADMFLAG_RCON, "[RCONFLAG]Forces the match to unpause");
@@ -573,6 +574,17 @@ public Action CreditsCommand(int client, int args)
 // *******************************************************************************************************************
 // ************************************************ ADMIN COMMANDS ***************************************************
 // ******************************************************************************************************************* 
+
+public Action Command_AimPos(int client, int args)
+{
+	float pos[3];
+	if (GetClientAimTargetEx(client, pos) >= 0) 
+	{
+		CReplyToCommand(client, "{%s}[%s] {%s}Position you are aiming at: {%s}%.6f, %.6f, %.6f", prefixcolor, prefix, textcolor, prefixcolor, pos[0], pos[1], pos[2]);
+	}
+
+	return Plugin_Handled;
+}
 
 public Action Command_GKSetup(int client, int args)
 {

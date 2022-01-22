@@ -134,6 +134,7 @@ char szTarget2[64];
 // BOOL
 bool capFightStarted	= false;
 bool tempSprint			= true;
+bool tempRule			= false;
 
 // FLOATS
 
@@ -144,6 +145,8 @@ int capPicker			= 0;
 int capCT				= 0;
 int capT				= 0;
 int capPicksLeft		= 0;
+int capnr				= 0;
+int nrhelper			= 0;
 
 // STRINGS
 char capweapon[32]		="knife";

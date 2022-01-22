@@ -326,12 +326,12 @@ public void CreateRankingTopMenu(int client, char title[64], Handle hndl)
 		if(rankMode == 0)
 		{
 			matches = SQL_FetchInt(hndl, 3);
-			points = points/matches;
+			if(matches != 0)			points = points/matches;
 		}
 		else if(rankMode == 1)
 		{
 			rounds = SQL_FetchInt(hndl, 3) + SQL_FetchInt(hndl, 4);
-			points = points/rounds;
+			if(rounds != 0)				points = points/rounds;
 		}
 		
 		Format(menuString, sizeof(menuString), "(%i) %s (%i)", position, name, points);

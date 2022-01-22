@@ -5,6 +5,30 @@ Changelog
 =========
 
 -----
+1.3.2
+-----
+
+***
+New
+***
+
+ - Added Pre-Cap-Join option to First12 Toggle
+ - Added !aim command to find out coordinates to use with replacer configs
+
+*******
+Changes
+*******
+
+ 
+*****
+Fixes
+*****
+
+ - More Fixes to joinlist
+ - Minor fixes
+
+
+-----
 1.3.1
 -----
 
@@ -12,7 +36,7 @@ Changelog
 New
 ***
 
- - Added First 12 Rule togge
+ - Added First 12 Rule toggle
  - Added Grassreplacer
 
 *******

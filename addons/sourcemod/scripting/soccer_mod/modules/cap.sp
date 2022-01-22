@@ -603,6 +603,22 @@ public void CapStartFight(int client)
 		}
 		else tempSprint = false;
 		
+		// count players
+		capnr = GetClientCount();
+		if(first12Set == 1)
+		{
+			if(nrhelper >= capnr)
+			{
+				first12Set = 2;
+				tempRule = true;
+			}
+		}
+		if(first12Set == 2)
+		{
+			if (capnr < 12)	capnr = 12;
+		}
+		nrhelper = 0;
+		
 		capFightStarted = true;
 		capPicksLeft = (matchMaxPlayers - 1) * 2;
 		
@@ -723,6 +739,11 @@ public void CapCreatePickMenu(int client)
 					if(posnr > 12)	menu.AddItem(playerid, menuString, ITEMDRAW_DISABLED);
 					else			menu.AddItem(playerid, menuString);
 				}
+				else if (first12Set == 2)
+				{
+					if(posnr > capnr)	menu.AddItem(playerid, menuString, ITEMDRAW_DISABLED);
+					else				menu.AddItem(playerid, menuString);
+				}
 				else				menu.AddItem(playerid, menuString);
 				keygroup.Rewind();
 			}
@@ -740,7 +761,7 @@ public int ImportJoinNumber(char steamid[32])
 	int entries = 0;
 	char buffer[32];
 	
-	kvConnectlist = new KeyValues("connectlist");
+	//kvConnectlist = new KeyValues("connectlist");
 	kvConnectlist.ImportFromFile(DCListKV);
 	
 	if (kvConnectlist.GotoFirstSubKey())
@@ -768,12 +789,12 @@ public int ImportJoinNumber(char steamid[32])
 		if (StrEqual(buffer, steamid)) 
 		{
 			kvConnectlist.Rewind();
-			kvConnectlist.Close();
+			//kvConnectlist.Close();
 			return nr; 
 		}
 	}
 	kvConnectlist.Rewind();
-	kvConnectlist.Close();
+	//kvConnectlist.Close();
 	
 	return 0;
 }

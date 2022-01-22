@@ -481,6 +481,7 @@ public void OpenMenuCommandsAdmin(int client)
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rpasswordcmd", "[RCON] !rpass");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("rankwipe", "[RCON] !wiperanks <table> ");	
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_ROOT, true)) menu.AddItem("jumptime", "[ROOT] !jumptime <float>");	
+	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_ROOT, true)) menu.AddItem("aimcmd", "[RCON] !aim");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -506,6 +507,7 @@ public int MenuHandlerCommandsAdmin(Menu menu, MenuAction action, int client, in
 		else if (StrEqual(menuItem, "ungk"))	CPrintToChat(client, "{%s}[%s] {%s}Removes the gk skin of your target.", prefixcolor, prefix, textcolor);	
 		else if (StrEqual(menuItem, "rankwipe"))	CPrintToChat(client, "{%s}[%s] {%s}Wipes the given ranking table. {%s}THIS IS NOT REVERSIBLE!!", prefixcolor, prefix, textcolor, "crimson");	
 		else if (StrEqual(menuItem, "jumptime"))	CPrintToChat(client, "{%s}[%s] {%s}Set the time before ducking after a jump is blocked. (Default: 0.45)", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "aimcmd"))	CPrintToChat(client, "{%s}[%s] {%s}Prints the coordinates you're looking at to the chat.", prefixcolor, prefix, textcolor);	
 
 		OpenMenuCommandsAdmin(client);
 	}

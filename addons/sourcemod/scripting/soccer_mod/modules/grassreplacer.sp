@@ -72,6 +72,8 @@ public void CreateDecalConfig()
 		hFile.Close();
 		
 		KeyValues kvRep = new KeyValues("Replacer");
+		kvRep.ImportFromFile(path_decals);
+		
 		kvRep.JumpToKey("grassreplacer", true);
 		kvRep.SetString("path", "decals/soccer_mod/grassreplacer");
 		kvRep.GoBack();
@@ -102,6 +104,8 @@ public void CreateMapConfig()
 		hFile.Close();
 		
 		KeyValues kvRep = new KeyValues("Positions");
+		kvRep.ImportFromFile(path_mapdecals);
+		
 		kvRep.JumpToKey("grassreplacer", true);
 		kvRep.SetString("pos1", "Please read the information found here:");
 		kvRep.SetString("pos2", "https://github.com/MK99MA/SoMoE-19/blob/master/cfg/sm_soccermod/grassreplacer/readme.txt");
