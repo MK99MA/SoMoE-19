@@ -1,0 +1,8 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "decals/soccer_mod/grassreplacer_light"
+	"$surfaceprop" "grass"
+	"$basetexturetransform" "center .5 .5 scale 4 4 rotate 0 translate 0 0"
+	"$decal" "1"
+	"%keywords" "lolobubu"
+}
