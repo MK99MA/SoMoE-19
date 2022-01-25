@@ -27,7 +27,7 @@ I incorporated parts of the following plugins and only modified them partially t
 
 If the problem / question remains feel free to create an issue [here](https://github.com/MK99MA/soccermod-2019edit/issues)  
 
-## [>>Mostly accurate CHANGELOG<<](https://somoe-19.readthedocs.io/en/latest/changelogs/changes.html).
+## [>>Somewhat accurate CHANGELOG<<](https://somoe-19.readthedocs.io/en/latest/changelogs/changes.html).
 
 ## [>>Related map background for the main menu<<](https://github.com/MK99MA/SoMoE-19/raw/master/MainMenuBackground.zip)  
 
