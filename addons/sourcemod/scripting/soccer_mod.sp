@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.3.2"
+#define PLUGIN_VERSION "1.3.3"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 #define MAXCONES_DYN 15
@@ -876,6 +876,16 @@ public Action cmd_jointeam(int client, const char[] command, int iArgs)
 			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
 		
 			if (ImportJoinNumber(steamid) > 12) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefix, textcolor, client, ImportJoinNumber(steamid));
+		}
+	}
+	if((first12Set == 2) && CapPrep)
+	{
+		if(team == 2 || team == 3)
+		{
+			char steamid[32]
+			GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+			
+			if (ImportJoinNumber(steamid) > capnr) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefix, textcolor, client, ImportJoinNumber(steamid));
 		}
 	}
 	

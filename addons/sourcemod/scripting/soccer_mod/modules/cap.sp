@@ -579,7 +579,11 @@ public void CapAddRandomPlayer(int client)
 		
 		if((first12Set == 1) && CapPrep)
 		{
-			if (ImportJoinNumber(targetSteamid) > 12) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefixcolor, textcolor, randomPlayer, ImportJoinNumber(targetSteamid));
+			if (ImportJoinNumber(targetSteamid) > 12) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefix, textcolor, randomPlayer, ImportJoinNumber(targetSteamid));
+		}
+		if((first12Set == 2) && CapPrep)
+		{
+			if (ImportJoinNumber(targetSteamid) > capnr) CPrintToChatAll("{%s}[%s] {%s}NOTICE: %N joined on position %i.", prefixcolor, prefix, textcolor, randomPlayer, ImportJoinNumber(targetSteamid));
 		}
 	}
 	else CPrintToChat(client, "{%s}[%s] {%s}No players in spectator", prefixcolor, prefix, textcolor);

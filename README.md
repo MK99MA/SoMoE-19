@@ -1,4 +1,4 @@
-# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.3.2 | Latest Tested Version: 1.3.2)  
+# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.3.2 | Latest Tested Version: 1.3.3)  
 
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  
@@ -27,7 +27,9 @@ I incorporated parts of the following plugins and only modified them partially t
 
 If the problem / question remains feel free to create an issue [here](https://github.com/MK99MA/soccermod-2019edit/issues)  
 
-## [>>Grass Replacer<<](https://github.com/MK99MA/SoMoE-19/raw/master/Grassreplacer.zip)  
+## [>>Mostly accurate CHANGELOG<<](https://somoe-19.readthedocs.io/en/latest/changelogs/changes.html).
 
-Use this file & follow it's readme to automatically replace the grass for maps using Lolobubus original grass texture!  
+## [>>Related map background for the main menu<<](https://github.com/MK99MA/SoMoE-19/raw/master/MainMenuBackground.zip)  
+
+Could be used to force cstrike to cache its grass texture right after starting. Obsolete since 1.3.2 and the addition of server-sided grass replacer options.
 

@@ -5,7 +5,7 @@ Changelog
 =========
 
 -----
-1.3.2
+1.3.2 & 1.3.3
 -----
 
 ***
@@ -13,12 +13,14 @@ New
 ***
 
  - Added Pre-Cap-Join option to First12 Toggle
+ - Added notification if a player that shouldn't be allowed to play joins a team / gets forced
  - Added !aim command to find out coordinates to use with replacer configs
 
 *******
 Changes
 *******
 
+ - Removed match reset at mapstart - sm_maprr;sm_start combination should work again
  
 *****
 Fixes
