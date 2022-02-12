@@ -31,6 +31,7 @@ public void MatchOnPluginStart()
 public void MatchOnMapStart()
 {
 	//MatchReset();
+	matchLastScored = 0;
 	NameReset();
 	ForfeitReset();
 }
@@ -1976,6 +1977,7 @@ public void MatchPause(int client)
 	{
 		if (!matchPaused)
 		{
+			matchStopPauseTimer = false;
 			pauseRdyTimer = CreateTimer(0.0, pauseReadyTimer);
 			
 			matchPaused = true;
@@ -2025,6 +2027,7 @@ public void MatchUnpause(int client)
 		if (matchPaused)
 		{
 			ClearTimer(pauseRdyTimer); //KillPauseReadyTimer();
+			matchStopPauseTimer = true;
 			CPrintToChatAll("{%s}[%s] {%s}Match was paused for %s minutes", prefixcolor, prefix, textcolor, totalpausetime);
 			matchPaused = false;
 			showPanel = false;	

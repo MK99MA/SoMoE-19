@@ -250,6 +250,7 @@ bool matchGoldenGoalActive		= false;
 bool matchKickOffTaken			= false;
 bool matchStoppageTimeStarted	= false;
 bool matchValid					= false;
+bool matchStopPauseTimer		= false;
 
 // FLOATS
 float matchBallStartPosition[3];

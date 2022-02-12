@@ -1,4 +1,4 @@
-# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.3.2 | Latest Tested Version: 1.3.3)  
+# [So]ccer [Mo]d [E]dit [-] [2019] (Current Version: 1.3.4 | Latest Tested Version: 1.3.3)  
 
 An edited Version of Marco Boogers SourceMod plugin aimed at Counter-Strike:Source soccer servers.  
 I merely edited and added stuff without any prior knowledge, so expect some heavily improvable code.  

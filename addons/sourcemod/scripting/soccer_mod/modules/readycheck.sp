@@ -346,7 +346,7 @@ public Action pauseReadyTimer(Handle timer, any time)
 		RefreshPanel();
 	}
 	
-	pauseRdyTimer = CreateTimer(1.0, pauseReadyTimer, time+1);
+	if(!matchStopPauseTimer)	pauseRdyTimer = CreateTimer(1.0, pauseReadyTimer, time+1);
 }
 
 public void GetStartPlayers()
