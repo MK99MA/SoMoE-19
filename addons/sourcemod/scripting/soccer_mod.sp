@@ -1589,7 +1589,6 @@ public void ClearTimer(Handle timer)
 
 public void AddDownloads()
 {
-	AddDirToDownloads("sound/soccermod");
 	AddDirToDownloads("materials/models/soccer_mod");
 	AddDirToDownloads("models/soccer_mod");
 	
@@ -1603,6 +1602,8 @@ public void AddDownloads()
 		AddDirToDownloads("materials/models/player/soccermod");
 		AddDirToDownloads("models/player/soccermod");
 	}
+	// if added first following entries are not added??
+	AddDirToDownloads("sound/soccermod");
 }
 
 
