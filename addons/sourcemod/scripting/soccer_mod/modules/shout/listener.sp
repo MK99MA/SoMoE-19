@@ -60,7 +60,7 @@ public void RenameFunc(int client, char customname[64])
 		SetArrayString(fileArray_Added, ArrayPos, gFilebuffer);
 		SetArrayString(nameArray_Added, ArrayPos, customname);
 		
-		CPrintToChat(client, "[{%s}[%s] {%s}Sound %s was renamed to %s.", prefixcolor, prefix, textcolor, gNamebuffer, customname);
+		CPrintToChat(client, "{%s}[%s] {%s}Sound %s was renamed to %s.", prefixcolor, prefix, textcolor, gNamebuffer, customname);
 		ShoutSoundSetup(gFilebuffer, customname);
 		
 		EmptyArrays(fileArray, nameArray);
