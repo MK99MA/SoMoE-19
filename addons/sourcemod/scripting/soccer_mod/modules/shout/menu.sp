@@ -49,7 +49,7 @@ public int MenuHandlerShoutList(Menu menu, MenuAction action, int client, int ch
 		kvConfigShout.JumpToKey(menuItem);
 		
 		char sound[PLATFORM_MAX_PATH]
-		kvConfigShout.GetString("path", sound, sizeof(sound), "shout/godlike.mp3")
+		kvConfigShout.GetString("path", sound, sizeof(sound), "soccermod/shout/godlike.mp3")
 		iVolume = kvConfigShout.GetNum("volume", shoutVolume);
 		iPitch	= kvConfigShout.GetNum("pitch", shoutPitch);
 	
@@ -1135,7 +1135,7 @@ public void OpenPanelShoutAddHelp(int client)
 	panel.DrawText(" ");
 	panel.DrawText("You can also manually edit the shout-");
 	panel.DrawText("list. The file can be found in:");
-	panel.DrawText("<game_dir>/cfg/sm_shout/");
+	panel.DrawText("<game_dir>/cfg/sm_soccermod/");
 	panel.DrawText("══════════════════════════════");
 	panel.DrawText(" ");
 	panel.DrawText("0. Back");

@@ -1,4 +1,4 @@
-.. _conf-skins:
+.. _conf-replacer:
 
 ====================
 soccer_mod_replacer.cfg

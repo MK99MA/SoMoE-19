@@ -1998,6 +1998,7 @@ public void MatchPause(int client)
 				if(matchReadyCheck == 2 || matchReadyCheck == 1)
 				{
 					showPanel = true;
+					readydisplay = 0;
 					
 					for (int i = 1; i <= MaxClients; i++)
 					{
@@ -2044,7 +2045,7 @@ public void MatchUnpause(int client)
 				if (IsClientInGame(player) && IsClientConnected(player)) CPrintToChat(player, "{%s}[%s] {%s}%N has unpaused the match", prefixcolor, prefix, textcolor, client);
 			}
 			
-			if(FileExists(tempReadyFileKV)) DeleteTempFile();
+			//if(FileExists(tempReadyFileKV)) DeleteTempFile();
 			
 			char steamid[32];
 			if(client != 0) 

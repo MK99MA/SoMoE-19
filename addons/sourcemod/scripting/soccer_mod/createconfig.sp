@@ -203,6 +203,7 @@ public void CreateSoccerModConfig()
 	
 	kvConfig.JumpToKey("Debug Settings", true);
 	kvConfig.SetNum("soccer_mod_debug",								debuggingEnabled);
+	kvConfig.SetNum("soccer_mod_scoredebug",						scoreDebuggingEnabled);
 	kvConfig.GoBack();
 	
 	kvConfig.Rewind();
@@ -558,6 +559,7 @@ public void ReadFromConfig()
 	
 	kvConfig.JumpToKey("Debug Settings", true);
 	debuggingEnabled		= kvConfig.GetNum("soccer_mod_debug", 0);
+	scoreDebuggingEnabled	= kvConfig.GetNum("soccer_mod_scoredebug", 0);
 	kvConfig.GoBack();
 	
 	kvConfig.Rewind();

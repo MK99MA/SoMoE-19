@@ -170,7 +170,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has passed the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled || scoreDebuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has passed the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
 			}
 			else
 			{
@@ -195,7 +195,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has lost the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled  || scoreDebuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has lost the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
 			}
 		}
 		// else

@@ -399,7 +399,7 @@ public Action StopCommand(int client, int args)
 				{
 					CancelClientMenu(i,false);
 					InternalShowMenu(i, "\10", 1); 
-					DeleteTempFile();
+					//DeleteTempFile();
 				} 
 			}
 		}
@@ -650,7 +650,7 @@ public Action Command_ForceUnpause(int client, int args)
 				}
 			}
 			showPanel = false;
-			DeleteTempFile();
+			//DeleteTempFile();
 			if (tempUnpause)
 			{
 				matchReadyCheck = 1;
@@ -673,8 +673,8 @@ public Action Command_ForceRdy(int client, int args)
 	{
 		if(matchReadyCheck > 0)
 		{
-			kvTemp = new KeyValues("Ready Check");
-			kvTemp.ImportFromFile(tempReadyFileKV);
+			//kvTemp = new KeyValues("Ready Check");
+			//kvTemp.ImportFromFile(tempReadyFileKV);
 			
 			kvTemp.GotoFirstSubKey()
 			do
@@ -689,8 +689,8 @@ public Action Command_ForceRdy(int client, int args)
 			while (kvTemp.GotoNextKey());
 			
 			kvTemp.Rewind();
-			kvTemp.ExportToFile(tempReadyFileKV);
-			kvTemp.Close();
+			//kvTemp.ExportToFile(tempReadyFileKV);
+			//kvTemp.Close();
 
 			for (int i = 1; i <= MaxClients; i++)
 			{

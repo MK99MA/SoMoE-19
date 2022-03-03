@@ -1,13 +1,19 @@
+public void ReadycheckOnMapStart()
+{
+	kvTemp = new KeyValues("Ready Check");
+}
+
 public void OpenReadyPanel(int client)
 {
 	// Create temp File if it doesn't exist (default)
-	if (!FileExists(tempReadyFileKV)) 
+	/*if (!FileExists(tempReadyFileKV)) 
 	{
 		File tFile = OpenFile(tempReadyFileKV, "w");
 		tFile.Close();
 		
 		GetStartPlayers();
-	}
+	}*/
+	GetStartPlayers();
 	
 	int playernum = 0;
 	for (int i = 1; i <= MaxClients; i++)
@@ -21,16 +27,16 @@ public void OpenReadyPanel(int client)
 	int panel_keys = 0;
 	char bLine[256];
 	
-	kvTemp = new KeyValues("Ready Check");
-	kvTemp.ImportFromFile(tempReadyFileKV);
+	//kvTemp = new KeyValues("Ready Check");
+	//kvTemp.ImportFromFile(tempReadyFileKV);
 	
 	// Create Panel
 	Panel panel = new Panel();
 	if(matchReadyCheck == 1)	panel.SetTitle("Unpause Ready Check: AUTO");
 	else if(matchReadyCheck == 2)	panel.SetTitle("Unpause Ready Check: MANUAL");
 	panel.DrawText("_______________________");
-	if (matchReadyCheck == 1) Format(bLine, sizeof(bLine), "Players: (%i / %i) required", readydisplay , startplayers);
-	else if (matchReadyCheck == 2) Format(bLine, sizeof(bLine), "Players: (%i / %i) required", readydisplay , playernum);
+	if (matchReadyCheck == 1) Format(bLine, sizeof(bLine), "Players: (%i / %i) ready", readydisplay, startplayers);
+	else if (matchReadyCheck == 2) Format(bLine, sizeof(bLine), "Players: (%i / %i) ready", readydisplay, playernum);
 	panel.DrawText(bLine);
 	panel.DrawText(" ");
 	
@@ -63,8 +69,8 @@ public void OpenReadyPanel(int client)
 	}
 	
 	kvTemp.Rewind();
-	kvTemp.ExportToFile(tempReadyFileKV);
-	kvTemp.Close();
+	//kvTemp.ExportToFile(tempReadyFileKV);
+	//kvTemp.Close();
 	
 	panel.DrawText(" ");
 	panel.DrawText("_______________________");
@@ -94,8 +100,8 @@ public void OpenReadyPanel(int client)
 
 public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int key)
 {
-	kvTemp = new KeyValues("Ready Check");
-	kvTemp.ImportFromFile(tempReadyFileKV);
+	//kvTemp = new KeyValues("Ready Check");
+	//kvTemp.ImportFromFile(tempReadyFileKV);
 	
 	char bName[MAX_NAME_LENGTH];
 	GetClientName(client, bName, sizeof(bName))
@@ -127,8 +133,8 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 					kvTemp.GoBack();
 				
 					kvTemp.Rewind();
-					kvTemp.ExportToFile(tempReadyFileKV);
-					kvTemp.Close();
+					//kvTemp.ExportToFile(tempReadyFileKV);
+					//kvTemp.Close();
 				}
 				else if(key == 2)
 				{
@@ -139,8 +145,8 @@ public int ReadyCheckPanelHandler(Menu menu, MenuAction action, int client, int 
 					kvTemp.GoBack();
 
 					kvTemp.Rewind();
-					kvTemp.ExportToFile(tempReadyFileKV);
-					kvTemp.Close();
+					//kvTemp.ExportToFile(tempReadyFileKV);
+					//kvTemp.Close();
 				}
 				
 				//cdMessage[client] = true;
@@ -171,7 +177,8 @@ public void RefreshPanel()
 			}
 			showPanel = false;
 			CPrintToChatAll("{%s}[%s] {%s}All Players ready... Match will resume.", prefixcolor, prefix, textcolor);
-			DeleteTempFile();
+			//DeleteTempFile();
+			recreateTempKV();
 			MatchUnpause(0);
 		}				
 		else if(showPanel) 
@@ -203,8 +210,8 @@ public void RefreshPanel()
 
 public bool AreAllReady()
 {
-	kvTemp = new KeyValues("Ready Check");
-	kvTemp.ImportFromFile(tempReadyFileKV);
+	//kvTemp = new KeyValues("Ready Check");
+	//kvTemp.ImportFromFile(tempReadyFileKV);
 
 	int ready = 0;
 	int notready = 0;
@@ -217,7 +224,7 @@ public bool AreAllReady()
 			playernum++;
 		}
 	}
-
+	
 	if(kvTemp.GotoFirstSubKey())
 	{
 		do
@@ -237,7 +244,7 @@ public bool AreAllReady()
 	}
 
 	kvTemp.Rewind();
-	kvTemp.Close();
+	//kvTemp.Close();
 	
 	//PrintToChatAll("ready: %i | notready: %i | check: %i | players: %i | start: %i", ready, notready, ready-notready,  playernum, startplayers);
 	
@@ -279,7 +286,8 @@ public void UnpauseCheck(int client)
 				}
 			}
 			showPanel = false;
-			DeleteTempFile();
+			//DeleteTempFile();
+			recreateTempKV();
 			if (tempUnpause)
 			{
 				matchReadyCheck = 1;
@@ -302,15 +310,15 @@ public void ReadyCheckOnClientDisconnect(int client)
 		char bSteam[32];
 		GetClientAuthId(client, AuthId_Engine, bSteam, sizeof(bSteam));
 		
-		kvTemp = new KeyValues("Ready Check");
-		kvTemp.ImportFromFile(tempReadyFileKV);
+		//kvTemp = new KeyValues("Ready Check");
+		//kvTemp.ImportFromFile(tempReadyFileKV);
 		
 		kvTemp.JumpToKey(bSteam, false);
 		kvTemp.DeleteThis();
 		
 		kvTemp.Rewind();
-		kvTemp.ExportToFile(tempReadyFileKV);
-		kvTemp.Close();
+		//kvTemp.ExportToFile(tempReadyFileKV);
+		//kvTemp.Close();
 	}
 }
 
@@ -352,7 +360,7 @@ public Action pauseReadyTimer(Handle timer, any time)
 public void GetStartPlayers()
 {
 	startplayers = 0;
-	readydisplay = 0;
+	//readydisplay = 0;
 	
 	if(GetTeamClientCount(2) == GetTeamClientCount(3))
 	{
@@ -378,10 +386,16 @@ public void GetStartPlayers()
 	}
 }
 
-public void DeleteTempFile()
+public void recreateTempKV()
+{
+	kvTemp.Close();
+	kvTemp = new KeyValues("Ready Check");
+}
+
+/*public void DeleteTempFile()
 {
 	DeleteFile(tempReadyFileKV);
-}
+}*/
 
 public void KillPauseReadyTimer()
 {

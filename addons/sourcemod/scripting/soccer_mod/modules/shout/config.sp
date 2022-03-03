@@ -50,7 +50,7 @@ public void ShoutReadConfig()
 	do
 	{
 		kvConfigShout.GetSectionName(soundName, sizeof(soundName));
-		kvConfigShout.GetString("path", sound, sizeof(sound), "shout/godlike.mp3");
+		kvConfigShout.GetString("path", sound, sizeof(sound), "soccermod/shout/godlike.mp3");
 		ShoutSoundSetup(sound, soundName);
 	}
 	while(kvConfigShout.GotoNextKey());

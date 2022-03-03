@@ -65,5 +65,8 @@ List of generated files
 | :ref:`conf-replacer`
 | *MANUAL CONFIG* - Add decals to be placed on maps in here.  
 
+| :ref:`conf-shouts`
+| Library of added and usable shouts on the server.
+
 .. tip::
    Every file got its own site in this documentation. Make sure to check them out if you're having issues!

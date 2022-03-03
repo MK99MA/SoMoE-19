@@ -35,6 +35,7 @@ Welcome to the `SoMoE-19 <https://github.com/MK99MA/SoMoE-19>`_ documentation!
     config/conf-pos
     config/conf-matchlog
     config/conf-replacer
+	config/conf-shouts
 
 .. toctree::
     :maxdepth: 2

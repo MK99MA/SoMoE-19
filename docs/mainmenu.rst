@@ -22,7 +22,6 @@ Alot of settings and features of SoMoE-19 are accessible from its included menu.
  - sections marked with a (*) require generic sourcemod admin privileges, the respective SoccerMod Admin privileges or the public menu being activated. 
  - sections marked with a (^) require at least generic sourcemod admin privileges.
  - sections marked with a (°) require rcon sourcemod admin privileges.
- - sections marked with a (#) require an external plugin to be running on the server to appear.
  
 Unless an indicator is added, the indicator of the next higher menu applies to every sub-menu.
 
@@ -160,7 +159,25 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ Captchamenu Timer Setting
 		 │     │  └─ Current Locksettings
 		 │     │
-		 │     └─ Shout Plugin (^#)
+		 │     └─ Shoutsettings (^)
+		 │        ├─ Shout Mode Toggle
+		 │        ├─ Global Shout Cooldown
+		 │        ├─ Global Shout Volume
+		 │        ├─ Global Shout Pitch
+		 │        ├─ Global Shout Radius (if mode supports it)
+		 │        ├─ Shout Commands Toggle
+		 │        ├─ Shout Manager (°)
+		 │        │  ├─ Add Shouts
+		 │        │  ├─ Scan Sounds Folder
+		 │        │  ├─ Edit Shouts
+		 │        │  ├─ Remove Shouts
+		 │        │  └─ Shout List
+		 │        └─ Info / Help
+		 │           ├─ About: Settings
+		 │           ├─ About: Managing Shouts
+		 │           ├─ Credits
+		 │           ├─ Toggle Join Adverts
+		 │           └─ Debug Toggle
 		 │
 		 ├─ Ranking
 		 │  ├─ Match Top 50
@@ -193,5 +210,5 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     └─ Timer Color Settings
 		 │        └─ Timer Color
 		 │
-		 ├─ Shouts (#)
+		 ├─ Shouts
 		 └─ Credits

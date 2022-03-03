@@ -80,6 +80,7 @@ int djbenabled					= 1;
 int publicmode		 			= 1;
 int damageSounds				= 0;
 int debuggingEnabled			= 0;
+int scoreDebuggingEnabled		= 0;
 int phys_pushscale				= 900;
 int healthGodmode				= 1;
 int healthAmount				= 250;

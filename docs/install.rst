@@ -62,7 +62,7 @@ and downlod the version for your OS.
 After downloading the archive, extract the contents of the archive to the same location you already extracted Metamod and Sourcemod to.
 
 If you want to activate the auto-update functionality you also have to download 'Updater.smx' from:
- - `Updater.smx <https://bitbucket.org/GoD_Tony/updater/downloads/updater.smx>`_
+ - `Updater.smx <https://github.com/Teamkiller324/Updater>`_
 
 In the location where you extracted the archives from before should be a folder called 'addons'. Place the downloaded .smx file in:
 

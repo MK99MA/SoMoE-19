@@ -76,7 +76,7 @@ public void KickOffWall()
 				if (matchLastScored == CS_TEAM_T) //t scored
 				{
 					//create first half		
-					CreateInvisWall(mapBallStartPosition[0]-4000.0, 0.0, -1000.0, -1*radius, 0.0, 1300.0, "wallminus", 0, CS_TEAM_CT); 			
+					CreateInvisWall(-4000.0, 0.0, -1000.0, -1*radius, 0.0, 1300.0, "wallminus", 0, CS_TEAM_CT); 			
 
 					//create second half
 					CreateInvisWall(radius, 0.0, -1000.0, 4000.0, 0.0, 1300.0, "wallplus", 1, CS_TEAM_CT);

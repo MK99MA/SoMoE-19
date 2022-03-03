@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.3.4"
+#define PLUGIN_VERSION "1.3.4.1"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 #define MAXCONES_DYN 15
@@ -591,7 +591,7 @@ public void OnMapStart()
 	{
 		ReadFromConfig();
 	}
-	if (FileExists(tempReadyFileKV)) DeleteTempFile();
+	//if (FileExists(tempReadyFileKV)) DeleteTempFile();
 	
 	if(!FileExists(shoutConfigFile))		ShoutCreateConfig();
 	if(!FileExists(shoutSetFile))			ShoutCreateSettings();
@@ -643,6 +643,7 @@ public void OnMapStart()
 	PersonalTrainingOnMapStart();
 	ReplacerOnMapStart();
 	ConnectlistOnMapStart();
+	ReadycheckOnMapStart();
 
 	//shoutset
 	for (int player = 1; player <= MaxClients; player++)

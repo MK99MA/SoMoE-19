@@ -12,7 +12,7 @@ I incorporated parts of the following plugins and only modified them partially t
   ● ShortSprint by walmar - https://forums.alliedmods.net/showthread.php?p=2294299  
   ● Simple AFK kicker by shavit - https://forums.alliedmods.net/showthread.php?p=2409504  
   Not included in soccer_mod.smx but relied on:  
-  ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095  
+  ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095 | https://github.com/Teamkiller324/Updater 
   
   
 ## [>>DOWNLOAD (Archive) <<](https://github.com/MK99MA/SoMoE-19/releases/tag/1.3.3)  

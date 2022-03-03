@@ -27,6 +27,7 @@ public void ReplacerOnPluginStart()
 
 public void ReplacerOnMapStart()
 {
+	ClearReplacerArrays();
 	GetCurrentMap(ReplacerMapName, sizeof(ReplacerMapName));
 	GetMapDisplayName(ReplacerMapName, ReplacerMapName, sizeof(ReplacerMapName));
 	
@@ -35,7 +36,7 @@ public void ReplacerOnMapStart()
 	CreateDecalConfig();
 	CreateMapConfig();
 	
-	ReadDecals();
+	if (FileExists(path_mapdecals))	ReadDecals();
 }
 
 public void ReplacerOnClientPostAdminCheck(int client) 
@@ -136,32 +137,35 @@ public bool ReadDecals()
 		kvReplace.Close();
 		return false;
 	}
-	do 
+	else
 	{
-		// Get texture to use
-		kvReplace.GetSectionName(buffer, sizeof(buffer));
-		PushArrayString(adt_decal_names, buffer);
-		// save Path in Variable
-		kvReplace.GetString("path", buffer, sizeof(buffer));
-		PushArrayString(adt_decal_paths, buffer);
-		
-		int precacheId = PrecacheDecal(buffer, true);
-		PushArrayCell(adt_decal_precache, precacheId);
-		
-		// Add Files to downloadtable !!Independent from downloads.cfg!!
-		char decalpath[PLATFORM_MAX_PATH];
-		Format(decalpath, sizeof(decalpath), buffer);
-		Format(download, sizeof(download), "materials/%s.vmt", buffer);
-		AddFileToDownloadsTable(download);
+		do 
+		{
+			// Get texture to use
+			kvReplace.GetSectionName(buffer, sizeof(buffer));
+			PushArrayString(adt_decal_names, buffer);
+			// save Path in Variable
+			kvReplace.GetString("path", buffer, sizeof(buffer));
+			PushArrayString(adt_decal_paths, buffer);
+			
+			int precacheId = PrecacheDecal(buffer, true);
+			PushArrayCell(adt_decal_precache, precacheId);
+			
+			// Add Files to downloadtable !!Independent from downloads.cfg!!
+			char decalpath[PLATFORM_MAX_PATH];
+			Format(decalpath, sizeof(decalpath), buffer);
+			Format(download, sizeof(download), "materials/%s.vmt", buffer);
+			AddFileToDownloadsTable(download);
 
-		kvVTF = new KeyValues("LightmappedGeneric");
-		kvVTF.ImportFromFile(download);
-		kvVTF.GetString("$basetexture", buffer, sizeof(buffer), buffer);
-		kvVTF.Close();
-		Format(download, sizeof(download), "materials/%s.vtf", buffer);
-		AddFileToDownloadsTable(download);
+			kvVTF = new KeyValues("LightmappedGeneric");
+			kvVTF.ImportFromFile(download);
+			kvVTF.GetString("$basetexture", buffer, sizeof(buffer), buffer);
+			kvVTF.Close();
+			Format(download, sizeof(download), "materials/%s.vtf", buffer);
+			AddFileToDownloadsTable(download);
+		}
+		while (kvReplace.GotoNextKey());
 	}
-	while (kvReplace.GotoNextKey());
 
 	kvReplace.Close();
 	
@@ -204,6 +208,15 @@ public bool ReadDecals()
 	
 	kvReplace.Close();
 	return true;
+}
+
+public void ClearReplacerArrays()
+{
+	ClearArray(adt_decal_names);
+	ClearArray(adt_decal_paths);
+	ClearArray(adt_decal_precache);
+	ClearArray(adt_decal_id);
+	ClearArray(adt_decal_position);
 }
 
 //	Fileformat
