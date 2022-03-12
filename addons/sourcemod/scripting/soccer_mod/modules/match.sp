@@ -1653,9 +1653,49 @@ public Action MatchPeriodTimer(Handle timer, any time)
 	PrintHintTextToAll("%s %i - %i %s | %s", custom_name_ct, matchScoreCT, matchScoreT, custom_name_t, timeString);
 
 	int periodEnd = matchPeriod * matchPeriodLength;
-	if (time < periodEnd) matchTimer = CreateTimer(1.0, MatchPeriodTimer, time + 1);
+	int periodCount = periodEnd - 5;
+	if (time < periodEnd) 
+	{
+		if(time >= periodCount)
+		{
+			switch(OTCountSet)
+			{
+				case 1:
+				{	
+					PrintCenterTextAll("Overtime in %i seconds", periodEnd - time);
+					PlaySound("buttons/bell1.wav");
+				}
+				case 2:
+				{
+					PlaySound("buttons/bell1.wav");
+				}
+				case 3:
+				{
+					PrintCenterTextAll("Overtime in %i seconds", periodEnd - time);
+				}
+			}
+		}
+		matchTimer = CreateTimer(1.0, MatchPeriodTimer, time + 1);
+	}
 	else
 	{
+		switch(OTCountSet)
+		{
+			case 1:
+			{	
+				PrintCenterTextAll("Overtime!");
+				PlaySound("ui/achievement_earned.wav");
+			}
+			case 2:
+			{
+				PlaySound("ui/achievement_earned.wav");
+			}
+			case 3:
+			{
+				PrintCenterTextAll("Overtime!");
+			}
+		}
+		
 		matchStoppageTimeStarted = true;
 
 		int index = CreateEntityByName("trigger_once");

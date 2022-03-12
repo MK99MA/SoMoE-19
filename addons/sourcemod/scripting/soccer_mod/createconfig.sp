@@ -159,6 +159,7 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_killfeed",						killfeedSet);
 	kvConfig.SetNum("soccer_mod_celebrate", 					celebrateweaponSet);
 	kvConfig.SetNum("soccer_mod_first12",						first12Set);
+	kvConfig.SetNum("soccer_mod_otcount",						OTCountSet);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -511,6 +512,7 @@ public void ReadFromConfig()
 	killfeedSet				= kvConfig.GetNum("soccer_mod_killfeed", 0);
 	celebrateweaponSet		= kvConfig.GetNum("soccer_mod_celebrate", 0);
 	first12Set				= kvConfig.GetNum("soccer_mod_first12",	0);
+	OTCountSet				= kvConfig.GetNum("soccer_mod_otcount",	1);					
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);

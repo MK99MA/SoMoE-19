@@ -149,7 +149,8 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │
 		 │     ├─ Sound Control (^)
 		 │     │  ├─ Remove Sound
-		 │     │  └─ Add Sound
+		 │     │  ├─ Add Sound
+		 │     │  └─ Overtime Warning Toggle (OFF, ON, SOUND, TEXT)
 		 │     │
 		 │     ├─ Lock Settings (^)
 		 │     │  ├─ Enable Serverlock

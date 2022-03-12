@@ -714,10 +714,17 @@ public void OpenMenuMapSounds(int client)
 {
 	Menu menu = new Menu(MenuHandlerMapSounds);
 
-	menu.SetTitle("Soccer Mod - Admin - Map Sounds");
+	char OTCString[32];
+	if(OTCountSet == 0)				OTCString = "OT Warning: OFF";
+	else if (OTCountSet == 1)		OTCString = "OT Warning: ON";
+	else if (OTCountSet == 2)		OTCString = "OT Warning: SOUND";
+	else if (OTCountSet == 3)		OTCString = "OT Warning: TEXT";
+
+	menu.SetTitle("Soccer Mod - Admin - Sounds");
 
 	menu.AddItem("rem", "Disable Sound");
 	menu.AddItem("add", "Enable Sound");
+	menu.AddItem("otctoggle", OTCString);
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -732,6 +739,30 @@ public int MenuHandlerMapSounds(Menu menu, MenuAction action, int client, int ch
 
 		if(StrEqual(menuItem, "rem")) 		OpenMenuMapSoundsRem(client);
 		else if(StrEqual(menuItem, "add"))	OpenMenuMapSoundsAdd(client);
+		else if(StrEqual(menuItem, "otctoggle"))
+		{
+			if(OTCountSet == 0)
+			{
+				OTCountSet = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otcount", OTCountSet);
+			}
+			else if(OTCountSet == 1)
+			{
+				OTCountSet = 2;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otcount", OTCountSet);
+			}
+			else if(OTCountSet == 2)
+			{
+				OTCountSet = 3;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otcount", OTCountSet);
+			}
+			else if(OTCountSet == 3)
+			{
+				OTCountSet = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otcount", OTCountSet);
+			}
+			OpenMenuMapSounds(client);
+		}
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
 	else if (action == MenuAction_End)					  menu.Close();

@@ -92,6 +92,7 @@ int jump_count[MAXPLAYERS+1]	= {0, ...};
 int celebrateweaponSet			= 0;
 int KickoffWallSet				= 1;
 int first12Set					= 0;
+int OTCountSet					= 1;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];

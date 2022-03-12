@@ -7,7 +7,7 @@ public void OpenAdvancedTrainingMenu(int client)
 
 	menu.SetTitle("Soccer Mod - Advanced Training");
 
-	char TrailString[32], TrainModeString[32];
+	char TrainModeString[32]; //,TrailString[32]
 	
 	if(trainingModeEnabled)		TrainModeString = "Trainingmode: ON";
 	else						TrainModeString = "Trainingmode: OFF";
