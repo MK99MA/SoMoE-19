@@ -15,7 +15,7 @@ I incorporated parts of the following plugins and only modified them partially t
   ● Updater by GoD-Tony - https://forums.alliedmods.net/showthread.php?t=169095 | https://github.com/Teamkiller324/Updater 
   
   
-## [>>DOWNLOAD (Archive) <<](https://github.com/MK99MA/SoMoE-19/releases/tag/1.3.3)  
+## [>>DOWNLOAD (Archive) <<](https://github.com/MK99MA/SoMoE-19/releases/latest)  
 [>>Update<< If you only need/want the sourcemod plugin](https://github.com/MK99MA/soccermod-2019edit/raw/master/addons/sourcemod/plugins/soccer_mod.smx)  
 [>>Previous Versions<< In case of any major issues](https://github.com/MK99MA/soccermod-2019edit/blob/master/addons/sourcemod/plugins/old/)  
 
