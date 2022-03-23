@@ -5,7 +5,7 @@ Changelog
 =========
 
 -----
-1.3.2 & 1.3.3 & 1.3.4 & 1.3.5
+1.3.2 & 1.3.3 & 1.3.4 & 1.3.5.x
 -----
 
 ***
@@ -16,6 +16,8 @@ New
  - Added notification if a player that shouldn't be allowed to play joins a team / gets forced
  - Added !aim command to find out coordinates to use with replacer configs
  - Added optional (default ON) sound & text notification before a period ends
+ - Added option to disable the 'overtime-sound' only.
+ - Added option to set custom sounds for the overtime countdown via config.
 
 *******
 Changes

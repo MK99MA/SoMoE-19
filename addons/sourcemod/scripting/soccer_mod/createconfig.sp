@@ -160,6 +160,9 @@ public void CreateSoccerModConfig()
 	kvConfig.SetNum("soccer_mod_celebrate", 					celebrateweaponSet);
 	kvConfig.SetNum("soccer_mod_first12",						first12Set);
 	kvConfig.SetNum("soccer_mod_otcount",						OTCountSet);
+	kvConfig.GetNum("soccer_mod_otfinal", 						OTFinalSet);
+	kvConfig.SetString("soccer_mod_otsound1", 					OTSound1);
+	kvConfig.SetString("soccer_mod_otsound2", 					OTSound2);
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);
@@ -500,7 +503,7 @@ public void ReadFromConfig()
 	kvConfig.JumpToKey("Misc Settings", true);
 	healthGodmode			= kvConfig.GetNum("soccer_mod_health_godmode", 1);
 	respawnDelay			= kvConfig.GetFloat("soccer_mod_respawn_delay", 10.0);
-	djbenabled				= kvConfig.GetNum("soccer_mod_blockdj_enable", 1);
+	djbenabled				= kvConfig.GetNum("soccer_mod_blockdj_enable", 3);
 	fJUMP_TIMER				= kvConfig.GetFloat("soccer_mod_blockdj_time", 0.4);
 	KickoffWallSet			= kvConfig.GetNum("soccer_mod_kickoffwall", 0);
 	damageSounds			= kvConfig.GetNum("soccer_mod_damagesounds", 0);
@@ -512,7 +515,10 @@ public void ReadFromConfig()
 	killfeedSet				= kvConfig.GetNum("soccer_mod_killfeed", 0);
 	celebrateweaponSet		= kvConfig.GetNum("soccer_mod_celebrate", 0);
 	first12Set				= kvConfig.GetNum("soccer_mod_first12",	0);
-	OTCountSet				= kvConfig.GetNum("soccer_mod_otcount",	1);					
+	OTCountSet				= kvConfig.GetNum("soccer_mod_otcount",	1);	
+	OTFinalSet				= kvConfig.GetNum("soccer_mod_otfinal", 1);
+	kvConfig.GetString("soccer_mod_otsound1", OTSound1, sizeof(OTSound1), "buttons/bell1.wav");
+	kvConfig.GetString("soccer_mod_otsound2", OTSound2, sizeof(OTSound2), "ambient/misc/brass_bell_f.wav");
 	kvConfig.GoBack();
 	
 	kvConfig.JumpToKey("Sprint Settings", true);

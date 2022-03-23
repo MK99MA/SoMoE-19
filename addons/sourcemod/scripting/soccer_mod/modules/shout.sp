@@ -39,7 +39,7 @@ public void ShoutSetDefaultClientSettings(int client)
 // ******************************************************************************************************************
 public Action ShoutMenu(int client, int args)
 {
-	if(shoutMode != -1)		OpenMenuShout(client);
+	if(shoutMode != -1)		OpenMenuShout(client, false);
 	else CPrintToChat(client, "{%s}[%s] {%s}Shouts are disabled.", prefixcolor, prefix, textcolor);
 
 	return Plugin_Handled;

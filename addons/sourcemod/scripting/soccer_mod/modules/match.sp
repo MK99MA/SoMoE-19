@@ -1663,11 +1663,11 @@ public Action MatchPeriodTimer(Handle timer, any time)
 				case 1:
 				{	
 					PrintCenterTextAll("Overtime in %i seconds", periodEnd - time);
-					PlaySound("buttons/bell1.wav");
+					PlaySound(OTSound1);
 				}
 				case 2:
 				{
-					PlaySound("buttons/bell1.wav");
+					PlaySound(OTSound1);
 				}
 				case 3:
 				{
@@ -1685,12 +1685,12 @@ public Action MatchPeriodTimer(Handle timer, any time)
 			{	
 				PrintCenterTextAll("Overtime!");
 				//PlaySound("ui/achievement_earned.wav");
-				PlaySound("buttons/button17.wav");
+				if(OTFinalSet == 1) PlaySound(OTSound2);
 			}
 			case 2:
 			{
 				//PlaySound("ui/achievement_earned.wav");
-				PlaySound("buttons/button17.wav");
+				if(OTFinalSet == 1) PlaySound(OTSound2);
 			}
 			case 3:
 			{

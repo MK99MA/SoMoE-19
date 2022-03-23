@@ -82,9 +82,9 @@ public void OpenMenuMiscSettings(int client)
 	else if (dissolveSet == 2)			DissolveString = "Remove Ragdoll: Dissolve";
 	
 	if(djbenabled == 0)					DJString = "DuckJumpBlock: OFF";
-	else if (djbenabled == 1)			DJString = "DuckJumpBlock: ON";
-	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON v2";
-	else if (djbenabled == 3)			DJString = "DuckJumpBlock: ON v3";
+	else if (djbenabled == 1)			DJString = "DuckJumpBlock: ON (v1)";
+	else if (djbenabled == 2)			DJString = "DuckJumpBlock: ON (v2)";
+	else if (djbenabled == 3)			DJString = "DuckJumpBlock: ON (v3)";
 	
 	if(KickoffWallSet == 0)				WallString = "Kickoff Wall: OFF";
 	else if (KickoffWallSet == 1)		WallString = "Kickoff Wall: ON";
@@ -714,17 +714,21 @@ public void OpenMenuMapSounds(int client)
 {
 	Menu menu = new Menu(MenuHandlerMapSounds);
 
-	char OTCString[32];
+	char OTCString[32], OTFString[32];
 	if(OTCountSet == 0)				OTCString = "OT Warning: OFF";
 	else if (OTCountSet == 1)		OTCString = "OT Warning: ON";
 	else if (OTCountSet == 2)		OTCString = "OT Warning: SOUND";
 	else if (OTCountSet == 3)		OTCString = "OT Warning: TEXT";
-
+	
+	if(OTFinalSet == 0)				OTFString = "OT Sound: OFF";
+	else							OTFString = "OT Sound: ON";
+	
 	menu.SetTitle("Soccer Mod - Admin - Sounds");
 
 	menu.AddItem("rem", "Disable Sound");
 	menu.AddItem("add", "Enable Sound");
 	menu.AddItem("otctoggle", OTCString);
+	if(OTCountSet == 1 || OTCountSet == 2) menu.AddItem("otftoggle", OTFString);
 	
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -760,6 +764,20 @@ public int MenuHandlerMapSounds(Menu menu, MenuAction action, int client, int ch
 			{
 				OTCountSet = 0;
 				UpdateConfigInt("Misc Settings", "soccer_mod_otcount", OTCountSet);
+			}
+			OpenMenuMapSounds(client);
+		}
+		else if(StrEqual(menuItem, "otftoggle"))
+		{
+			if(OTFinalSet == 0)
+			{
+				OTFinalSet = 1;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otfinal", OTFinalSet);
+			}
+			else if(OTCountSet == 1)
+			{
+				OTFinalSet = 0;
+				UpdateConfigInt("Misc Settings", "soccer_mod_otfinal", OTFinalSet);
 			}
 			OpenMenuMapSounds(client);
 		}

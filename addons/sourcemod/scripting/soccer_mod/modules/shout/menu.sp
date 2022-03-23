@@ -2,7 +2,7 @@
 // ****************************************************** MENU ******************************************************
 // ******************************************************************************************************************
 
-public void OpenMenuShout(int client)
+public void OpenMenuShout(int client, bool menutrue)
 {
 	Menu menu = new Menu(MenuHandlerShoutList);
 	menu.SetTitle("[   Available Shouts   ]");
@@ -13,6 +13,7 @@ public void OpenMenuShout(int client)
 	if (kvConfigShout.GotoFirstSubKey() == false) 
 	{
 		CPrintToChat(client, "{%s}[%s] {%s}No Shouts found", prefixcolor, prefix, textcolor);
+		if(menutrue)	OpenMenuSoccer(client);
 	}
 	else
 	{

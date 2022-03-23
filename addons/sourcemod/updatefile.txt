@@ -4,8 +4,8 @@
 	{
 		"Version"
 		{
-			"Latest"	"1.3.5"
-			"Previous"	"1.3.4"
+			"Latest"	"1.3.5.1"
+			"Previous"	"1.3.5"
 		}
 		
 		"Notes"	"Minor changes & fixes"
@@ -23,6 +23,7 @@
 		"Plugin"	"Path_Mod/sound/soccermod/halftime.wav"
 		"Plugin"	"Path_Mod/sound/soccermod/kickoff.wav"
 		"Plugin"	"Path_Mod/sound/soccermod/whistle.wav"
+		"Plugin"	"Path_Mod/sound/soccermod/OTstart.wav"
 		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer.vtf"
 		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer.vmt"
 		"Plugin"	"Path_Mod/materials/decals/soccer_mod/grassreplacer_light.vtf"

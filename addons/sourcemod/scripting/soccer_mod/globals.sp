@@ -76,7 +76,7 @@ ArrayList lcPanelArray;
 UserMsg TextMsg;
 
 // INTEGER
-int djbenabled					= 1;
+int djbenabled					= 3;
 int publicmode		 			= 1;
 int damageSounds				= 0;
 int debuggingEnabled			= 0;
@@ -93,6 +93,7 @@ int celebrateweaponSet			= 0;
 int KickoffWallSet				= 1;
 int first12Set					= 0;
 int OTCountSet					= 1;
+int OTFinalSet					= 1;
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -103,6 +104,8 @@ char cardString[32];
 char sprayName[MAXPLAYERS + 1][64];
 char sprayID[MAXPLAYERS + 1][32];
 char wallmodel[128]				= "models/soccer_mod/wall.mdl";
+char OTSound1[PLATFORM_MAX_PATH]= "buttons/bell1.wav";
+char OTSound2[PLATFORM_MAX_PATH]= "ambient/misc/brass_bell_f.wav";
 
 // **************************************************** ADMIN ***************************************************
 

@@ -214,6 +214,11 @@ This section features miscellaneous settings that do not fit into any of the oth
 			"soccer_mod_loaddefaults"       "1"
 			"soccer_mod_killfeed"           "0"
 			"soccer_mod_celebrate"			"0"
+			"soccer_mod_first12"            "0"
+			"soccer_mod_otcount"            "1"
+			"soccer_mod_otfinal"            "1"
+			"soccer_mod_otsound1"           "buttons/bell1.wav"
+			"soccer_mod_otsound2"           "ambient/misc/brass_bell_f.wav"
 		}
 		
 .. attention:: Most keys in this section are changeable ingame. Exceptions are *soccer_mod_health_godmode* and *soccer_mod_respawn_delay* which usually should not be changed at all.
@@ -230,6 +235,13 @@ This section features miscellaneous settings that do not fit into any of the oth
  - **soccer_mod_loaddefaults** controls whether SoMoE-19 should load default mapvalues in its *soccer_mod_mapdefaults.cfg* file.
   - **soccer_mod_killfeed** controls whether SoMoE-19 will block or allow the killfeed messages in the upper right corner.
   - **soccer_mod_celebrate** controls whether alive players will receive weapons after scoring a goal. Alive players will be able to hurt each other in this mode.
+  - **soccer_mod_first12** controls if players in slot 13 and following are pickable by caps.
+  - **soccer_mod_otcount** controls the type of overtime countdown. (Allowed values: 0 - Off, 1 - On, 2 - Sound only, 3 - Text only).
+  - **soccer_mod_otfinal** controls if a sound is played when the overtime countdown ends. (Allowed values: 0 - Off, 1 - On).
+  - **soccer_mod_otsound1** sets the sound used for the countdown.
+  - **soccer_mod_otsound2** sets the sound used for the end of the countdown and should use a different sound.
+  (https://github.com/sourcesounds/cstrike/tree/master/sound the sounds listed here should all work, except for sounds found in the 'ui' folder. Also any custom added sound can be used)
+  
  
 ----
 
@@ -365,8 +377,10 @@ As the name suggests, this section features debug settings.
 		"Debug Settings"
 		{
 			"soccer_mod_debug"                    "0"
+			"soccer_mod_scoredebug"               "0"
 		}
 
 .. attention:: These keys are not changeable ingame. If you want to change its settings you have to manually edit this file.
 	
  - **soccer_mod_debug** controls whether debug mode is enabled or disabled. You should not need this option at all.
+ - **soccer_mod_scoredebug** controls whether a 'light' debug mode is enabled or disabled. This option could help finding out what is causing the 'scorer-bug', but should not be needed usually.
