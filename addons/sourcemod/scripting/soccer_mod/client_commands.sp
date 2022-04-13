@@ -95,7 +95,51 @@ public Action JoinlistCommand(int client, int args)
 
 public Action SpecCommand(int client, int args)
 {
-	CapPutAllToSpec(client);
+	if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2) || (publicmode == 1))
+	{
+		if(args > 0)
+		{
+			char username[128];
+			GetCmdArg(1, username, sizeof(username));
+			TrimString(username);
+			StripQuotes(username);
+			
+			if(StrEqual(username, "all"))
+			{
+				//Put all to spec
+				CapPutAllToSpec(client);
+			}
+			else if(StrEqual(username, "me"))
+			{
+				//Put user to spec
+				ChangeClientTeam(client, 1);
+			}
+			else
+			{
+				//Put target to spec
+				int iTarget = FindTarget(client, username, true, false);
+		
+				if(iTarget == -1) return Plugin_Handled;
+				
+				if (IsClientInGame(iTarget) && IsClientConnected(iTarget))
+				{
+					if (GetClientTeam(iTarget) != 1)
+					{
+						ChangeClientTeam(iTarget, 1);
+					}
+					else CPrintToChat(client, "{%s}[%s] {%s}Player is already in spectator", prefixcolor, prefix, textcolor);
+				}
+				else CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
+			}
+		}
+		else
+		{
+			//Info
+			CPrintToChat(client, "{%s}[%s] {%s}Missing argument. Use '!spec all' to spec everyone or '!spec me' to spec yourself.", prefixcolor, prefix, textcolor);
+			CPrintToChat(client, "{%s}[%s] {%s}You can also provide the part of a username to spec your target (e.g. '!spec art').", prefixcolor, prefix, textcolor);
+		}
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 	
 	return Plugin_Handled;
 }

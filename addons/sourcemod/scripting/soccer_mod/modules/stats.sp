@@ -19,6 +19,8 @@ public void StatsOnTakeDamage(int ball, int client)
 	bool interception = false;
 	bool ball_loss = false;
 	float possession;
+	
+	SetHudTextParams(0.90, 0.01, 30.0, 255, 255, 255, 255);
 
 	char steamid[32];
 	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
@@ -72,7 +74,20 @@ public void StatsOnTakeDamage(int ball, int client)
 				//  table, rankingPointsForSave, saverSteamid);
 				// ExecuteQuery(queryString);
 
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has made a save", prefixcolor, prefix, textcolor, statsSaver);
+				if (debuggingEnabled > 0) CPrintToChatAll("{%s}[%s] {%s}%N has made a save.", prefixcolor, prefix, textcolor, statsSaver);
+				else
+				{
+					for(int player = 1; player <= MaxClients; player++)
+					{
+						if(extChatSet[player] == 1 && extChatSave[player] == 1)
+						{
+							//extChatMode == 0 -> Chat
+							if(extChatMode[player] == 0) CPrintToChat(player, "{%s}[%s] %N has made a save.", prefixcolor, prefix, statsSaver);
+							//extChatMode == 1 -> Hud
+							else 	ShowHudText(player, 8, "%N has made a save.", statsSaver); 
+						}
+					}
+				}
 			}
 			else if (!(statsTGKAreaMinX <= ballPosition[0] <= statsTGKAreaMaxX && 
 				statsTGKAreaMinY <= ballPosition[1] <= statsTGKAreaMaxY && 
@@ -86,7 +101,20 @@ public void StatsOnTakeDamage(int ball, int client)
 				//  table, rankingPointsForSave, saverSteamid);
 				// ExecuteQuery(queryString);
 
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has made a save", prefixcolor, prefix, textcolor, statsSaver);
+				if (debuggingEnabled > 0) CPrintToChatAll("{%s}[%s] {%s}%N has made a save.", prefixcolor, prefix, textcolor, statsSaver);
+				else
+				{
+					for(int player = 1; player <= MaxClients; player++)
+					{
+						if(extChatSet[player] == 1 && extChatSave[player] == 1)
+						{
+							//extChatMode == 0 -> Chat
+							if(extChatMode[player] == 0) CPrintToChat(player, "{%s}[%s] %N has made a save.", prefixcolor, prefix, statsSaver);
+							//extChatMode == 1 -> Hud
+							else 	ShowHudText(player, 8, "%N has made a save.", statsSaver); 
+						}
+					}
+				}
 			}
 		}
 
@@ -109,7 +137,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				statsSaver = client;
 			}		
 		}
-		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the CT gk area", prefixcolor, prefix, textcolor, client);
+		if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the CT gk area.", prefixcolor, prefix, textcolor, client);
 	}
 	else if (team == CS_TEAM_T && 
 		statsTGKAreaMinX <= ballPosition[0] <= statsTGKAreaMaxX && 
@@ -127,7 +155,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				statsSaver = client;
 			}		
 		}
-		if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the T gk area", prefixcolor, prefix, textcolor, client);
+		if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}%N has knifed the ball in the T gk area.", prefixcolor, prefix, textcolor, client);
 	}
 
 	if (client != statsScorerClientid)
@@ -156,7 +184,20 @@ public void StatsOnTakeDamage(int ball, int client)
 			else if (statsAssisterTeam == CS_TEAM_CT) statsPossessionCT += possession;
 			statsPossessionTotal += possession;
 			// AddPlayerStatPossession(statsAssisterSteamid, possession, statsAssisterTeam);
-			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsAssisterName, possession);
+			if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f.", prefixcolor, prefix, textcolor, statsAssisterName, possession);
+			/*else
+			{
+				for(int player = 1; player <= MaxClients; player++)
+				{
+					if(extChatSet[player] == 1 && extChatPoss[player] == 1)
+					{
+						//extChatMode == 0 -> Chat
+						if(extChatMode[player] == 0) CPrintToChat(player, "{%s}[%s] %s had the ball for %f.", prefixcolor, prefix, statsAssisterName, possession);
+						//extChatMode == 1 -> Hud
+						else 	ShowHudText(player, 8, "%s had the ball for %f.", statsAssisterName, possession); 
+					}
+				}
+			}*/
 
 			if (team == statsAssisterTeam)
 			{
@@ -170,7 +211,20 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled || scoreDebuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has passed the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled > 0) CPrintToChatAll("{%s}[%s] {%s}%s has passed the ball to %s.", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				else
+				{
+					for(int player = 1; player <= MaxClients; player++)
+					{
+						if(extChatSet[player] == 1 && extChatPass[player] == 1)
+						{
+							//extChatMode == 0 -> Chat
+							if(extChatMode[player] == 0) CPrintToChat(player, "{%s}[%s] {%s}%s has passed the ball to %s.", prefixcolor, prefix, textcolor, statsAssisterName, name);
+							//extChatMode == 1 -> Hud
+							else ShowHudText(player, 8, "%s has passed the ball to %s.", statsAssisterName, name);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -183,7 +237,7 @@ public void StatsOnTakeDamage(int ball, int client)
 				//  table, rankingPointsForInterception, steamid);
 				// ExecuteQuery(queryString);
 
-				if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has intercepted the ball from %s", prefixcolor, prefix, textcolor, name, statsAssisterName);
+				if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}%s has intercepted the ball from %s.", prefixcolor, prefix, textcolor, name, statsAssisterName);
 
 				ball_loss = true;
 				if (statsAssisterTeam == CS_TEAM_T) statsBallLossesT++;
@@ -195,7 +249,20 @@ public void StatsOnTakeDamage(int ball, int client)
 				// ExecuteQuery(queryString);
 
 				// if (IsClientInGame(statsAssisterClientid) && IsClientConnected(statsAssisterClientid)) SetPlayerStats(timer, statsAssisterClientid);
-				if (debuggingEnabled  || scoreDebuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s has lost the ball to %s", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				if (debuggingEnabled > 0) CPrintToChatAll("{%s}[%s] {%s}%s has lost the ball to %s.", prefixcolor, prefix, textcolor, statsAssisterName, name);
+				else
+				{
+					for(int player = 1; player <= MaxClients; player++)
+					{
+						if(extChatSet[player] == 1 && extChatLoss[player] == 1)
+						{
+							//extChatMode == 0 -> Chat
+							if(extChatMode[player] == 0) CPrintToChat(player, "{%s}[%s] %s has lost the ball to %s.", prefixcolor, prefix, statsAssisterName, name);
+							//extChatMode == 1 -> Hud
+							else ShowHudText(player, 8, "%s has lost the ball to %s.", statsAssisterName, name);
+						}
+					}
+				}
 			}
 		}
 		// else
@@ -359,6 +426,7 @@ public void StatsOnTakeDamage(int ball, int client)
 	//SetPlayerStats(timer, client);
 }
 
+
 // ************************************************************************************************************
 // ************************************************** EVENTS **************************************************
 // ************************************************************************************************************
@@ -407,7 +475,7 @@ public void StatsEventRoundStart(Event event)
 	statsCTGKAreaMaxX = kvGKArea.GetFloat("ct_max_x", 0.0);
 	statsCTGKAreaMaxY = kvGKArea.GetFloat("ct_max_y", 0.0);
 	statsCTGKAreaMaxZ = kvGKArea.GetFloat("ct_max_z", 0.0);
-	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}CT GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsCTGKAreaMinX, statsCTGKAreaMinY, statsCTGKAreaMinZ, 
+	if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}CT GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsCTGKAreaMinX, statsCTGKAreaMinY, statsCTGKAreaMinZ, 
 		statsCTGKAreaMaxX, statsCTGKAreaMaxY, statsCTGKAreaMaxZ);
 
 	statsTGKAreaMinX = kvGKArea.GetFloat("t_min_x", 0.0);
@@ -416,7 +484,7 @@ public void StatsEventRoundStart(Event event)
 	statsTGKAreaMaxX = kvGKArea.GetFloat("t_max_x", 0.0);
 	statsTGKAreaMaxY = kvGKArea.GetFloat("t_max_y", 0.0);
 	statsTGKAreaMaxZ = kvGKArea.GetFloat("t_max_z", 0.0);
-	if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}T GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsTGKAreaMinX, statsTGKAreaMinY, statsTGKAreaMinZ, 
+	if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}T GK Area: %.1f, %.1f, %.1f, %.1f, %.1f, %.1f", prefixcolor, prefix, textcolor, statsTGKAreaMinX, statsTGKAreaMinY, statsTGKAreaMinZ, 
 		statsTGKAreaMaxX, statsTGKAreaMaxY, statsTGKAreaMaxZ);
 
 	kvGKArea.Close();
@@ -464,7 +532,7 @@ public void StatsEventRoundEnd(Event event)
 		{
 			float possession = GetGameTime() - statsScorerTimestamp;
 			AddPlayerStatPossession(statsScorerSteamid, possession, statsScorerTeam);
-			if (debuggingEnabled) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsScorerName, possession);
+			if (debuggingEnabled == 1) CPrintToChatAll("{%s}[%s] {%s}%s had the ball for %f", prefixcolor, prefix, textcolor, statsScorerName, possession);
 
 			if (statsScorerTeam == winner)
 			{
@@ -721,6 +789,8 @@ public void OpenStatisticsMenu(int client)
 	menu.AddItem("round", "Current Round");
 
 	menu.AddItem("map", "Current Match");
+	
+	menu.AddItem("chat", "Chat Info");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -751,10 +821,93 @@ public int StatisticsMenuHandler(Menu menu, MenuAction action, int client, int c
 		else if (StrEqual(menuItem, "player"))			  OpenSelectPlayerStatisticsMenu(client);
 		else if (StrEqual(menuItem, "round"))			   OpenRoundStatisticsMenu(client);
 		else if (StrEqual(menuItem, "map"))				 OpenMapStatisticsMenu(client);
+		else if (StrEqual(menuItem, "chat"))			 OpenChatSettingsMenu(client);
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSoccer(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
+
+// **************************************************************************************************************************
+// ************************************************** TEAM STATISTICS MENU **************************************************
+// **************************************************************************************************************************
+public void OpenChatSettingsMenu(int client)
+{
+	Menu menu = new Menu(ChatSettingsMenuHandler);
+	menu.SetTitle("Statistics - Chat Settings");
+
+	char ExtendedChatString[32], ModeString[32], PassString[32], SaveString[32], LossString[32];//, PossString[32];
+	if(extChatSet[client] == 0)					ExtendedChatString = "Chat Info: OFF";
+	else if (extChatSet[client] == 1)			ExtendedChatString = "Chat Info: ON";
+	
+	if(extChatMode[client] == 0)				ModeString = "Mode: CHAT";
+	else if (extChatMode[client] == 1)			ModeString = "Mode: HUD";
+	
+	if(extChatPass[client] == 0)				PassString = "Passes: OFF";
+	else if (extChatPass[client] == 1)			PassString = "Passes: ON";
+	
+	if(extChatSave[client] == 0)				SaveString = "Saves: OFF";
+	else if (extChatSave[client] == 1)			SaveString = "Saves: ON";
+	
+	if(extChatLoss[client] == 0)				LossString = "Losses: OFF";
+	else if (extChatLoss[client] == 1)			LossString = "Losses: ON";
+	
+	//if(extChatPoss[client] == 0)				PossString = "Possession: OFF";
+	//else if (extChatPoss[client] == 1)			PossString = "Possession: ON";
+	
+	menu.AddItem("toggle", ExtendedChatString);
+	menu.AddItem("mode", ModeString);
+	menu.AddItem("passes", PassString);
+	menu.AddItem("saves", SaveString);
+	menu.AddItem("losses", LossString);
+	//menu.AddItem("possession", PossString);
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int ChatSettingsMenuHandler(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char menuItem[32];
+		menu.GetItem(choice, menuItem, sizeof(menuItem));
+		
+		if (StrEqual(menuItem, "toggle"))	
+		{
+			if(extChatSet[client] == 0)		extChatSet[client] = 1;
+			else							extChatSet[client] = 0;
+		}
+		else if (StrEqual(menuItem, "mode"))	
+		{
+			if(extChatMode[client] == 0)	extChatMode[client] = 1;
+			else							extChatMode[client] = 0;
+		}
+		else if (StrEqual(menuItem, "passes"))	
+		{
+			if(extChatPass[client] == 0)	extChatPass[client] = 1;
+			else							extChatPass[client] = 0;
+		}
+		else if (StrEqual(menuItem, "saves"))	
+		{
+			if(extChatSave[client] == 0)	extChatSave[client] = 1;
+			else							extChatSave[client] = 0;
+		}
+		else if (StrEqual(menuItem, "losses"))	
+		{
+			if(extChatLoss[client] == 0)	extChatLoss[client] = 1;
+			else							extChatLoss[client] = 0;
+		}
+		/*else if (StrEqual(menuItem, "possession"))	
+		{
+			if(extChatPoss[client] == 0)	extChatPoss[client] = 1;
+			else							extChatPoss[client] = 0;
+		}*/
+		OpenChatSettingsMenu(client);
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenStatisticsMenu(client);
+	else if (action == MenuAction_End)					  menu.Close();
+}
+
 
 // **************************************************************************************************************************
 // ************************************************** TEAM STATISTICS MENU **************************************************

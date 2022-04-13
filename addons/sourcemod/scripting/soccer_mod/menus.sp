@@ -431,7 +431,7 @@ public int MenuHandlerCommands(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "pick"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap picking menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "admin"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod admin menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "cap"))		 	CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod cap match menu", prefixcolor, prefix, textcolor);
-		else if (StrEqual(menuItem, "spec"))		 	CPrintToChat(client, "{%s}[%s] {%s}Move every player to spectator", prefixcolor, prefix, textcolor);
+		else if (StrEqual(menuItem, "spec"))		 	CPrintToChat(client, "{%s}[%s] {%s}Move yourself('me'), your target or everyone('all') to spectator.", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "maprr"))		CPrintToChat(client, "{%s}[%s] {%s}Reload the current map", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "match"))		CPrintToChat(client, "{%s}[%s] {%s}Opens the Soccer Mod match menu", prefixcolor, prefix, textcolor);
 		else if (StrEqual(menuItem, "matchrr"))		CPrintToChat(client, "{%s}[%s] {%s}Restart the match", prefixcolor, prefix, textcolor);

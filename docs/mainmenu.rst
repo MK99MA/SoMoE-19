@@ -160,25 +160,29 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │     │  ├─ Captchamenu Timer Setting
 		 │     │  └─ Current Locksettings
 		 │     │
-		 │     └─ Shoutsettings (^)
-		 │        ├─ Shout Mode Toggle
-		 │        ├─ Global Shout Cooldown
-		 │        ├─ Global Shout Volume
-		 │        ├─ Global Shout Pitch
-		 │        ├─ Global Shout Radius (if mode supports it)
-		 │        ├─ Shout Commands Toggle
-		 │        ├─ Shout Manager (°)
-		 │        │  ├─ Add Shouts
-		 │        │  ├─ Scan Sounds Folder
-		 │        │  ├─ Edit Shouts
-		 │        │  ├─ Remove Shouts
-		 │        │  └─ Shout List
-		 │        └─ Info / Help
-		 │           ├─ About: Settings
-		 │           ├─ About: Managing Shouts
-		 │           ├─ Credits
-		 │           ├─ Toggle Join Adverts
-		 │           └─ Debug Toggle
+		 │     ├─ Shoutsettings (^)
+		 │     │  ├─ Shout Mode Toggle
+		 │     │  ├─ Global Shout Cooldown
+		 │     │  ├─ Global Shout Volume
+		 │     │  ├─ Global Shout Pitch
+		 │     │  ├─ Global Shout Radius (if mode supports it)
+		 │     │  ├─ Shout Commands Toggle
+		 │     │  ├─ Shout Manager (°)
+		 │     │  │  ├─ Add Shouts
+		 │     │  │  ├─ Scan Sounds Folder
+		 │     │  │  ├─ Edit Shouts
+		 │     │  │  ├─ Remove Shouts
+		 │     │  │  └─ Shout List
+		 │     │  └─ Info / Help
+		 │     │     ├─ About: Settings
+		 │     │     ├─ About: Managing Shouts
+		 │     │     ├─ Credits
+		 │     │     ├─ Toggle Join Adverts
+		 │     │     └─ Debug Toggle
+		 │     │
+		 │     └─ Debugging (°)
+		 │        ├─ Debugging Toggle
+		 │        └─ Scoredebugging Toggle	
 		 │
 		 ├─ Ranking
 		 │  ├─ Match Top 50

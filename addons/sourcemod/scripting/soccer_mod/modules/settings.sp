@@ -7,10 +7,14 @@ public void OpenMenuSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings");
 
-	char PubString[32];
+	char DebugString[32], PubString[32];
 	if(publicmode == 0)					PubString = "Public Mode: Admins";
 	else if(publicmode == 1)			PubString = "Public Mode: !Cap / !Match";
 	else if(publicmode == 2)			PubString = "Public Mode: Free for All";
+	
+	if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
+	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";
+	else if (debuggingEnabled == 2)		DebugString = "Debugging: Score";
 
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("adminset", "Manage Admins");
 	menu.AddItem("maps", "Allowed Maps");
@@ -22,6 +26,7 @@ public void OpenMenuSettings(int client)
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("advtraining", "Training Settings");
 	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC, true)) menu.AddItem("shoutplug", "Shout Control");
 	menu.AddItem("lockenabled", "Lock Settings");
+	menu.AddItem("debugging", DebugString);
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -42,6 +47,25 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 		else if (StrEqual(menuItem, "shoutplug"))		OpenMenuShoutSet(client);
 		else if (StrEqual(menuItem, "mapsounds")) 		OpenMenuMapSounds(client);
 		else if (StrEqual(menuItem, "advtraining"))		OpenMenuAdvTrainSet(client);
+		else if (StrEqual(menuItem, "debugging"))		
+		{
+			if(debuggingEnabled == 0)
+			{
+				debuggingEnabled = 1;
+				UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
+			}
+			else if(debuggingEnabled == 1)
+			{
+				debuggingEnabled = 2;
+				UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
+			}
+			else if(debuggingEnabled == 2)
+			{
+				debuggingEnabled = 0;
+				UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
+			}
+			OpenMenuSettings(client);
+		}
 		else if(StrEqual(menuItem, "lockenabled"))
 		{
 			if(!pwchange) OpenMenuLockSet(client);
@@ -51,9 +75,10 @@ public int MenuHandlerSettings(Menu menu, MenuAction action, int client, int cho
 				OpenMenuSettings(client);
 			}
 		}
-		else if(StrEqual(menuItem, "adminset")) if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))		OpenMenuAdminSet(client);
-		
-		
+		else if(StrEqual(menuItem, "adminset")) 
+		{
+			if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true))		OpenMenuAdminSet(client);
+		}		
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuAdmin(client);
 	else if (action == MenuAction_End)					  menu.Close();
@@ -69,7 +94,7 @@ public void OpenMenuMiscSettings(int client)
 
 	menu.SetTitle("Soccer Mod - Admin - Settings - Misc");
 
-	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32], WallString[32], First12String[32]; //, DebugString[32];
+	char ReadyString[32], DamageString[32], DissolveString[32], DJString[32], JoinString[32], RankString[32], HostString[32], DefaultString[32], FeedString[32], GKString[32], RankModeString[32], CelebrateString[32], WallString[32], First12String[32];
 	if(matchReadyCheck == 0)			ReadyString = "Ready Check: OFF";
 	else if (matchReadyCheck == 1)		ReadyString = "Ready Check: AUTO";
 	else if (matchReadyCheck == 2)		ReadyString = "Ready Check: ON USE";
@@ -115,9 +140,6 @@ public void OpenMenuMiscSettings(int client)
 	else if(first12Set == 1)			First12String = "First 12 Rule: ON";
 	else if(first12Set == 2)			First12String = "First 12 Rule: Pre-Cap Join";
 	
-	/*if(debuggingEnabled == 0)			DebugString = "Debugging: OFF";
-	else if (debuggingEnabled == 1)		DebugString = "Debugging: ON";*/
-	
 	Format(RankString, sizeof(RankString), "!rank Cooldown: %i", rankingCDTime);
 	
 	menu.AddItem("classchoice", JoinString);
@@ -134,8 +156,7 @@ public void OpenMenuMiscSettings(int client)
 	menu.AddItem("gksaves", GKString);
 	menu.AddItem("rankmode", RankModeString);
 	menu.AddItem("celebrate", CelebrateString);
-	/*if (debuggingEnabled == 1 && CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gk_areas", "Set gk areas");
-	if(CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("debugset", DebugString);*/
+	/*if (debuggingEnabled == 1 && CheckCommandAccess(client, "generic_admin", ADMFLAG_RCON, true)) menu.AddItem("gk_areas", "Set gk areas");*/
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -360,26 +381,12 @@ public int MenuHandlerMiscSettings(Menu menu, MenuAction action, int client, int
 			}
 			OpenMenuMiscSettings(client);
 		}
-		/*else if(StrEqual(menuItem, "debugset")) 
-		{
-			if(debuggingEnabled == 0)
-			{
-				debuggingEnabled = 1;
-				UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
-				OpenMenuSettings(client);
-			}
-			else if(debuggingEnabled == 1)
-			{
-				debuggingEnabled = 0;
-				UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
-				OpenMenuSettings(client);
-			}
-		}
-		else if(StrEqual(menuItem, "gk_areas"))		OpenMenuGKAreas(client);*/		
+		/*else if(StrEqual(menuItem, "gk_areas"))		OpenMenuGKAreas(client);*/	
 	}
 	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSettings(client);
 	else if (action == MenuAction_End)					  menu.Close();
 }
+
 
 // *******************************************************************************************************************
 // ************************************************** LOCKSET MENU ***************************************************

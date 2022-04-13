@@ -322,3 +322,12 @@ General commands
 	.. code-block:: none
 	
 		Opens the steamprofile of the target in the MOTD window
+		
+**sm_spec me/all/<name> / !spec me/all/<name>**
+
+	.. code-block:: none
+	
+		Specs players depending on the given argument.
+		'me' 	specs yourself
+		'all' 	specs everyone
+		<name>  specs your target (e.g. !spec MK99 will spec the player with MK99 in his name)

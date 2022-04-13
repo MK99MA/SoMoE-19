@@ -21,6 +21,7 @@ The structure of this menu looks like this:
 	 - :ref:`sound-control`
 	 - :ref:`lock-settings`
 	 - :ref:`shout-plugin` (#)
+	 - :ref:`debugging` (*)
 	 
 	Items marked with a (*) require the rcon flag (z).
 	Items marked with a (#) require an additional plugin to be loaded.
@@ -275,5 +276,14 @@ The structure of this menu looks like this:
 Shout Plugin
 ------------	 
 
-This option is only displayed if *shout.smx* is running on the server. It simply serves as a shortcut to settings menu of the shout-plugin, which is also accessible by using *!shoutset / sm_shoutset*
+Access and configure settings related to shouting (playing sounds).
+
+
+.. _debugging:
+
+---------
+Debugging
+---------	 
+
+Toggle the debugging modes. There are 2 possible modes. A complete debugging mode and one only checking for passes and losses.
  

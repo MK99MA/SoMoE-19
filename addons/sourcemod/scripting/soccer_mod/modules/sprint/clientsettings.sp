@@ -16,6 +16,16 @@ public Action RegSprintCookie()
 	h_TIMER_COL_COOKIE = RegClientCookie(
 		"timer_col",
 		"Sprinttimer color", CookieAccess_Private);
+	//extended chat setting temp
+	h_STATS_TEXT_COOKIE = RegClientCookie(
+		"ext_chat",
+		"Stats text toggle", CookieAccess_Private);
+	h_STATS_MODE_COOKIE = RegClientCookie(
+		"ext_chatmode",
+		"Stats text mode", CookieAccess_Private);
+	h_STATS_TOGGLE_COOKIE = RegClientCookie(
+		"ext_chattoggles",
+		"Stats text settings", CookieAccess_Private);
 	return;
 }
 
@@ -26,6 +36,7 @@ public Action ReadClientCookie(int client)
 		char sCookie_val[16];
 		char sTempArray[3][16];
 		char sTempArray2[2][16];
+		//char sTempArray3[4][16];
 
 		GetClientCookie(client, h_SPRINT_COOKIE, sCookie_val, sizeof(sCookie_val));
 		iP_SETTINGS[client] = StringToInt(sCookie_val) | PLAYER_INITIALIZED;
@@ -40,6 +51,20 @@ public Action ReadClientCookie(int client)
 		ExplodeString(sCookie_val, ";", sTempArray2, sizeof(sTempArray2), sizeof(sTempArray2[]));
 		x_val[client] 		= StringToFloat(sTempArray2[0]);
 		y_val[client] 		= StringToFloat(sTempArray2[1]);
+		
+		//extended chat setting temp
+		GetClientCookie(client, h_STATS_TEXT_COOKIE, sCookie_val, sizeof(sCookie_val));
+		extChatSet[client] = StringToInt(sCookie_val);
+		
+		GetClientCookie(client, h_STATS_MODE_COOKIE, sCookie_val, sizeof(sCookie_val));
+		extChatMode[client] = StringToInt(sCookie_val);
+		
+		GetClientCookie(client, h_STATS_TOGGLE_COOKIE, sCookie_val, sizeof(sCookie_val));
+		ExplodeString(sCookie_val, ";", sTempArray, sizeof(sTempArray), sizeof(sTempArray[]));
+		extChatPass[client]	= StringToInt(sTempArray[0]);
+		extChatSave[client]	= StringToInt(sTempArray[1]);
+		extChatLoss[client]	= StringToInt(sTempArray[2]);
+		//extChatPoss[client]	= StringToInt(sTempArray3[3]);
 
 		if(iP_SETTINGS[client] < 2)
 		{
@@ -86,6 +111,17 @@ public Action WriteClientCookie(int client)
 		// Position Cookie
 		Format(sCookie_val, sizeof(sCookie_val), "%f;%f", x_val[client], y_val[client]);
 		SetClientCookie(client, h_TIMER_XY_COOKIE, sCookie_val);
+		
+		//extended chat setting temp
+		Format(sCookie_val, sizeof(sCookie_val), "%i", extChatSet[client]);
+		SetClientCookie(client, h_STATS_TEXT_COOKIE, sCookie_val);
+		
+		Format(sCookie_val, sizeof(sCookie_val), "%i", extChatMode[client]);
+		SetClientCookie(client, h_STATS_MODE_COOKIE, sCookie_val);
+		
+		//Format(sCookie_val, sizeof(sCookie_val), "%i;%i;%i;%i", extChatPass[client], extChatSave[client], extChatLoss[client], extChatPoss[client]);
+		Format(sCookie_val, sizeof(sCookie_val), "%i;%i;%i", extChatPass[client], extChatSave[client], extChatLoss[client]);
+		SetClientCookie(client, h_STATS_TOGGLE_COOKIE, sCookie_val);
 	}
 	return;
 }

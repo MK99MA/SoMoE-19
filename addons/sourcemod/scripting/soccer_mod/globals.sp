@@ -80,7 +80,6 @@ int djbenabled					= 3;
 int publicmode		 			= 1;
 int damageSounds				= 0;
 int debuggingEnabled			= 0;
-int scoreDebuggingEnabled		= 0;
 int phys_pushscale				= 900;
 int healthGodmode				= 1;
 int healthAmount				= 250;
@@ -144,6 +143,11 @@ bool tempRule			= false;
 // FLOATS
 
 // HANDLES
+/*ArrayList gkArray = CreateArray(MAXPLAYERS+1);
+ArrayList dfArray = CreateArray(MAXPLAYERS+1);
+ArrayList mfArray = CreateArray(MAXPLAYERS+1);
+ArrayList wgArray = CreateArray(MAXPLAYERS+1);
+ArrayList nPArray = CreateArray(MAXPLAYERS+1);*/
 
 // INTEGER
 int capPicker			= 0;
@@ -551,6 +555,9 @@ float statsPossessionCT		 = 0.0;
 float statsPossessionT		 = 0.0;
 
 // HANDLES
+Handle h_STATS_TEXT_COOKIE		= INVALID_HANDLE;
+Handle h_STATS_MODE_COOKIE		= INVALID_HANDLE;
+Handle h_STATS_TOGGLE_COOKIE	= INVALID_HANDLE;
 
 // INTEGER 
 int statsAssisterClientid	= 0;
@@ -580,6 +587,12 @@ int statsRoundsWonCT		= 0;
 int statsRoundsWonT			= 0;
 int statsRoundsLostCT		= 0;
 int statsRoundsLostT		= 0;
+int extChatSet[MAXPLAYERS+1] = {0, ...};
+int extChatMode[MAXPLAYERS+1] = {0, ...};
+int extChatPass[MAXPLAYERS+1] = {0, ...};
+int extChatSave[MAXPLAYERS+1] = {0, ...};
+int extChatLoss[MAXPLAYERS+1] = {0, ...};
+//int extChatPoss[MAXPLAYERS+1] = {0, ...};
 
 // STRINGS
 char statsAssisterName[MAX_NAME_LENGTH]	= "";

@@ -6,11 +6,6 @@ public void RegisterServerCommands()
 		"Enables or disables debugging messages - values: 0/1, default: 0"
 	);
 	RegServerCmd(
-		"soccer_mod_scoredebug",
-		ServerCommands,
-		"Enables or disables score debugging messages - values: 0/1, default: 0"
-	);		
-	RegServerCmd(
 		"soccer_mod_downloads_add_dir",
 		ServerCommands,
 		"Adds a directory and all the subdirectories to the downloads - values: path/to/dir"
@@ -130,36 +125,27 @@ public Action ServerCommands(int args)
 
 	if (StrEqual(serverCommand, "soccer_mod_debug"))
 	{
-		if (StringToInt(cmdArg1))
+		int val = StringToInt(cmdArg1);
+		if (val == 1)
 		{
 			debuggingEnabled = 1;
 			UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
 			PrintToServer("[%s] Debugging enabled", prefix);
 			CPrintToChatAll("{%s}[%s] {%s}Debugging enabled", prefixcolor, prefix, textcolor);
 		}
-		else
+		else if (val == 2)
+		{
+			debuggingEnabled = 2;
+			UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
+			PrintToServer("[%s] Score only debugging enabled", prefix);
+			CPrintToChatAll("{%s}[%s] {%s}Score only debugging enabled", prefixcolor, prefix, textcolor);
+		}
+		else if (val == 0)
 		{
 			debuggingEnabled = 0;
 			UpdateConfigInt("Debug Settings", "soccer_mod_debug", debuggingEnabled);
 			PrintToServer("[%s] Debugging disabled", prefix);
 			CPrintToChatAll("{%s}[%s] {%s}Debugging disabled", prefixcolor, prefix, textcolor);
-		}
-	}
-	else if (StrEqual(serverCommand, "soccer_mod_scoredebug"))
-	{
-		if (StringToInt(cmdArg1))
-		{
-			scoreDebuggingEnabled = 1;
-			UpdateConfigInt("Debug Settings", "soccer_mod_scoredebug", scoreDebuggingEnabled);
-			PrintToServer("[%s] Score Debugging enabled", prefix);
-			CPrintToChatAll("{%s}[%s] {%s}Score Debugging enabled", prefixcolor, prefix, textcolor);
-		}
-		else
-		{
-			scoreDebuggingEnabled = 0;
-			UpdateConfigInt("Debug Settings", "soccer_mod_scoredebug", scoreDebuggingEnabled);
-			PrintToServer("[%s] Score Debugging disabled", prefix);
-			CPrintToChatAll("{%s}[%s] {%s}Score Debugging disabled", prefixcolor, prefix, textcolor);
 		}
 	}
 	else if (StrEqual(serverCommand, "soccer_mod_downloads_add_dir"))

@@ -8,7 +8,7 @@ Welcome to the `SoMoE-19 <https://github.com/MK99MA/SoMoE-19>`_ documentation!
 ======================================
 
 .. toctree::
-    :caption: Current Version: 1.3.4:
+    :caption: Current Version: 1.3.6:
     
     credits
     features
