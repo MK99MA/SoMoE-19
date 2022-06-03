@@ -207,6 +207,7 @@ public void CreateSoccerModConfig()
 	
 	kvConfig.JumpToKey("Debug Settings", true);
 	kvConfig.SetNum("soccer_mod_debug",								debuggingEnabled);
+	kvConfig.SetString("soccer_mod_spawnball",						spawnModelBall);
 	kvConfig.GoBack();
 	
 	kvConfig.Rewind();
@@ -566,6 +567,7 @@ public void ReadFromConfig()
 	
 	kvConfig.JumpToKey("Debug Settings", true);
 	debuggingEnabled		= kvConfig.GetNum("soccer_mod_debug", 0);
+	kvConfig.GetString("soccer_mod_spawnball", spawnModelBall, sizeof(spawnModelBall), "models/soccer_mod/ball_2011.mdl");
 	kvConfig.GoBack();
 	
 	kvConfig.Rewind();

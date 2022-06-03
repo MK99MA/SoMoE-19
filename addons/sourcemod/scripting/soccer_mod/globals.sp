@@ -95,8 +95,8 @@ int KickoffWallSet				= 1;
 int first12Set					= 0;
 int OTCountSet					= 1;
 int OTFinalSet					= 1;
-int pcGrassSet[MAXPLAYERS+1] 	= {0, ...};
-int pcShoutSet[MAXPLAYERS+1] 	= {0, ...};
+int pcGrassSet[MAXPLAYERS+1] 	= {1, ...};
+int pcShoutSet[MAXPLAYERS+1] 	= {1, ...};
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -500,6 +500,21 @@ char skinsModelCTGoalkeeper[128]		= "models/player/soccer_mod/termi/2011/gkaway/
 char skinsModelCTGoalkeeperNumber[4]	= "0";
 char skinsModelTGoalkeeper[128]			= "models/player/soccer_mod/termi/2011/gkhome/ct_urban.mdl";
 char skinsModelTGoalkeeperNumber[4]		= "0";
+
+// **************************************************** SPAWNBALL ***************************************************
+
+// BOOL
+bool ballspawn_required			= false;
+
+// FLOAT
+float ballspawn_pos[3];
+
+// INTEGER
+int spawnballpos 				= -1;
+
+// STRING
+char spawnModelBall[128] = "models/soccer_mod/ball_2011.mdl";
+
 
 // **************************************************** SPRINT ***************************************************
 

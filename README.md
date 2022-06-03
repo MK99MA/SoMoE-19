@@ -33,5 +33,5 @@ If the problem / question remains feel free to create an issue [here](https://gi
 
 Could be used to force cstrike to cache its grass texture right after starting. Theoretically obsolete since 1.3.2 and the addition of server-sided grass replacer options but can still be used for servers not using it or if you prefer to disable the replacer and use this method. Alternatively you can just 'Create a Server' with the following map right after starting up CS:S:
 
-## [>>Map to precache the newer grasstexture<<] (https://github.com/MK99MA/SoMoE-19/raw/master/maps/0_maptexture.bsp)
+## [>>Map to precache the newer grasstexture<<](https://github.com/MK99MA/SoMoE-19/raw/master/maps/0_maptexture.bsp)
 

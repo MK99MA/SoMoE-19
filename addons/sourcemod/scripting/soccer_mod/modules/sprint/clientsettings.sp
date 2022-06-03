@@ -38,13 +38,13 @@ public Action RegSprintCookie()
 
 public Action ReadClientCookie(int client)
 {
+	char sCookie_val[16];
+	char sTempArray[3][16];
+	char sTempArray2[2][16];
+	//char sTempArray3[4][16];
+	
 	if(!IsFakeClient(client) && !(iP_SETTINGS[client] & PLAYER_INITIALIZED))
 	{
-		char sCookie_val[16];
-		char sTempArray[3][16];
-		char sTempArray2[2][16];
-		//char sTempArray3[4][16];
-
 		GetClientCookie(client, h_SPRINT_COOKIE, sCookie_val, sizeof(sCookie_val));
 		iP_SETTINGS[client] = StringToInt(sCookie_val) | PLAYER_INITIALIZED;
 		
@@ -58,7 +58,10 @@ public Action ReadClientCookie(int client)
 		ExplodeString(sCookie_val, ";", sTempArray2, sizeof(sTempArray2), sizeof(sTempArray2[]));
 		x_val[client] 		= StringToFloat(sTempArray2[0]);
 		y_val[client] 		= StringToFloat(sTempArray2[1]);
-		
+	}
+	
+	if(!IsFakeClient(client))
+	{
 		//extended chat setting temp
 		GetClientCookie(client, h_STATS_TEXT_COOKIE, sCookie_val, sizeof(sCookie_val));
 		extChatSet[client] = StringToInt(sCookie_val);
@@ -76,9 +79,11 @@ public Action ReadClientCookie(int client)
 		//per-client settings temp
 		GetClientCookie(client, h_GRASS_TOGGLE_COOKIE, sCookie_val, sizeof(sCookie_val));
 		pcGrassSet[client] = StringToInt(sCookie_val);
+		//PrintToServer("Retrieved value %s for Grass Toggle for %N", sCookie_val, client);
 		
 		GetClientCookie(client, h_SHOUT_TOGGLE_COOKIE, sCookie_val, sizeof(sCookie_val));
 		pcShoutSet[client] = StringToInt(sCookie_val);
+		//PrintToServer("Retrieved value %s for Shout Toggle for %N", sCookie_val, client);
 
 		if(iP_SETTINGS[client] < 2)
 		{
@@ -111,9 +116,10 @@ public Action ReadEveryClientCookie()
 
 public Action WriteClientCookie(int client)
 {
+	char sCookie_val[16];
+	
 	if(!IsFakeClient(client) && (iP_SETTINGS[client] & PLAYER_INITIALIZED))
 	{
-		char sCookie_val[16];
 		IntToString(iP_SETTINGS[client], sCookie_val, sizeof(sCookie_val));
 
 		SetClientCookie(client, h_SPRINT_COOKIE, sCookie_val);
@@ -125,7 +131,10 @@ public Action WriteClientCookie(int client)
 		// Position Cookie
 		Format(sCookie_val, sizeof(sCookie_val), "%f;%f", x_val[client], y_val[client]);
 		SetClientCookie(client, h_TIMER_XY_COOKIE, sCookie_val);
-		
+	}
+	
+	if(!IsFakeClient(client))
+	{
 		//extended chat setting temp
 		Format(sCookie_val, sizeof(sCookie_val), "%i", extChatSet[client]);
 		SetClientCookie(client, h_STATS_TEXT_COOKIE, sCookie_val);
@@ -140,10 +149,13 @@ public Action WriteClientCookie(int client)
 		//per-client settings temp
 		Format(sCookie_val, sizeof(sCookie_val), "%i", pcGrassSet[client]);
 		SetClientCookie(client, h_GRASS_TOGGLE_COOKIE, sCookie_val);
+		//PrintToServer("Grass Toggle for %N is %s", client, sCookie_val);
 		
 		Format(sCookie_val, sizeof(sCookie_val), "%i", pcShoutSet[client]);
 		SetClientCookie(client, h_SHOUT_TOGGLE_COOKIE, sCookie_val);
+		//PrintToServer("Shout Toggle for %N is %s", client, sCookie_val);
 	}
+		
 	return;
 }
 

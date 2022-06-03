@@ -1,7 +1,7 @@
 // **************************************************************************************************************
 // ************************************************** DEFINES ***************************************************
 // ************************************************************************************************************** 
-#define PLUGIN_VERSION "1.3.7"
+#define PLUGIN_VERSION "1.3.7.1"
 #define UPDATE_URL "https://raw.githubusercontent.com/MK99MA/SoMoE-19/master/addons/sourcemod/updatefile.txt"
 #define MAX_NAMES 10
 #define MAXCONES_DYN 15
@@ -63,6 +63,7 @@
 #include "soccer_mod\modules\training_adv.sp"
 #include "soccer_mod\modules\shout.sp"
 #include "soccer_mod\modules\grassreplacer.sp"
+#include "soccer_mod\modules\spawnball.sp"
 
 #include "soccer_mod\fixes\join_team.sp"
 #include "soccer_mod\fixes\radio_commands.sp"
@@ -575,6 +576,8 @@ public void OnMapStart()
 	g_BeamSprite = PrecacheModel("materials/sprites/laser.vmt", true);
 	g_HaloSprite = PrecacheModel("materials/sprites/halo01.vmt", true);
 	
+	SpawnBallOnMapStart();
+	
 	if(FileExists("addons/sourcemod/plugins/shout.smx"))
 	{
 		ServerCommand("sm plugins unload shout");
@@ -1080,7 +1083,8 @@ public Action EventRoundStart(Event event, const char[] name, bool dontBroadcast
 				}
 			}
 		}
-				
+		
+		SpawnBallOnRoundStart();
 		MatchEventRoundStart(event);
 		StatsEventRoundStart(event);
 		TrainingEventRoundStart(event);

@@ -5,7 +5,7 @@ Changelog
 =========
 
 -----
-1.3.2 & 1.3.3 & 1.3.4 & 1.3.5.x & 1.3.6 & 1.3.7
+1.3.2 & 1.3.3 & 1.3.4 & 1.3.5.x & 1.3.6 & 1.3.7.1
 -----
 
 ***
@@ -21,6 +21,7 @@ New
  - Added per client toggleable chat/hud information.
  - Added per client toggleable grassreplacer.
  - Added per client toggleable shout playing.
+ - Added option to spawn a ball at mapstart if the map features a certain entity.
 
 *******
 Changes
