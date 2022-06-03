@@ -1,10 +1,12 @@
 .. _menu-sprintset:
 
-==============
-Sprintsettings
-==============
+========
+Settings
+========
 
-This submenu can be used to change certain client settings resolving around the sprinting feature. It also features a short informational text, but is mostly used to enable or disable certain sprinting indicators such as:
+This submenu can be used to change certain client settings. Most are resolving around the sprinting feature but you can also toggle whether you can hear shouts or see the grassreplacer. 
+
+The Sprintsettings consist of an additional submenu which features a short informational text, but is mostly used to enable or disable certain sprinting indicators such as:
 
  - Messages - Displays a chat message when you are sprinting, sprint ended or you can sprint again.
  - Progress Bar - Displays the defuse bar as a visual indicator for the sprint duration or cooldown.

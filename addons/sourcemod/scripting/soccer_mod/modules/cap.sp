@@ -88,6 +88,8 @@ public void OpenCapMenu(int client)
 	menu.AddItem("start", capString);
 	
 	menu.AddItem("capweap", "Weapon selection");
+	
+	//menu.AddItem("autocap", "[BETA] Auto Cap");
 
 	if(publicmode == 0 || publicmode == 2) menu.ExitBackButton = true;
 	else if(publicmode == 1) 
@@ -117,7 +119,16 @@ public int CapMenuHandler(Menu menu, MenuAction action, int client, int choice)
 					CPrintToChatAll("{%s}[%s] {%s}At least %i players when the capfight started; Changing the pw...", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
 					RandPass();
 				}
-			}	
+			}
+			/*else if (StrEqual(menuItem, "autocap"))
+			{
+				AutoCapStart(client);
+				if(GetClientCount() >= PWMAXPLAYERS+1 && passwordlock == 1 && pwchange == true)
+				{
+					CPrintToChatAll("{%s}[%s] {%s}At least %i players when the capfight started; Changing the pw...", prefixcolor, prefix, textcolor, PWMAXPLAYERS+1);
+					RandPass();
+				}
+			}*/
 		}
 		else CPrintToChat(client, "{%s}[%s]{%s}You can not use this option during a match", prefixcolor, prefix, textcolor);
 
@@ -532,21 +543,24 @@ public void CapPutAllToSpec(int client)
 {
 	if(trainingModeEnabled) trainingModeEnabled = false;
 	
-	for (int player = 1; player <= MaxClients; player++)
+	if(!matchStarted)
 	{
-		if (IsClientInGame(player) && IsClientConnected(player))
+		for (int player = 1; player <= MaxClients; player++)
 		{
-			CPrintToChat(player, "{%s}[%s] {%s}%N has put all players to spectator", prefixcolor, prefix, textcolor, client);
-			if (GetClientTeam(player) != 1) ChangeClientTeam(player, 1);
+			if (IsClientInGame(player) && IsClientConnected(player))
+			{
+				CPrintToChat(player, "{%s}[%s] {%s}%N has put all players to spectator", prefixcolor, prefix, textcolor, client);
+				if (GetClientTeam(player) != 1) ChangeClientTeam(player, 1);
+			}
 		}
-	}
-	
-	HostName_Change_Status("Specced");
-	if(first12Set == 1)				CapPrep = true;
+		
+		HostName_Change_Status("Specced");
+		if(first12Set == 1)				CapPrep = true;
 
-	char steamid[32];
-	GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
-	LogMessage("%N <%s> has put all players to spectator", client, steamid);
+		char steamid[32];
+		GetClientAuthId(client, AuthId_Engine, steamid, sizeof(steamid));
+		LogMessage("%N <%s> has put all players to spectator", client, steamid);
+	}
 }
 
 public void CapAddRandomPlayer(int client)
@@ -802,3 +816,110 @@ public int ImportJoinNumber(char steamid[32])
 	
 	return 0;
 }
+
+
+/*public void AutoCapStart(int client)
+{
+	if (!capFightStarted)
+	{
+		if(passwordlock == 1)
+		{
+			pwchange = true;
+			CPrintToChatAll("{%s}[%s] {%s}AFK Kick enabled.", prefixcolor, prefix, textcolor);
+			AFKKick();
+		}
+		
+		// count players
+		capnr = GetClientCount();
+		if(first12Set == 1)
+		{
+			if(nrhelper >= capnr)
+			{
+				first12Set = 2;
+				tempRule = true;
+			}
+		}
+		if(first12Set == 2)
+		{
+			if (capnr < 12)	capnr = 12;
+		}
+		nrhelper = 0;
+		
+		capFightStarted = true;
+		capPicksLeft = (matchMaxPlayers - 1) * 2;
+		
+		int posnr[MAXPLAYERS+1];
+		gkArray.Clear();
+		dfArray.Clear();
+		mfArray.Clear();
+		wgArray.Clear();
+		nPArray.Clear();
+		
+		KeyValues keygroup = new KeyValues("capPositions");
+		keygroup.ImportFromFile(pathCapPositionsFile);
+
+		for (int player = 1; player <= MaxClients; player++)
+		{
+			if (IsClientInGame(player) && IsClientConnected(player))
+			{
+				char playerSteamid[32];
+				GetClientAuthId(player, AuthId_Engine, playerSteamid, sizeof(playerSteamid));
+				
+				noPos[player] = false;
+					
+				keygroup.JumpToKey(playerSteamid, true);
+
+				int gk = keygroup.GetNum("gk", 0);
+				int lb = keygroup.GetNum("lb", 0);
+				int rb = keygroup.GetNum("rb", 0);
+				int mf = keygroup.GetNum("mf", 0);
+				int lw = keygroup.GetNum("lw", 0);
+				int rw = keygroup.GetNum("rw", 0);
+				int spec = keygroup.GetNum("spec", 0);
+				
+				//Fill arrays
+				if(gk == 1)
+				{
+					gkArray.Push(player);
+				}
+				if((lb == 1 && rb == 1) || lb == 1 || rb == 1)
+				{
+					dfArray.Push(player);
+				}
+				if(mf = 1)
+				{
+					mfArray.Push(player);
+				}
+				if((lw == 1 && rw == 1) || lw == 1 || rw == 1)
+				{
+					wgArray.Push(player);
+				}
+				if(gk == 0 && lb == 0 && rb == 0 && mf == 0 && lw == 0 && rw == 0)
+				{
+					nPArray.Push(player);
+				}
+				
+				posnr[player] = ImportJoinNumber(playerSteamid)
+			}
+		}
+
+		//Pick Team
+		PickTeams();
+	}
+	else CPrintToChat(client, "{%s}[%s] {%s}Cap fight already started", prefixcolor, prefix, textcolor);
+}
+
+
+public void PickTeams()
+{
+	//CoinToss for starting team
+	int firstpick = GetRandomInt(2, 3);
+	int secondpick, picker;
+	if(firstpick == CS_TEAM_T) secondpick = CS_TEAM_CT;
+	else secondpick = CS_TEAM_T;
+	
+	ArrayList priorityList = CreateArray(MAXPLAYERS+1);
+	priorityList.ClearArray();
+	
+	for(int player = 0
+}*/

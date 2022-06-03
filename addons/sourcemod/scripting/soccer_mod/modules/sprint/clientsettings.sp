@@ -26,6 +26,13 @@ public Action RegSprintCookie()
 	h_STATS_TOGGLE_COOKIE = RegClientCookie(
 		"ext_chattoggles",
 		"Stats text settings", CookieAccess_Private);
+	//per-client settings temp
+	h_SHOUT_TOGGLE_COOKIE = RegClientCookie(
+		"client_shout",
+		"Per client shout toggle", CookieAccess_Private);
+	h_GRASS_TOGGLE_COOKIE = RegClientCookie(
+		"client_grass",
+		"Per client grass toggle", CookieAccess_Private);
 	return;
 }
 
@@ -65,6 +72,13 @@ public Action ReadClientCookie(int client)
 		extChatSave[client]	= StringToInt(sTempArray[1]);
 		extChatLoss[client]	= StringToInt(sTempArray[2]);
 		//extChatPoss[client]	= StringToInt(sTempArray3[3]);
+		
+		//per-client settings temp
+		GetClientCookie(client, h_GRASS_TOGGLE_COOKIE, sCookie_val, sizeof(sCookie_val));
+		pcGrassSet[client] = StringToInt(sCookie_val);
+		
+		GetClientCookie(client, h_SHOUT_TOGGLE_COOKIE, sCookie_val, sizeof(sCookie_val));
+		pcShoutSet[client] = StringToInt(sCookie_val);
 
 		if(iP_SETTINGS[client] < 2)
 		{
@@ -122,6 +136,13 @@ public Action WriteClientCookie(int client)
 		//Format(sCookie_val, sizeof(sCookie_val), "%i;%i;%i;%i", extChatPass[client], extChatSave[client], extChatLoss[client], extChatPoss[client]);
 		Format(sCookie_val, sizeof(sCookie_val), "%i;%i;%i", extChatPass[client], extChatSave[client], extChatLoss[client]);
 		SetClientCookie(client, h_STATS_TOGGLE_COOKIE, sCookie_val);
+		
+		//per-client settings temp
+		Format(sCookie_val, sizeof(sCookie_val), "%i", pcGrassSet[client]);
+		SetClientCookie(client, h_GRASS_TOGGLE_COOKIE, sCookie_val);
+		
+		Format(sCookie_val, sizeof(sCookie_val), "%i", pcShoutSet[client]);
+		SetClientCookie(client, h_SHOUT_TOGGLE_COOKIE, sCookie_val);
 	}
 	return;
 }

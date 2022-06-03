@@ -28,7 +28,8 @@ public void OpenMenuSoccer(int client)
 
 	menu.AddItem("help", "Help");
 	
-	menu.AddItem("sprintinfo", "Sprintsettings");
+	//menu.AddItem("sprintinfo", "Sprintsettings");
+	menu.AddItem("clientset", "Settings");
 	
 	if(shoutMode != -1) menu.AddItem("shout", "Shouts");
 
@@ -61,7 +62,8 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		}
 		else if (StrEqual(menuItem, "help"))		OpenMenuHelp(client);
 		else if (StrEqual(menuItem, "credits"))	 	OpenMenuCredits(client);
-		else if (StrEqual(menuItem, "sprintinfo"))  OpenInfoPanel(client); //FakeClientCommandEx(client, "sm_sprintinfo");
+		//else if (StrEqual(menuItem, "sprintinfo"))  OpenInfoPanel(client); //FakeClientCommandEx(client, "sm_sprintinfo");
+		else if (StrEqual(menuItem, "clientset"))  OpenMenuClientSettings(client);
 		else if (StrEqual(menuItem, "shout"))		OpenMenuShout(client, true);
 		else if (currentMapAllowed)
 		{
@@ -76,6 +78,73 @@ public int MenuHandlerSoccer(Menu menu, MenuAction action, int client, int choic
 		}
 	}
 	else if (action == MenuAction_End) menu.Close();
+}
+
+
+// *****************************************************************************************************************
+// ************************************************** CLIENT SETTINGS **************************************************
+// *****************************************************************************************************************
+public void OpenMenuClientSettings(int client)
+{
+	Menu menu = new Menu(MenuHandlerClientSettings);
+	menu.SetTitle("Soccer Mod - Client Settings");
+	
+	char GrassString[32], ShoutString[32];
+	if(pcGrassSet[client] == 0)				GrassString = "Grass: Disabled";
+	else if(pcGrassSet[client] == 1)		GrassString = "Grass: Enabled";
+	
+	if(pcShoutSet[client] == 0)				ShoutString = "Shouts: Disabled";
+	else if(pcShoutSet[client] == 1)		ShoutString = "Shouts: Enabled";
+
+	menu.AddItem("pc_grass", GrassString);
+
+	menu.AddItem("pc_shout", ShoutString);
+	
+	menu.AddItem("sprintinfo", "Sprintsettings");
+
+	menu.ExitBackButton = true;
+	menu.Display(client, MENU_TIME_FOREVER);
+}
+
+public int MenuHandlerClientSettings(Menu menu, MenuAction action, int client, int choice)
+{
+	if (action == MenuAction_Select)
+	{
+		char menuItem[32];
+		menu.GetItem(choice, menuItem, sizeof(menuItem));
+
+		if (StrEqual(menuItem, "pc_grass"))
+		{
+			if(pcGrassSet[client] == 0)
+			{
+				pcGrassSet[client] = 1;
+				CPrintToChat(client, "{%s}[%s] {%s}Grassreplacer enabled. Changes will be visible after your next rr or mapchange!", prefixcolor, prefix, textcolor);
+			}
+			else if(pcGrassSet[client] == 1)
+			{
+				pcGrassSet[client] = 0;
+				CPrintToChat(client, "{%s}[%s] {%s}Grassreplacer disabled. Changes will be visible after your next rr or mapchange!", prefixcolor, prefix, textcolor);
+			}
+			OpenMenuClientSettings(client);
+		}
+		else if (StrEqual(menuItem, "pc_shout"))
+		{
+			if(pcShoutSet[client] == 0)
+			{
+				pcShoutSet[client] = 1;
+				CPrintToChat(client, "{%s}[%s] {%s}Shouts enabled.", prefixcolor, prefix, textcolor);
+			}
+			else if(pcShoutSet[client] == 1)
+			{
+				pcShoutSet[client] = 0;
+				CPrintToChat(client, "{%s}[%s] {%s}Shouts disabled.", prefixcolor, prefix, textcolor);
+			}
+			OpenMenuClientSettings(client);
+		}
+		else if (StrEqual(menuItem, "sprintinfo"))  OpenInfoPanel(client); 
+	}
+	else if (action == MenuAction_Cancel && choice == -6)   OpenMenuSoccer(client);
+	else if (action == MenuAction_End)					  	menu.Close();
 }
 
 // ****************************************************************************************************************

@@ -209,11 +209,14 @@ Unless an indicator is added, the indicator of the next higher menu applies to e
 		 │  │
 		 │  └─ Guide
 		 │
-		 ├─ Sprintsettings
-		 │  └─ Timer Settings
-		 │     ├─ Timer Position
-		 │     └─ Timer Color Settings
-		 │        └─ Timer Color
+		 ├─ Settings
+		 │  ├─ Per Client Grassreplacer Toggle
+		 │  ├─ Per Client Shout Toggle
+		 │  └─ Sprintsettings
+		 │     └─ Timer Settings
+		 │        ├─ Timer Position
+		 │        └─ Timer Color Settings
+		 │           └─ Timer Color
 		 │
 		 ├─ Shouts
 		 └─ Credits

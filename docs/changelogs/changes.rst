@@ -5,7 +5,7 @@ Changelog
 =========
 
 -----
-1.3.2 & 1.3.3 & 1.3.4 & 1.3.5.x & 1.3.6
+1.3.2 & 1.3.3 & 1.3.4 & 1.3.5.x & 1.3.6 & 1.3.7
 -----
 
 ***
@@ -19,6 +19,8 @@ New
  - Added option to disable the 'overtime-sound' only.
  - Added option to set custom sounds for the overtime countdown via config.
  - Added per client toggleable chat/hud information.
+ - Added per client toggleable grassreplacer.
+ - Added per client toggleable shout playing.
 
 *******
 Changes
@@ -26,6 +28,7 @@ Changes
 
  - Removed match reset at mapstart - sm_maprr;sm_start combination should work again
  - Debug mode can be toggled from the menu now.
+ - Main menu now leads to Settings submenu instead of directly to the sprintsettings.
  
 *****
 Fixes

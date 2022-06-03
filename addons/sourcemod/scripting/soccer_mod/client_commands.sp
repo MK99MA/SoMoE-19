@@ -95,26 +95,31 @@ public Action JoinlistCommand(int client, int args)
 
 public Action SpecCommand(int client, int args)
 {
-	if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2) || (publicmode == 1))
+	
+	if(args > 0)
 	{
-		if(args > 0)
+		char username[128];
+		GetCmdArg(1, username, sizeof(username));
+		TrimString(username);
+		StripQuotes(username);
+		
+		if(StrEqual(username, "all"))
 		{
-			char username[128];
-			GetCmdArg(1, username, sizeof(username));
-			TrimString(username);
-			StripQuotes(username);
-			
-			if(StrEqual(username, "all"))
+			//Put all to spec
+			if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2) || (publicmode == 1))
 			{
-				//Put all to spec
 				CapPutAllToSpec(client);
 			}
-			else if(StrEqual(username, "me"))
-			{
-				//Put user to spec
-				ChangeClientTeam(client, 1);
-			}
-			else
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+		}
+		else if(StrEqual(username, "me"))
+		{
+			//Put user to spec
+			ChangeClientTeam(client, 1);
+		}
+		else
+		{
+			if((CheckCommandAccess(client, "generic_admin", ADMFLAG_GENERIC)) || IsSoccerAdmin(client, "cap") || (publicmode == 2) || (publicmode == 1))
 			{
 				//Put target to spec
 				int iTarget = FindTarget(client, username, true, false);
@@ -131,15 +136,15 @@ public Action SpecCommand(int client, int args)
 				}
 				else CPrintToChat(client, "{%s}[%s] {%s}Player is no longer on the server", prefixcolor, prefix, textcolor);
 			}
-		}
-		else
-		{
-			//Info
-			CPrintToChat(client, "{%s}[%s] {%s}Missing argument. Use '!spec all' to spec everyone or '!spec me' to spec yourself.", prefixcolor, prefix, textcolor);
-			CPrintToChat(client, "{%s}[%s] {%s}You can also provide the part of a username to spec your target (e.g. '!spec art').", prefixcolor, prefix, textcolor);
+			else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
 		}
 	}
-	else CPrintToChat(client, "{%s}[%s] {%s}You are not allowed to use this command", prefixcolor, prefix, textcolor);
+	else
+	{
+		//Info
+		CPrintToChat(client, "{%s}[%s] {%s}Missing argument. Use '!spec all' to spec everyone or '!spec me' to spec yourself.", prefixcolor, prefix, textcolor);
+		CPrintToChat(client, "{%s}[%s] {%s}You can also provide the part of a username to spec your target (e.g. '!spec art').", prefixcolor, prefix, textcolor);
+	}
 	
 	return Plugin_Handled;
 }

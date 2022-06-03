@@ -119,87 +119,115 @@ public void ShoutPlaySound(int client, char sound[PLATFORM_MAX_PATH], char sound
 	{
 		if (IsClientInGame(client) && IsPlayerAlive(client) && GetClientTeam(client) > 1)
 		{
-			if(!(cdStatus[client] & CLIENT_SHOUTCD))
+			if(pcShoutSet[client] == 1)
 			{
-				cdStatus[client] |= CLIENT_SHOUTCD;
-				
-				// client position holen
-				float pos[3];
-				GetClientAbsOrigin(client, pos);
-				
-				int modVolume = RoundToCeil(float(iVolume)/100);
-				float floatVolume = float(iVolume)/(modVolume*100);
+				if(!(cdStatus[client] & CLIENT_SHOUTCD))
+				{
+					cdStatus[client] |= CLIENT_SHOUTCD;
+					
+					// client position holen
+					float pos[3];
+					GetClientAbsOrigin(client, pos);
+					
+					int modVolume = RoundToCeil(float(iVolume)/100);
+					float floatVolume = float(iVolume)/(modVolume*100);
 
-				if(shoutMode == 0)	
-				{
-					for(int i = 1; i <= modVolume; i++)						EmitAmbientSound(sound, pos, SOUND_FROM_PLAYER, _, _, floatVolume, iPitch);	
-				}
-				else if (shoutMode == 1) 
-				{					
-					for(int i = 1; i <= MaxClients; i++)
+					if(shoutMode == 0)	
 					{
-						if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
-						{
-							for(int k = 1; k <= modVolume; k++)			EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
-						}
+						for(int i = 1; i <= modVolume; i++)						EmitAmbientSound(sound, pos, SOUND_FROM_PLAYER, _, _, floatVolume, iPitch);	
 					}
-				}
-				else if (shoutMode == 2) 
-				{					
-					for(int i = 1; i <= MaxClients; i++)
-					{
-						if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
+					else if (shoutMode == 1) 
+					{					
+						for(int i = 1; i <= MaxClients; i++)
 						{
-							if(GetClientTeam(i) == GetClientTeam(client))	
+							if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
 							{
-								for(int k = 1; k <= modVolume; k++)			EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+								for(int k = 1; k <= modVolume; k++)
+								{
+									if (pcShoutSet[i] == 1)
+									{
+										EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+									}
+								}
 							}
 						}
 					}
-				}
-				else if (shoutMode == 3)
-				{
-					for(int i = 1; i <= MaxClients; i++)
-					{
-						if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
+					else if (shoutMode == 2) 
+					{					
+						for(int i = 1; i <= MaxClients; i++)
 						{
-							float pos2[3];
-							GetClientAbsOrigin(i, pos2);
-							char namebuffer[MAX_NAME_LENGTH];
-							GetClientName(i, namebuffer, sizeof(namebuffer));
+							if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
+							{
+								if(GetClientTeam(i) == GetClientTeam(client))	
+								{
+									for(int k = 1; k <= modVolume; k++)			
+									{
+										if (pcShoutSet[i] == 1)
+										{
+											EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+										}
+									}
+								}
+							}
+						}
+					}
+					else if (shoutMode == 3)
+					{
+						for(int i = 1; i <= MaxClients; i++)
+						{
+							if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
+							{
+								float pos2[3];
+								GetClientAbsOrigin(i, pos2);
+								char namebuffer[MAX_NAME_LENGTH];
+								GetClientName(i, namebuffer, sizeof(namebuffer));
 
-							if(shoutDebug == 1)	if(GetVectorDistance(pos, pos2, false) > 0.0)PrintToChatAll("Player %s is %.0f away. Current radius: %.0f", namebuffer, GetVectorDistance(pos, pos2, false), floatRadius);
-							
-							if(GetVectorDistance(pos, pos2, false) <= floatRadius)
-							{
-								for(int k = 1; k <= modVolume; k++)			EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+								if(shoutDebug == 1)	if(GetVectorDistance(pos, pos2, false) > 0.0)PrintToChatAll("Player %s is %.0f away. Current radius: %.0f", namebuffer, GetVectorDistance(pos, pos2, false), floatRadius);
+								
+								if(GetVectorDistance(pos, pos2, false) <= floatRadius)
+								{
+									for(int k = 1; k <= modVolume; k++)			
+									{
+										if (pcShoutSet[i] == 1)
+										{
+											EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+										}
+									}
+								}
 							}
 						}
 					}
-				}
-				else if (shoutMode == 4)
-				{
-					for(int i = 1; i <= MaxClients; i++)
+					else if (shoutMode == 4)
 					{
-						if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
+						for(int i = 1; i <= MaxClients; i++)
 						{
-							float pos2[3];
-							GetClientAbsOrigin(i, pos2);
-							char namebuffer[MAX_NAME_LENGTH];
-							GetClientName(i, namebuffer, sizeof(namebuffer));
-							
-							if(shoutDebug == 1)	if(GetVectorDistance(pos, pos2, false) > 0.0)PrintToChatAll("Player %s is %.0f away. Current radius: %.0f", namebuffer, GetVectorDistance(pos, pos2, false), floatRadius);
-							
-							if((GetVectorDistance(pos, pos2, false) <= floatRadius) && (GetClientTeam(i) == GetClientTeam(client)))
+							if(IsClientInGame(i) && IsClientConnected(i) && !IsFakeClient(i)) 
 							{
-								for(int k = 1; k <= modVolume; k++)			EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+								float pos2[3];
+								GetClientAbsOrigin(i, pos2);
+								char namebuffer[MAX_NAME_LENGTH];
+								GetClientName(i, namebuffer, sizeof(namebuffer));
+								
+								if(shoutDebug == 1)	if(GetVectorDistance(pos, pos2, false) > 0.0)PrintToChatAll("Player %s is %.0f away. Current radius: %.0f", namebuffer, GetVectorDistance(pos, pos2, false), floatRadius);
+								
+								if((GetVectorDistance(pos, pos2, false) <= floatRadius) && (GetClientTeam(i) == GetClientTeam(client)))
+								{
+									for(int k = 1; k <= modVolume; k++)			
+									{
+										if (pcShoutSet[i] == 1)
+										{
+											EmitSoundToClient(i, sound, _, _, _, _, floatVolume, iPitch, _, pos, _, true, _);
+										}
+									}
+								}
 							}
 						}
 					}
+					shoutCDs[client] = CreateTimer(floatCD, shoutCD_Timer, client);
 				}
-				shoutCDs[client] = CreateTimer(floatCD, shoutCD_Timer, client);
+				else CPrintToChat(client, "{%s}[%s] {%s}Shout is on cooldown.", prefixcolor, prefix, textcolor);
 			}
-			else CPrintToChat(client, "{%s}[%s] {%s}Shout is on cooldown.", prefixcolor, prefix, textcolor);
+			else CPrintToChat(client, "{%s}[%s] {%s}You can only shout if you can hear them yourself.", prefixcolor, prefix, textcolor);
 		}
 		else CPrintToChat(client, "{%s}[%s] {%s}Only living players can shout.", prefixcolor, prefix, textcolor);
 	}

@@ -47,13 +47,16 @@ public void ReplacerOnClientPostAdminCheck(int client)
 	int precache;
 	
 	int size = GetArraySize(adt_decal_id);
-	for (int i = 0; i < size; i++) 
+	if(pcGrassSet[client] == 1)
 	{
-		id = GetArrayCell(adt_decal_id, i);
-		precache = GetArrayCell(adt_decal_precache, id);
-		GetArrayArray(adt_decal_position, i, view_as<int>(position));
-		TE_SetupBSPDecal(position, 0, precache);
-		TE_SendToClient(client);
+		for (int i = 0; i < size; i++) 
+		{
+			id = GetArrayCell(adt_decal_id, i);
+			precache = GetArrayCell(adt_decal_precache, id);
+			GetArrayArray(adt_decal_position, i, view_as<int>(position));
+			TE_SetupBSPDecal(position, 0, precache);
+			TE_SendToClient(client);
+		}
 	}
 }
 

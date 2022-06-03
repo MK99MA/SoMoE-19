@@ -69,6 +69,8 @@ Handle respawnTimers[MAXPLAYERS + 1];
 Handle delayedFreezeTimer[MAXPLAYERS + 1];
 Handle dclistTimer[MAXPLAYERS + 1];
 Handle g_cJumpTimer[MAXPLAYERS+1] = {null,...};
+Handle h_GRASS_TOGGLE_COOKIE 	= INVALID_HANDLE;
+Handle h_SHOUT_TOGGLE_COOKIE 	= INVALID_HANDLE;
 
 ArrayList groupArray;
 ArrayList lcPanelArray;
@@ -93,6 +95,8 @@ int KickoffWallSet				= 1;
 int first12Set					= 0;
 int OTCountSet					= 1;
 int OTFinalSet					= 1;
+int pcGrassSet[MAXPLAYERS+1] 	= {0, ...};
+int pcShoutSet[MAXPLAYERS+1] 	= {0, ...};
 
 // STRINGS
 char changeSetting[MAXPLAYERS + 1][32];
@@ -104,7 +108,7 @@ char sprayName[MAXPLAYERS + 1][64];
 char sprayID[MAXPLAYERS + 1][32];
 char wallmodel[128]				= "models/soccer_mod/wall.mdl";
 char OTSound1[PLATFORM_MAX_PATH]= "buttons/bell1.wav";
-char OTSound2[PLATFORM_MAX_PATH]= "ambient/misc/brass_bell_f.wav";
+char OTSound2[PLATFORM_MAX_PATH]= "ambient/misc/brass_bell_f.wav"; //Custom sound?
 
 // **************************************************** ADMIN ***************************************************
 
