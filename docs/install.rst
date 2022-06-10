@@ -81,7 +81,7 @@ Preparing SoMoE-19
 ------------------
 
 If you did not install SoMoe-19 before please download the latest full archive from here:
- - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/tag/1.2.7>`_
+ - `SoMoE-19 Archive <https://github.com/MK99MA/SoMoE-19/releases/latest>`_
  
 I do not create a full release for every subversion, so if you are not using **Updater.smx** also check if there is already a newer version found here:
  - `SoMoE-19.smx <https://github.com/MK99MA/SoMoE-19/blob/master/addons/sourcemod/plugins/soccer_mod.smx>`_
